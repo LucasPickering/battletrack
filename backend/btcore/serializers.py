@@ -4,16 +4,24 @@ from . import models
 
 
 class MatchSerializer(serializers.ModelSerializer):
-    mid = serializers.CharField(read_only=True)
+    class Meta:
+        model = models.Match
+        fields = ('id', 'shard', 'players')
 
 
 class PlayerSerializer(serializers.ModelSerializer):
-    pid = models.CharField(read_only=True)
+    class Meta:
+        model = models.Player
+        fields = ('id', 'matches')
 
 
 class PlayerMatchSerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = models.PlayerMatch
+        fields = ('player', 'match', 'placement')
 
 
 class TelemetrySerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = models.Telemetry
+        fields = ('match')
