@@ -1,7 +1,11 @@
-from django.conf.urls import url
+from django.conf.urls import include, url
 
 from . import views
 
 urlpatterns = [
-    url(r'^matches/(?P<match_id>.+)$', views.Match.as_view()),
+    url(r'^matches/(?P<id>[0-9a-f-]+)$', views.MatchView.as_view()),
+    url(r'^players/(?P<shard>[\w-]+)/', include([
+        url(r'^(?P<id>account\.[0-9a-f]+)$', views.PlayerView.as_view()),
+        url(r'^(?P<name>.+)$', views.PlayerView.as_view()),
+    ]))
 ]
