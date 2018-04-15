@@ -1,4 +1,7 @@
+from requests.exceptions import HTTPError
+
 from django.db import models
+from django.http import Http404
 
 
 class DevAPIQuerySet(models.QuerySet):
@@ -6,12 +9,13 @@ class DevAPIQuerySet(models.QuerySet):
         try:
             return super().get(*args, **kwargs)
         except self.model.DoesNotExist:
+            # Object isn't in the DB, try to fetch it from the API
             try:
                 data = self.model.api_getter(*args, **kwargs)
                 return self.model.deser_dev_api(data)
-            except Exception as e:
-                print(repr(e))
-                raise e
+            except HTTPError as e:
+                # Re-throw the requests 404 as a Django 404
+                raise Http404(str(e))
 
 
 class DevAPIManager(models.Manager):
