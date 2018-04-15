@@ -1,7 +1,13 @@
+import logging
+import traceback
+
 from requests.exceptions import HTTPError
 
+from django.conf import settings
 from django.db import models
 from django.http import Http404
+
+logger = logging.getLogger(settings.BT_LOGGER_NAME)
 
 
 class DevAPIQuerySet(models.QuerySet):
@@ -16,6 +22,10 @@ class DevAPIQuerySet(models.QuerySet):
             except HTTPError as e:
                 # Re-throw the requests 404 as a Django 404
                 raise Http404(str(e))
+            except Exception as e:
+                # Django likes to silence these errors, but we will not be silenced!
+                logger.error(traceback.format_exc())
+                raise e  # Re-raise it
 
 
 class DevAPIManager(models.Manager):

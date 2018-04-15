@@ -8,6 +8,7 @@ from . import models
 class PlayerMatchStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PlayerMatchStats
+        exclude = ('player_match',)
 
 
 class PlayerMatchSerializer(serializers.ModelSerializer):
@@ -18,7 +19,17 @@ class PlayerMatchSerializer(serializers.ModelSerializer):
         exclude = ('id', 'roster_match', 'player_ref')
 
 
+class RosterMatchSerializer(serializers.ModelSerializer):
+    players = PlayerMatchSerializer(many=True)
+
+    class Meta:
+        model = models.RosterMatch
+        exclude = ('id', 'match')
+
+
 class MatchSerializer(serializers.ModelSerializer):
+    rosters = RosterMatchSerializer(many=True)
+
     class Meta:
         model = models.Match
         fields = '__all__'
@@ -31,7 +42,7 @@ class MatchSerializer(serializers.ModelSerializer):
         # Separate 'included' objects by type: we'll need to access all 3 types later
         incl = defaultdict(list)
         for e in data['included']:
-            incl[e['id']].append(e)
+            incl[e['type']].append(e)
 
         tel_asset = incl['asset'][0]  # Get the first asset, which is always telemetry metadata
 
@@ -64,17 +75,19 @@ class MatchSerializer(serializers.ModelSerializer):
                 participant_rosters[participant['id']] = roster_match
 
         # Build a PLayerMatch for each player in the game
-        for participant in incl['participants']:  # For each participant
-            attrs = participant['attributes']
-            player_match = models.PlayerMatch.objects.create(
-                player_id=attrs['playerId'],
+        # print(incl['participant'])
+        for participant in incl['participant']:  # For each participant
+            stats = participant['attributes']['stats']
+            new_vals = {
+                'roster_match': participant_rosters[participant['id']],  # Look up by participant ID
+            }
+            player_match, created = models.PlayerMatch.objects.update_or_create(
+                player_id=stats['playerId'],
                 match_id=match_id,
-                # Look up the RosterMatch object by participant ID
-                roster_match=participant_rosters[participant['id']],
+                defaults=new_vals,  # New values to insert
             )
 
             # Build a stats object
-            stats = attrs['stats']
             models.PlayerMatchStats.objects.create(
                 player_match=player_match,
                 kills=stats['kills'],
@@ -82,12 +95,6 @@ class MatchSerializer(serializers.ModelSerializer):
 
         return match
     models.Match.deser_dev_api = deser_dev_api  # Add this to the Match model
-
-
-class TelemetrySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Telemetry
-        fields = '__all__'
 
 
 class PlayerSerializer(serializers.ModelSerializer):
@@ -112,9 +119,22 @@ class PlayerSerializer(serializers.ModelSerializer):
         # Create a PlayerMatch object for each match
         match_ids = (m['id'] for m in data['relationships']['matches']['data'])
         for match_id in match_ids:
-            models.PlayerMatch.objects.create(player_id=player_id,
-                                              player_ref=player,
-                                              match_id=match_id)
+            # If the PlayerMatch already exists, update it with the player reference
+            # Otherwise, create a new one
+            new_vals = {
+                'player_ref': player,
+            }
+            models.PlayerMatch.objects.update_or_create(
+                player_id=player_id,
+                match_id=match_id,
+                defaults=new_vals,  # New values to insert
+            )
 
         return player
     models.Player.deser_dev_api = deser_dev_api  # Add this to the Player model
+
+
+class TelemetrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Telemetry
+        fields = '__all__'
