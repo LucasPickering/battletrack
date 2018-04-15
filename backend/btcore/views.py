@@ -22,3 +22,10 @@ class PlayerView(views.APIView):
         player = models.Player.objects.get(**kwargs)
         serializer = serializers.PlayerSerializer(player)
         return Response(serializer.data)
+
+
+class TelemetryView(generics.RetrieveAPIView):
+    queryset = models.Telemetry.objects
+    serializer_class = serializers.TelemetrySerializer
+    lookup_field = 'match'
+    lookup_url_kwarg = 'id'
