@@ -18,4 +18,5 @@ yarn-error.log*
 *.sqlite3
 *.cfg
 *.pyc
+*.log
 !package.json

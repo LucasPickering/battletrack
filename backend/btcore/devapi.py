@@ -1,10 +1,9 @@
+import logging
 import requests
 
+from django.conf import settings
 
-def http_get(url, headers):
-    r = requests.get(url, headers=headers)
-    r.raise_for_status()
-    return r.json()
+logger = logging.getLogger(settings.BT_LOGGER_NAME)
 
 
 class DevAPI:
@@ -25,6 +24,7 @@ class DevAPI:
         return cls(key)  # Instantiate the API
 
     def http_get(self, url):
+        logger.info(f"Dev API GET {url}")
         r = requests.get(url, headers=self._headers)
         r.raise_for_status()
         return r.json()
