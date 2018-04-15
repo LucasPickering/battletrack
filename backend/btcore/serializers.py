@@ -1,8 +1,12 @@
 from collections import defaultdict
 
+from django.conf import settings
 from rest_framework import serializers
 
-from . import models
+from . import devapi, models
+
+
+api = devapi.DevAPI.from_file(settings.DEV_API_KEY_FILE)
 
 
 class PlayerMatchStatsSerializer(serializers.ModelSerializer):
@@ -32,22 +36,23 @@ class MatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Match
-        fields = '__all__'
+        exclude = ('telemetry_url',)
 
     @staticmethod
-    def deser_dev_api(data):
-        d = data['data']
-        attrs = d['attributes']
+    def get_from_api(id):
+        d = api.get_match(id)  # Get match data from the API
+        data = d['data']
+        attrs = data['attributes']
 
         # Separate 'included' objects by type: we'll need to access all 3 types later
         incl = defaultdict(list)
-        for e in data['included']:
+        for e in d['included']:
             incl[e['type']].append(e)
 
         tel_asset = incl['asset'][0]  # Get the first asset, which is always telemetry metadata
 
         # Create the main match object
-        match_id = d['id']
+        match_id = data['id']
         match = models.Match.objects.create(
             id=match_id,
             shard=attrs['shardId'],
@@ -94,7 +99,7 @@ class MatchSerializer(serializers.ModelSerializer):
             )
 
         return match
-    models.Match.deser_dev_api = deser_dev_api  # Add this to the Match model
+    models.Match.get_from_api = get_from_api  # Add this to the Match model
 
 
 class PlayerSerializer(serializers.ModelSerializer):
@@ -105,7 +110,8 @@ class PlayerSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     @staticmethod
-    def deser_dev_api(data):
+    def get_from_api(**kwargs):
+        data = api.get_player(**kwargs)  # kwargs could have player ID or name
         attrs = data['attributes']
 
         # Build the Player object
@@ -131,10 +137,21 @@ class PlayerSerializer(serializers.ModelSerializer):
             )
 
         return player
-    models.Player.deser_dev_api = deser_dev_api  # Add this to the Player model
+    models.Player.get_from_api = get_from_api  # Add this to the Player model
 
 
 class TelemetrySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Telemetry
         fields = '__all__'
+
+    @staticmethod
+    def get_from_api(match):
+        # Get the match object. This will fetch it from the API if necessary.
+        match_obj = models.Match.objects.get(id=match)
+        data = api.get(match_obj.telemetry_url)  # Get the URL
+
+        # TODO: Deserialization
+
+        return models.Telemetry.objects.create(match=match_obj)
+    models.Telemetry.get_from_api = get_from_api

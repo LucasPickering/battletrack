@@ -15,10 +15,9 @@ class DevAPIQuerySet(models.QuerySet):
         try:
             return super().get(*args, **kwargs)
         except self.model.DoesNotExist:
-            # Object isn't in the DB, try to fetch it from the API
             try:
-                data = self.model.api_getter(*args, **kwargs)
-                return self.model.deser_dev_api(data)
+                # Object isn't in the DB, try to fetch it from the API
+                return self.model.get_from_api(*args, **kwargs)
             except HTTPError as e:
                 # Re-throw the requests 404 as a Django 404
                 raise Http404(str(e))
