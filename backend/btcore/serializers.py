@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 from django.conf import settings
+from django.db import transaction
 from rest_framework import serializers
 
 from . import devapi, models
@@ -120,6 +121,7 @@ class MatchDevDeserializer(serializers.ModelSerializer):
     def run_validation(self, data):
         return data  # Fake validation! SAD!
 
+    @transaction.atomic
     def create(self, validated_data):
         data = validated_data['data']
         attrs = data['attributes']
@@ -186,8 +188,9 @@ class PlayerDevDeserializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def run_validation(self, data):
-        return data
+        return data  # The data is in a very strange structure, so don't apply validation
 
+    @transaction.atomic
     def create(self, validated_data):
         attrs = validated_data['attributes']
 
@@ -222,7 +225,7 @@ class TelemetryDevDeserializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def run_validation(self, data):
-        return data
+        return data  # The data is in a very strange structure, so don't apply validation
 
     def create(self, validated_data):
         # TODO: Deserialization

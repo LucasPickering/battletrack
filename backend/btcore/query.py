@@ -6,13 +6,10 @@ from django.conf import settings
 from django.db import models
 from django.http import Http404
 
-from . import util
-
 logger = logging.getLogger(settings.BT_LOGGER_NAME)
 
 
 class DevAPIQuerySet(models.QuerySet):
-    @util.timed
     def get(self, *args, **kwargs):
         try:
             return super().get(*args, **kwargs)
