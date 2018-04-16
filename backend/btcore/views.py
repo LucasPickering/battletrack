@@ -20,6 +20,15 @@ class PlayerView(views.APIView):
     def get(self, request, **kwargs):
         # kwargs will have shard and either name or ID - this handles either case
         player = models.Player.objects.get(**kwargs)
+
+        # If requested, populate all missing match matches for the player
+        if request.GET.get('populate', False) is not False:
+            for player_match in player.matches.all():
+                # If there is no RosterMatch for this PlayerMatch, then the Match isn't in the DB.
+                # Run a get for it by ID get it pulled from the API.
+                if not player_match.roster_match:
+                    models.Match.objects.get(id=player_match.match_id)
+
         serializer = serializers.PlayerSerializer(player)
         return Response(serializer.data)
 

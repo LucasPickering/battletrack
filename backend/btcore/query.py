@@ -1,7 +1,6 @@
 import logging
+import requests
 import traceback
-
-from requests.exceptions import HTTPError
 
 from django.conf import settings
 from django.db import models
@@ -18,8 +17,8 @@ class DevAPIQuerySet(models.QuerySet):
             try:
                 # Object isn't in the DB, try to fetch it from the API
                 return self.model.get_from_api(*args, **kwargs)
-            except HTTPError as e:
-                # Re-throw the requests 404 as a Django 404
+            except requests.exceptions.HTTPError as e:
+                # Re-throw the requests error as a Django 404
                 raise Http404(str(e))
             except Exception as e:
                 # Django likes to silence these errors, but we will not be silenced!
