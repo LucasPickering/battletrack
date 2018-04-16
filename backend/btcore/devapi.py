@@ -24,8 +24,8 @@ class DevAPI:
         return cls(key)  # Instantiate the API
 
     def get(self, url):
-        logger.info(f"Dev API GET {url}")
         r = requests.get(url, headers=self._headers)
+        logger.info(f"Dev API GET {url} {r.status_code}")
         r.raise_for_status()
         return r.json()
 
