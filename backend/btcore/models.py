@@ -40,6 +40,7 @@ objects where possible. An unlinked in this case PlayerMatch will have a null re
 
 
 class Match(models.Model):
+    get_from_api = api.get_match
     objects = DevAPIManager()
 
     id = models.CharField(primary_key=True, max_length=constants.MATCH_ID_LENGTH)
@@ -52,6 +53,7 @@ class Match(models.Model):
 
 
 class Player(models.Model):
+    get_from_api = api.get_player
     objects = DevAPIManager()
 
     id = models.CharField(primary_key=True, max_length=constants.PLAYER_ID_LENGTH)
@@ -64,6 +66,22 @@ class Telemetry(models.Model):
 
     match = models.OneToOneField(Match, on_delete=models.CASCADE, primary_key=True)
     # TODO: Add events and stuff
+
+    @staticmethod
+    def get_from_api(match):
+        """
+        @brief      Gets telemetry data from the dev API, given a match ID. Looks up the match by
+                    ID in the DB, which will fetch it from the API if necessary. Then, gets the
+                    telemetry URL from the match data and fetches that from the API.
+
+        @param      match  The match ID
+
+        @return     The telemetry data from the API.
+        """
+        # Get the match object. This will fetch it from the API if necessary.
+        match_obj = Match.objects.get(id=match)
+        tel_data = api.get(match_obj.telemetry_url)  # Get the URL
+        return {'match': match_obj, 'telemetry': tel_data}
 
 
 class RosterMatch(models.Model):

@@ -16,7 +16,11 @@ class DevAPIQuerySet(models.QuerySet):
         except self.model.DoesNotExist:
             try:
                 # Object isn't in the DB, try to fetch it from the API
-                return self.model.get_from_api(*args, **kwargs)
+                data = self.model.get_from_api(*args, **kwargs)
+                # Deserialize the data and save it
+                serializer = self.model.dev_deserializer(data=data)
+                serializer.is_valid(raise_exception=True)
+                return serializer.save()
             except requests.exceptions.HTTPError as e:
                 # Re-throw the requests error as a Django 404
                 raise Http404(str(e))
