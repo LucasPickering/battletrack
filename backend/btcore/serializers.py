@@ -9,22 +9,81 @@ from . import devapi, models
 api = devapi.DevAPI.from_file(settings.DEV_API_KEY_FILE)
 
 
+class MatchSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Match
+        fields = ('mode', 'map_name', 'date', 'duration')
+
+
 class PlayerMatchStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PlayerMatchStats
         exclude = ('player_match',)
 
 
+class PlayerMatchStatsDevDeserializer(serializers.ModelSerializer):
+    """
+    @brief      Deserialize player stats data from the dev API into our model format.
+                Maps dev API field names to our model field names. Names that match between the two
+                (e.g. 'boosts') don't need to be explicitly mapped.
+    """
+    DBNOs = serializers.IntegerField(source='dbnos')
+    damageDealt = serializers.FloatField(source='damage_dealt')
+    deathType = serializers.CharField(source='death_type')
+    headshotKills = serializers.IntegerField(source='headshot_kills')
+    killPlace = serializers.IntegerField(source='kill_place')
+    killPoints = serializers.IntegerField(source='kill_points')
+    killStreaks = serializers.IntegerField(source='kill_streaks')
+    longestKill = serializers.IntegerField(source='longest_kill')
+    mostDamage = serializers.IntegerField(source='most_damage')
+    rideDistance = serializers.FloatField(source='ride_distance')
+    roadKills = serializers.IntegerField(source='road_kills')
+    teamKills = serializers.IntegerField(source='team_kills')
+    timeSurvived = serializers.IntegerField(source='time_survived')
+    vehicleDestroys = serializers.IntegerField(source='vehicle_destroys')
+    walkDistance = serializers.FloatField(source='walk_distance')
+    weaponsAcquired = serializers.IntegerField(source='weapons_acquired')
+    winPlace = serializers.IntegerField(source='win_place')
+    winPoints = serializers.IntegerField(source='win_points')
+
+    class Meta:
+        model = models.PlayerMatchStats
+        fields = ('player_match',
+                  'DBNOs', 'assists', 'boosts', 'damageDealt', 'deathType', 'headshotKills',
+                  'heals', 'killPlace', 'killPoints', 'killStreaks', 'kills', 'longestKill',
+                  'mostDamage', 'revives', 'rideDistance', 'roadKills', 'teamKills', 'timeSurvived',
+                  'vehicleDestroys', 'walkDistance', 'weaponsAcquired', 'winPlace', 'winPoints')
+
+
 class PlayerMatchSerializer(serializers.ModelSerializer):
+    """
+    @brief      Contains info about a Match for a certain Player
+    """
+    match = MatchSummarySerializer(source='roster_match.match', default=None)
     stats = PlayerMatchStatsSerializer()
 
     class Meta:
         model = models.PlayerMatch
-        exclude = ('id', 'roster_match', 'player_ref')
+        fields = ('match_id', 'stats', 'match')
 
 
-class RosterMatchSerializer(serializers.ModelSerializer):
-    players = PlayerMatchSerializer(many=True)
+class MatchPlayerSerializer(serializers.ModelSerializer):
+    """
+    @brief      Contains info about a Player for a certain Match
+    """
+    name = serializers.CharField(source='player_ref.name', default=None)
+    stats = PlayerMatchStatsSerializer()
+
+    class Meta:
+        model = models.PlayerMatch
+        fields = ('player_id', 'name', 'stats')
+
+
+class MatchRosterSerializer(serializers.ModelSerializer):
+    """
+    @brief      Contains info about a Roster for a certain Match
+    """
+    players = MatchPlayerSerializer(many=True)
 
     class Meta:
         model = models.RosterMatch
@@ -32,7 +91,7 @@ class RosterMatchSerializer(serializers.ModelSerializer):
 
 
 class MatchSerializer(serializers.ModelSerializer):
-    rosters = RosterMatchSerializer(many=True)
+    rosters = MatchRosterSerializer(many=True)
 
     class Meta:
         model = models.Match
@@ -80,7 +139,6 @@ class MatchSerializer(serializers.ModelSerializer):
                 participant_rosters[participant['id']] = roster_match
 
         # Build a PLayerMatch for each player in the game
-        # print(incl['participant'])
         for participant in incl['participant']:  # For each participant
             stats = participant['attributes']['stats']
             new_vals = {
@@ -92,11 +150,11 @@ class MatchSerializer(serializers.ModelSerializer):
                 defaults=new_vals,  # New values to insert
             )
 
-            # Build a stats object
-            models.PlayerMatchStats.objects.create(
-                player_match=player_match,
-                kills=stats['kills'],
-            )
+            # Deserialize the stats and save them
+            stats['player_match'] = player_match.id
+            stats_serializer = PlayerMatchStatsDevDeserializer(data=stats)
+            stats_serializer.is_valid(raise_exception=True)
+            stats_serializer.save()
 
         return match
     models.Match.get_from_api = get_from_api  # Add this to the Match model
