@@ -21,40 +21,6 @@ class PlayerMatchStatsSerializer(serializers.ModelSerializer):
         exclude = ('player_match',)
 
 
-class PlayerMatchStatsDevDeserializer(serializers.ModelSerializer):
-    """
-    @brief      Deserialize player stats data from the dev API into our model format.
-                Maps dev API field names to our model field names. Names that match between the two
-                (e.g. 'boosts') don't need to be explicitly mapped.
-    """
-    DBNOs = serializers.IntegerField(source='dbnos')
-    damageDealt = serializers.FloatField(source='damage_dealt')
-    deathType = serializers.CharField(source='death_type')
-    headshotKills = serializers.IntegerField(source='headshot_kills')
-    killPlace = serializers.IntegerField(source='kill_place')
-    killPoints = serializers.IntegerField(source='kill_points')
-    killStreaks = serializers.IntegerField(source='kill_streaks')
-    longestKill = serializers.IntegerField(source='longest_kill')
-    mostDamage = serializers.IntegerField(source='most_damage')
-    rideDistance = serializers.FloatField(source='ride_distance')
-    roadKills = serializers.IntegerField(source='road_kills')
-    teamKills = serializers.IntegerField(source='team_kills')
-    timeSurvived = serializers.IntegerField(source='time_survived')
-    vehicleDestroys = serializers.IntegerField(source='vehicle_destroys')
-    walkDistance = serializers.FloatField(source='walk_distance')
-    weaponsAcquired = serializers.IntegerField(source='weapons_acquired')
-    winPlace = serializers.IntegerField(source='win_place')
-    winPoints = serializers.IntegerField(source='win_points')
-
-    class Meta:
-        model = models.PlayerMatchStats
-        fields = ('player_match',
-                  'DBNOs', 'assists', 'boosts', 'damageDealt', 'deathType', 'headshotKills',
-                  'heals', 'killPlace', 'killPoints', 'killStreaks', 'kills', 'longestKill',
-                  'mostDamage', 'revives', 'rideDistance', 'roadKills', 'teamKills', 'timeSurvived',
-                  'vehicleDestroys', 'walkDistance', 'weaponsAcquired', 'winPlace', 'winPoints')
-
-
 class PlayerMatchSerializer(serializers.ModelSerializer):
     """
     @brief      Contains info about a Match for a certain Player
@@ -97,15 +63,70 @@ class MatchSerializer(serializers.ModelSerializer):
         model = models.Match
         exclude = ('telemetry_url',)
 
-    @staticmethod
-    def get_from_api(id):
-        d = api.get_match(id)  # Get match data from the API
-        data = d['data']
+
+class PlayerSerializer(serializers.ModelSerializer):
+    matches = PlayerMatchSerializer(many=True)
+
+    class Meta:
+        model = models.Player
+        fields = '__all__'
+
+
+class TelemetrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Telemetry
+        fields = '__all__'
+
+
+class PlayerMatchStatsDevDeserializer(serializers.ModelSerializer):
+    """
+    @brief      Deserialize player stats data from the dev API into our model format.
+                Maps dev API field names to our model field names. Names that match between the two
+                (e.g. 'boosts') don't need to be explicitly mapped.
+    """
+    DBNOs = serializers.IntegerField(source='dbnos')
+    damageDealt = serializers.FloatField(source='damage_dealt')
+    deathType = serializers.CharField(source='death_type')
+    headshotKills = serializers.IntegerField(source='headshot_kills')
+    killPlace = serializers.IntegerField(source='kill_place')
+    killPoints = serializers.IntegerField(source='kill_points')
+    killStreaks = serializers.IntegerField(source='kill_streaks')
+    longestKill = serializers.IntegerField(source='longest_kill')
+    mostDamage = serializers.IntegerField(source='most_damage')
+    rideDistance = serializers.FloatField(source='ride_distance')
+    roadKills = serializers.IntegerField(source='road_kills')
+    teamKills = serializers.IntegerField(source='team_kills')
+    timeSurvived = serializers.IntegerField(source='time_survived')
+    vehicleDestroys = serializers.IntegerField(source='vehicle_destroys')
+    walkDistance = serializers.FloatField(source='walk_distance')
+    weaponsAcquired = serializers.IntegerField(source='weapons_acquired')
+    winPlace = serializers.IntegerField(source='win_place')
+    winPoints = serializers.IntegerField(source='win_points')
+
+    class Meta:
+        model = models.PlayerMatchStats
+        fields = ('player_match',
+                  'DBNOs', 'assists', 'boosts', 'damageDealt', 'deathType', 'headshotKills',
+                  'heals', 'killPlace', 'killPoints', 'killStreaks', 'kills', 'longestKill',
+                  'mostDamage', 'revives', 'rideDistance', 'roadKills', 'teamKills', 'timeSurvived',
+                  'vehicleDestroys', 'walkDistance', 'weaponsAcquired', 'winPlace', 'winPoints')
+
+
+class MatchDevDeserializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Match
+        fields = '__all__'
+
+    def run_validation(self, data):
+        return data  # Fake validation! SAD!
+
+    def create(self, validated_data):
+        data = validated_data['data']
         attrs = data['attributes']
 
         # Separate 'included' objects by type: we'll need to access all 3 types later
         incl = defaultdict(list)
-        for e in d['included']:
+        for e in validated_data['included']:
             incl[e['type']].append(e)
 
         tel_asset = incl['asset'][0]  # Get the first asset, which is always telemetry metadata
@@ -157,23 +178,21 @@ class MatchSerializer(serializers.ModelSerializer):
             stats_serializer.save()
 
         return match
-    models.Match.get_from_api = get_from_api  # Add this to the Match model
 
 
-class PlayerSerializer(serializers.ModelSerializer):
-    matches = PlayerMatchSerializer(many=True)
-
+class PlayerDevDeserializer(serializers.ModelSerializer):
     class Meta:
         model = models.Player
         fields = '__all__'
 
-    @staticmethod
-    def get_from_api(**kwargs):
-        data = api.get_player(**kwargs)  # kwargs could have player ID or name
-        attrs = data['attributes']
+    def run_validation(self, data):
+        return data
+
+    def create(self, validated_data):
+        attrs = validated_data['attributes']
 
         # Build the Player object
-        player_id = data['id']
+        player_id = validated_data['id']
         player = models.Player.objects.create(
             id=player_id,
             name=attrs['name'],
@@ -181,7 +200,7 @@ class PlayerSerializer(serializers.ModelSerializer):
         )
 
         # Create a PlayerMatch object for each match
-        match_ids = (m['id'] for m in data['relationships']['matches']['data'])
+        match_ids = (m['id'] for m in validated_data['relationships']['matches']['data'])
         for match_id in match_ids:
             # If the PlayerMatch already exists, update it with the player reference
             # Otherwise, create a new one
@@ -195,21 +214,23 @@ class PlayerSerializer(serializers.ModelSerializer):
             )
 
         return player
-    models.Player.get_from_api = get_from_api  # Add this to the Player model
 
 
-class TelemetrySerializer(serializers.ModelSerializer):
+class TelemetryDevDeserializer(serializers.ModelSerializer):
     class Meta:
         model = models.Telemetry
         fields = '__all__'
 
-    @staticmethod
-    def get_from_api(match):
-        # Get the match object. This will fetch it from the API if necessary.
-        match_obj = models.Match.objects.get(id=match)
-        data = api.get(match_obj.telemetry_url)  # Get the URL
+    def run_validation(self, data):
+        return data
 
+    def create(self, validated_data):
         # TODO: Deserialization
 
-        return models.Telemetry.objects.create(match=match_obj)
-    models.Telemetry.get_from_api = get_from_api
+        return models.Telemetry.objects.create(match=validated_data['match'])
+
+
+# Add these dev deserializers to their respective model classes, so the query set can access them
+models.Match.dev_deserializer = MatchDevDeserializer
+models.Player.dev_deserializer = PlayerDevDeserializer
+models.Telemetry.dev_deserializer = TelemetryDevDeserializer
