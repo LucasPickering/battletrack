@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
-import {
-  Table,
-} from 'react-bootstrap';
+import BootstrapTable from 'react-bootstrap-table-next';
 
 import api from '../api';
 import '../styles/Player.css'
@@ -24,32 +22,19 @@ class Player extends Component {
   }
 
   render() {
-    const matchData  = this.state.playerData ? this.state.playerData.matches : [];
-    const rows = matchData.map(d => {
-      const stats = d.stats || {};
-      return (
-        <tr key={d.match_id}>
-          <td>{d.match_id}</td>
-          <td>{stats.kills}</td>
-        </tr>
-      );
-    });
-
+    // Get match data from the player. Filter out null matches.
+    const { playerData } = this.state;
+    const matchData  = playerData ? playerData.matches.filter(d => d.match) : [];
+    const columns = [
+      {dataField: 'match.mode', text: 'Game Mode'},
+      {dataField: 'match.map_name', text: 'Map'},
+      {dataField: 'stats.win_place', text: 'Placement'},
+      {dataField: 'stats.time_survived', text: 'Time Alive'},
+      {dataField: 'stats.kills', text: 'Kills'},
+      {dataField: 'stats.assists', text: 'Assists'},
+    ];
     return (
-      <div>
-        <h2>{this.playerName}</h2>
-        <Table className="matchTable">
-          <thead>
-            <tr>
-              <th>Match ID</th>
-              <th>Kills</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows}
-          </tbody>
-        </Table>
-      </div>
+      <BootstrapTable keyField="match_id" data={matchData} columns={columns} />
     );
   }
 };
