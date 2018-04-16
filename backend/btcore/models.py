@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 
-from . import constants, devapi
+from . import devapi, util
 from .query import DevAPIManager
 
 api = devapi.DevAPI.from_file(settings.DEV_API_KEY_FILE)
@@ -43,7 +43,7 @@ class Match(models.Model):
     get_from_api = api.get_match
     objects = DevAPIManager()
 
-    id = models.CharField(primary_key=True, max_length=constants.MATCH_ID_LENGTH)
+    id = models.CharField(primary_key=True, max_length=util.MATCH_ID_LENGTH)
     shard = models.CharField(max_length=20)
     mode = models.CharField(max_length=20)
     map_name = models.CharField(max_length=50)
@@ -56,7 +56,7 @@ class Player(models.Model):
     get_from_api = api.get_player
     objects = DevAPIManager()
 
-    id = models.CharField(primary_key=True, max_length=constants.PLAYER_ID_LENGTH)
+    id = models.CharField(primary_key=True, max_length=util.PLAYER_ID_LENGTH)
     name = models.CharField(max_length=50)
     shard = models.CharField(max_length=20)
 
@@ -85,14 +85,14 @@ class Telemetry(models.Model):
 
 
 class RosterMatch(models.Model):
-    id = models.CharField(primary_key=True, max_length=constants.ROSTER_ID_LENGTH)
+    id = models.CharField(primary_key=True, max_length=util.ROSTER_ID_LENGTH)
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='rosters')
     placement = models.PositiveSmallIntegerField()
 
 
 class PlayerMatch(models.Model):
     # Store the player's ID, and also a reference to the player object
-    player_id = models.CharField(max_length=constants.PLAYER_ID_LENGTH)
+    player_id = models.CharField(max_length=util.PLAYER_ID_LENGTH)
     # Null if match isn't in the DB yet
     player_ref = models.ForeignKey(Player, on_delete=models.CASCADE, null=True,
                                    related_name='matches')
