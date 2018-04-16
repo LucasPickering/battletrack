@@ -23,7 +23,7 @@ class PlayerView(views.APIView):
 
         # If requested, populate all missing match matches for the player
         if request.GET.get('populate', False) is not False:
-            for player_match in player.matches.all():
+            for player_match in player.matches.all()[:5]:  # Rate limiting!
                 # If there is no RosterMatch for this PlayerMatch, then the Match isn't in the DB.
                 # Run a get for it by ID get it pulled from the API.
                 if not player_match.roster_match:

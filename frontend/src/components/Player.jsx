@@ -18,7 +18,7 @@ class Player extends Component {
 
   componentDidMount() {
     // Load player's data from the API
-    api.get(`/api/players/pc-na/${this.playerName}`)
+    api.get(`/api/players/pc-na/${this.playerName}?populate`)
       .then(response => this.setState({ playerData: response.data }))
       .catch(console.error);
   }
