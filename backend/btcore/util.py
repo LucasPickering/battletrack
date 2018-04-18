@@ -4,6 +4,9 @@ import time
 
 from django.conf import settings
 
+GAME_MODES = [('solo', 'Solo'), ('duo', 'Duo'), ('squad', 'Squad')]
+PERSPECTIVES = [('tpp', 'TPP'), ('fpp', 'FPP')]
+
 MATCH_ID_LENGTH = 36
 PLAYER_ID_LENGTH = 40
 ROSTER_ID_LENGTH = 36

@@ -5,10 +5,11 @@ import api from '../api';
 import {
   formatDate,
   formatSeconds,
+  formatGameMode,
+  formatPerspective,
+  formatMap,
   makeTable,
   sortKeyFunc,
-  translateGameMode,
-  translateMap,
 } from '../util';
 import RosterMatchSummary from './RosterMatchSummary';
 
@@ -36,13 +37,15 @@ class Match extends Component {
     }
 
     const rosters = matchData.rosters.sort(sortKeyFunc(r => r.win_place));
+    console.log(matchData);
 
     return (
       <div className="match">
-        <h2>{translateGameMode(matchData.mode)}</h2>
+        <h2>{formatGameMode(matchData.mode)} {formatPerspective(matchData.perspective)}</h2>
+        <h2>{formatPerspective(matchData.mode)}</h2>
         <h3>{formatDate(matchData.date)}</h3>
         {makeTable([
-          ['Map', translateMap(matchData.map_name)],
+          ['Map', formatMap(matchData.map_name)],
           ['Duration', formatSeconds(matchData.duration)],
         ])}
         <ListGroup>

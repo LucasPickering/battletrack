@@ -2,15 +2,6 @@ import moment from 'moment';
 import React from 'react';
 import { Table } from 'react-bootstrap';
 
-const GAME_MODES = {
-  'solo-tpp': 'Solo TPP',
-  'duo-tpp': 'Duo TPP',
-  'squad-tpp': 'Squad TPP',
-  'solo-fpp': 'Solo FPP',
-  'duo-fpp': 'Duo FPP',
-  'squad-fpp': 'Squad FPP',
-}
-
 const MAP_NAMES = {
   Erangel_Main: 'Erangel',
   Desert_Main: 'Miramar',
@@ -22,6 +13,18 @@ export function formatDate(date) {
 
 export function formatSeconds(seconds) {
   return moment.utc(seconds * 1000).format('m[m] ss[s]');
+}
+
+export function formatGameMode(gameMode) {
+  return gameMode.charAt(0).toUpperCase() + gameMode.slice(1);  // Capitalize first letter
+}
+
+export function formatPerspective(perspective) {
+  return perspective.toUpperCase();
+}
+
+export function formatMap(mapName) {
+  return MAP_NAMES[mapName];
 }
 
 export function makeTable(rows) {
@@ -52,12 +55,4 @@ export function sortKeyFunc(keyFunc) {
     }
     return 0;
   }
-}
-
-export function translateGameMode(gameMode) {
-  return GAME_MODES[gameMode];
-}
-
-export function translateMap(mapName) {
-  return MAP_NAMES[mapName];
 }
