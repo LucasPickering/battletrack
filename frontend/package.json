@@ -5,11 +5,12 @@
   "proxy": "http://localhost:4000",
   "dependencies": {
     "axios": "^0.18.0",
+    "moment": "^2.22.1",
+    "moment-timezone": "^0.5.14",
     "npm": "^5.8.0",
     "prop-types": "^15.6.1",
     "react": "^16.3.1",
     "react-bootstrap": "^0.32.1",
-    "react-bootstrap-table-next": "^0.1.8",
     "react-dom": "^16.3.1",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.1.4"

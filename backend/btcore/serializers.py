@@ -54,7 +54,7 @@ class MatchRosterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.RosterMatch
-        exclude = ('id', 'match')
+        exclude = ('match',)
 
 
 class MatchSerializer(serializers.ModelSerializer):
@@ -154,7 +154,7 @@ class MatchDevDeserializer(serializers.ModelSerializer):
             roster_match = models.RosterMatch.objects.create(
                 id=roster['id'],
                 match=match,
-                placement=attrs['stats']['rank'],
+                win_place=attrs['stats']['rank'],
             )
 
             # Save this RosterMatch in a dict for each participant on the roster
