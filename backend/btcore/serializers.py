@@ -13,7 +13,7 @@ api = devapi.DevAPI.from_file(settings.DEV_API_KEY_FILE)
 class MatchSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Match
-        fields = ('mode', 'map_name', 'date', 'duration')
+        fields = ('mode', 'perspective', 'map_name', 'date', 'duration')
 
 
 class PlayerMatchStatsSerializer(serializers.ModelSerializer):
@@ -135,10 +135,12 @@ class MatchDevDeserializer(serializers.ModelSerializer):
 
         # Create the main match object
         match_id = data['id']
+        mode, perspective = attrs['gameMode'].split('-')  # Split mode-perspective into two parts
         match = models.Match.objects.create(
             id=match_id,
             shard=attrs['shardId'],
-            mode=attrs['gameMode'],
+            mode=mode,
+            perspective=perspective,
             # API doesn't always include this field, so default to None
             map_name=attrs.get('mapName', ''),
             date=attrs['createdAt'],

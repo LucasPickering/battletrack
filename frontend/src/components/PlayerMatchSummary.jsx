@@ -3,7 +3,13 @@ import React from 'react';
 import { Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-import { formatSeconds, matchLink, translateGameMode, translateMap } from '../util';
+import {
+  formatSeconds,
+  formatGameMode,
+  formatPerspective,
+  formatMap,
+  matchLink,
+} from '../util';
 import '../styles/PlayerMatchSummary.css';
 
 const PlayerMatchSummary = (props) => {
@@ -15,8 +21,10 @@ const PlayerMatchSummary = (props) => {
     <Link to={matchLink(match_id)}>
       <Panel className="player-match-summary">
         <Panel.Heading>
-          <Panel.Title componentClass="h3">{translateGameMode(match.mode)}</Panel.Title>
-          <Panel.Title componentClass="h3">{translateMap(match.map_name)}</Panel.Title>
+          <Panel.Title componentClass="h3">
+            {formatGameMode(match.mode)} {formatPerspective(match.perspective)}
+          </Panel.Title>
+          <Panel.Title componentClass="h3">{formatMap(match.map_name)}</Panel.Title>
         </Panel.Heading>
         <Panel.Body>
           <ul className="left-block">
