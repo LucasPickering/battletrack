@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import BootstrapTable from 'react-bootstrap-table-next';
+import { ListGroup } from 'react-bootstrap';
 
 import api from '../api';
-import '../styles/Player.css'
+import PlayerMatchSummary from './PlayerMatchSummary';
+import '../styles/Player.css';
 
 class Player extends Component {
   constructor(props, context) {
@@ -10,31 +11,42 @@ class Player extends Component {
     this.state = {
       playerData: null,
     };
-
-    this.playerName = props.match.params.playerName;
   }
 
   componentDidMount() {
+    this.updatePlayerData();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { playerName: oldName } = this.props.match.params;
+    const { playerName: newName } = nextProps.match.params;
+
+    // If the player name changed, fetch the new player's data
+    if (oldName !== newName) {
+      this.updatePlayerData();
+    }
+  }
+
+  updatePlayerData() {
+    this.setState({ playerData: null }); // Wipe any old data
     // Load player's data from the API
-    api.get(`/api/players/pc-na/${this.playerName}?populate`)
+    api.get(`/api/players/pc-na/${this.props.match.params.playerName}?populate`)
       .then(response => this.setState({ playerData: response.data }))
       .catch(console.error);
   }
 
   render() {
-    // Get match data from the player. Filter out null matches.
     const { playerData } = this.state;
-    const matchData  = playerData ? playerData.matches.filter(d => d.match) : [];
-    const columns = [
-      {dataField: 'match.mode', text: 'Game Mode'},
-      {dataField: 'match.map_name', text: 'Map'},
-      {dataField: 'stats.win_place', text: 'Placement'},
-      {dataField: 'stats.time_survived', text: 'Time Alive'},
-      {dataField: 'stats.kills', text: 'Kills'},
-      {dataField: 'stats.assists', text: 'Assists'},
-    ];
-    return (
-      <BootstrapTable keyField="match_id" data={matchData} columns={columns} />
+
+    return playerData && (
+      <div className="player">
+        <h2>{playerData.name}</h2>
+        <ListGroup>
+          {playerData.matches
+            .filter(m => m.match) // Filter out null matches
+            .map(m => <PlayerMatchSummary key={m.match_id} data={m} />)}
+        </ListGroup>
+      </div>
     );
   }
 };

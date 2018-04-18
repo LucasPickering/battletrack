@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
   Button,
@@ -20,18 +21,23 @@ class PlayerSearch extends Component {
   }
 
   search() {
-    this.props.history.push(`/players/${this.state.searchName}`)
+    this.props.history.push(`/players/${this.state.searchName}`);
   }
 
   render() {
     return (
-      <FormGroup className="playerSearch">
+      <FormGroup className="player-search">
         <InputGroup>
           <FormControl
             type="text"
             // value={this.state.value}
-            placeholder="Name"
+            placeholder="Player name..."
             onChange={e => this.setState({ searchName: e.target.value })}
+            onKeyPress={e =>{
+              if (e.key === 'Enter') {
+                this.search();
+              }
+            }}
           />
           <InputGroup.Button>
             <Button onClick={this.search}>Search</Button>
@@ -41,4 +47,9 @@ class PlayerSearch extends Component {
     );
   }
 };
+
+PlayerSearch.contextTypes = {
+  router: PropTypes.object,
+}
+
 export default withRouter(PlayerSearch);

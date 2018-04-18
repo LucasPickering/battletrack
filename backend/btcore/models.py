@@ -87,7 +87,7 @@ class Telemetry(models.Model):
 class RosterMatch(models.Model):
     id = models.CharField(primary_key=True, max_length=util.ROSTER_ID_LENGTH)
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='rosters')
-    placement = models.PositiveSmallIntegerField()
+    win_place = models.PositiveSmallIntegerField()
 
 
 class PlayerMatch(models.Model):
