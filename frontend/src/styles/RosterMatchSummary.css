@@ -1,0 +1,14 @@
+.roster-match-summary {
+    border: none;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.roster-match-summary h4 {
+    float: left;
+}
+
+.roster-table th,
+.roster-table td {
+    padding-left: 40px;
+}

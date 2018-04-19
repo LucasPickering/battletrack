@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ListGroup } from 'react-bootstrap';
+import { Panel } from 'react-bootstrap';
 
 import api from '../api';
 import {
@@ -12,6 +12,7 @@ import {
   sortKeyFunc,
 } from '../util';
 import RosterMatchSummary from './RosterMatchSummary';
+import '../styles/Match.css';
 
 class Match extends Component {
   constructor(props, context) {
@@ -37,20 +38,18 @@ class Match extends Component {
     }
 
     const rosters = matchData.rosters.sort(sortKeyFunc(r => r.win_place));
-    console.log(matchData);
 
     return (
       <div className="match">
         <h2>{formatGameMode(matchData.mode)} {formatPerspective(matchData.perspective)}</h2>
-        <h2>{formatPerspective(matchData.mode)}</h2>
         <h3>{formatDate(matchData.date)}</h3>
         {makeTable([
           ['Map', formatMap(matchData.map_name)],
           ['Duration', formatSeconds(matchData.duration)],
         ])}
-        <ListGroup>
+        <Panel className="rosters">
           {rosters.map(r => <RosterMatchSummary key={r.id} data={r} />)}
-        </ListGroup>
+        </Panel>
       </div>
     );
   }
