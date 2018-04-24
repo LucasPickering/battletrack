@@ -7,10 +7,26 @@ from . import devapi, models, serializers
 api = devapi.DevAPI.from_file(settings.DEV_API_KEY_FILE)
 
 
-class MatchView(generics.RetrieveAPIView):
+class MatchView(views.APIView):
     queryset = models.Match.objects
     serializer_class = serializers.MatchSerializer
-    lookup_field = 'id'
+
+    def get(self, request, id):
+        match = models.Match.objects.get(id=id)
+
+        # If requested, populate missing players or telemetry data for the match
+        if request.GET.get('popPlayers', False) is not False:
+            for roster_match in match.rosters.all()[0]:  # Rate limiting!
+                for player_match in roster_match.players.all()[:5]:
+                    # If there is no Player for this PlayerMatch, then the Player isn't in the DB.
+                    # Run a get for it by ID get it pulled from the API.
+                    if not player_match.player_ref:
+                        models.Player.objects.get(id=player_match.player_id)
+        if request.GET.get('popTelemetry', False) is not False and not match.telemetry:
+            models.Telemetry.get(match=match)
+
+        serializer = serializers.MatchSerializer(match)
+        return Response(serializer.data)
 
 
 class PlayerView(views.APIView):
@@ -22,7 +38,7 @@ class PlayerView(views.APIView):
         player = models.Player.objects.get(**kwargs)
 
         # If requested, populate all missing match matches for the player
-        if request.GET.get('populate', False) is not False:
+        if request.GET.get('popMatches', False) is not False:
             for player_match in player.matches.all()[:5]:  # Rate limiting!
                 # If there is no RosterMatch for this PlayerMatch, then the Match isn't in the DB.
                 # Run a get for it by ID get it pulled from the API.
