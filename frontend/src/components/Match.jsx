@@ -26,7 +26,7 @@ class Match extends Component {
 
   componentDidMount() {
     // Load player's data from the API
-    api.get(`/api/matches/${this.matchId}`)
+    api.get(`/api/matches/${this.matchId}?popTelemetry`)
       .then(response => this.setState({ matchData: response.data }))
       .catch(console.error);
   }

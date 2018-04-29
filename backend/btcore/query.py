@@ -18,7 +18,7 @@ class DevAPIQuerySet(models.QuerySet):
                 # Object isn't in the DB, try to fetch it from the API
                 data = self.model.get_from_api(*args, **kwargs)
                 # Deserialize the data and save it
-                serializer = self.model.dev_deserializer(data=data)
+                serializer = self.model.serializer(data=data)
                 serializer.is_valid(raise_exception=True)
                 return serializer.save()
             except requests.exceptions.HTTPError as e:
