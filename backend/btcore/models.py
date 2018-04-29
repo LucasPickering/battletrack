@@ -1,7 +1,9 @@
 from django.conf import settings
 from django.db import models
+from model_utils.managers import InheritanceManager
 
 from . import devapi, util
+from .fields import CircleField, PositionField
 from .query import DevAPIManager
 
 api = devapi.DevAPI.from_file(settings.DEV_API_KEY_FILE)
@@ -61,6 +63,9 @@ class Player(models.Model):
     name = models.CharField(max_length=50)
     shard = models.CharField(max_length=20)
 
+    class Meta:
+        unique_together = (('id', 'shard'), ('name', 'shard'))
+
 
 class Telemetry(models.Model):
     objects = DevAPIManager()
@@ -78,10 +83,11 @@ class Telemetry(models.Model):
 
         @return     The telemetry data from the API.
         """
-        # Get the match object. This will fetch it from the API if necessary.
         match_obj = Match.objects.get(id=match)
-        tel_data = api.get(match_obj.telemetry_url)  # Get the URL
-        return {'match': match_obj, 'telemetry': tel_data}
+        return {
+            'match': match_obj,
+            'telemetry': api.get(match_obj.telemetry_url),  # Pull the data from the API
+        }
 
 
 class RosterMatch(models.Model):
@@ -135,23 +141,6 @@ class PlayerMatchStats(models.Model):
     win_points = models.PositiveSmallIntegerField()
 
 
-class Position(models.Model):
-    """
-    @brief      Describes a 3D position
-    """
-    x = models.FloatField()
-    y = models.FloatField()
-    z = models.FloatField()
-
-
-class Circle(models.Model):
-    """
-    @brief      Describes a circle's (red zone, white zone, etc.) position and radius.
-    """
-    position = models.OneToOneField(Position, on_delete=models.PROTECT)
-    radius = models.FloatField()
-
-
 class Item(models.Model):
     item_name = models.CharField(max_length=75)
     stack_count = models.PositiveSmallIntegerField()
@@ -167,41 +156,42 @@ class Vehicle(models.Model):
 
 
 class Event(models.Model):
-    telemetry = models.ForeignKey(Telemetry, on_delete=models.CASCADE)
+    objects = InheritanceManager()
+
+    telemetry = models.ForeignKey(Telemetry, on_delete=models.CASCADE, related_name='events')
     type = models.CharField(max_length=20)
     time = models.DateTimeField()
 
 
 class GameStatePeriodicEvent(Event):
     # God bless America
-    red_zone = models.OneToOneField(Circle, on_delete=models.PROTECT, related_name='red_event',
-                                    blank=True, )  # Null if no active red zone
-    white_zone = models.OneToOneField(Circle, on_delete=models.PROTECT, related_name='white_event')
-    blue_zone = models.OneToOneField(Circle, on_delete=models.PROTECT, related_name='blue_event')
+    red_zone = CircleField(blank=True)  # Blank if no active red zone
+    white_zone = CircleField(blank=True)  # Blank if no white zone yet
+    blue_zone = CircleField()
 
 
 class PlayerEvent(Event):
-    # player = PlayerMatchField()
-    position = models.OneToOneField(Position, on_delete=models.PROTECT)
+    player = models.ForeignKey(PlayerMatch, on_delete=models.CASCADE)
+    position = PositionField()
     health = models.FloatField()
 
 
-class PlayerAttackEvent(Event):
+class PlayerAttackEvent(PlayerEvent):
     attack_type = models.CharField(max_length=20)
     weapon = models.OneToOneField(Item, on_delete=models.PROTECT)
     vehicle = models.OneToOneField(Vehicle, on_delete=models.PROTECT)
 
 
-class PlayerTakeDamageEvent(Event):
+class PlayerTakeDamageEvent(PlayerEvent):
     attacker = models.ForeignKey(PlayerMatch, on_delete=models.CASCADE,
-                                 blank=True)  # Null if non-player damage
+                                 blank=True, null=True)  # Null if non-player damage
     damage = models.FloatField()
     damage_type = models.CharField(max_length=40)  # e.g. Damage_Gun
     damage_reason = models.CharField(max_length=40)  # e.g. ArmShot
     damage_causer = models.CharField(max_length=40)  # e.g. WeapHK416_C
 
 
-class PlayerKillEvent(Event):
+class PlayerKillEvent(PlayerEvent):
     attacker = models.ForeignKey(PlayerMatch, on_delete=models.CASCADE,
                                  blank=True)  # Null if non-player death
     damage_type = models.CharField(max_length=40)  # e.g. Damage_Gun
@@ -211,7 +201,7 @@ class PlayerKillEvent(Event):
 class ItemEvent(Event):
     player = models.ForeignKey(PlayerMatch, on_delete=models.CASCADE)
     item = models.OneToOneField(Item, on_delete=models.PROTECT)
-    position = models.OneToOneField(Position, on_delete=models.PROTECT)
+    position = PositionField()
 
 
 class VehicleEvent(Event):
@@ -225,4 +215,4 @@ class VehicleDestroyEvent(VehicleEvent):
 
 
 class CarePackageEvent(Event):
-    position = models.OneToOneField(Position, on_delete=models.PROTECT)
+    position = PositionField()

@@ -7,10 +7,10 @@ import { formatSeconds, playerLink } from '../util';
 import '../styles/RosterMatchSummary.css';
 
 function makePlayerSummary(player) {
-  const { player_id, name, stats } = player;
+  const { player_id, player_name, stats } = player;
   return (
     <tr key={player_id}>
-      <td><Link to={playerLink(name)}>{name}</Link></td>
+      <td><Link to={playerLink(player_name)}>{player_name}</Link></td>
       <td>{stats.kills}</td>
       <td>{formatSeconds(stats.time_survived)}</td>
     </tr>

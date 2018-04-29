@@ -22,8 +22,8 @@ class MatchView(views.APIView):
                     # Run a get for it by ID get it pulled from the API.
                     if not player_match.player_ref:
                         models.Player.objects.get(id=player_match.player_id)
-        if request.GET.get('popTelemetry', False) is not False and not match.telemetry:
-            models.Telemetry.get(match=match)
+        if request.GET.get('popTelemetry', False) is not False:
+            models.Telemetry.objects.get(match=match.id)  # Will pull from the API if necessary
 
         serializer = serializers.MatchSerializer(match)
         return Response(serializer.data)

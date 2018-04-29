@@ -30,7 +30,7 @@ class Player extends Component {
   updatePlayerData() {
     this.setState({ playerData: null }); // Wipe any old data
     // Load player's data from the API
-    api.get(`/api/players/pc-na/${this.props.match.params.playerName}?populate`)
+    api.get(`/api/players/pc-na/${this.props.match.params.playerName}?popMatches`)
       .then(response => this.setState({ playerData: response.data }))
       .catch(console.error);
   }
