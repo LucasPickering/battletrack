@@ -18,12 +18,20 @@ class DevAPIQuerySet(models.QuerySet):
                 # Object isn't in the DB, try to fetch it from the API
                 data = self.model.get_from_api(*args, **kwargs)
                 # Deserialize the data and save it
-                serializer = self.model.serializer(data=data)
+                serializer = self.model.serializer.from_dev_data(data)
                 serializer.is_valid(raise_exception=True)
-                return serializer.save()
+                serializer.save()
+
+                # Re-run the original query to make sure we re-use select_related, etc.
+                return super().get(*args, **kwargs)
             except requests.exceptions.HTTPError as e:
-                # Re-throw the requests error as a Django 404
-                raise Http404(str(e))
+                if e.response.status_code == 404:
+                    # If it was a 404, re-throw it as a Django 404
+                    raise Http404(str(e))
+                else:
+                    # Otherwise, log the error
+                    logger.error(traceback.format_exc())
+                    raise e
             except Exception as e:
                 # Django likes to silence these errors, but we will not be silenced!
                 logger.error(traceback.format_exc())

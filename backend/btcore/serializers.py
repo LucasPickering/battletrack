@@ -47,42 +47,75 @@ class DevDeserializerMeta(serializers.SerializerMetaclass):
         return super().__init__(name, bases, attrs)
 
 
+class DevDeserializer(serializers.ModelSerializer, metaclass=DevDeserializerMeta):
+    @staticmethod
+    def convert_dev_data(dev_data, *args, **kwargs):
+        pass
+
+    @classmethod
+    def from_dev_data(cls, dev_data, *args, **kwargs):
+        return cls(*args, data=cls.convert_dev_data(dev_data), **kwargs)
+
+
 class MatchSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Match
         fields = ('mode', 'perspective', 'map_name', 'date', 'duration')
 
 
-class PlayerMatchStatsSerializer(serializers.ModelSerializer):
+class PlayerMatchStatsSerializer(DevDeserializer):
+    # Left value is the name in the API data, right value is the name in the model
+    FIELD_MAPPINGS = [
+        ('assists', 'assists'),
+        ('boosts', 'boosts'),
+        ('DBNOs', 'dbnos'),
+        ('damageDealt', 'damage_dealt'),
+        ('deathType', 'death_type'),
+        ('headshotKills', 'headshot_kills'),
+        ('heals', 'heals'),
+        ('killPlace', 'kill_place'),
+        ('killPoints', 'kill_points'),
+        ('killStreaks', 'kill_streaks'),
+        ('kills', 'kills'),
+        ('longestKill', 'longest_kill'),
+        ('mostDamage', 'most_damage'),
+        ('revives', 'revives'),
+        ('rideDistance', 'ride_distance'),
+        ('roadKills', 'road_kills'),
+        ('teamKills', 'team_kills'),
+        ('timeSurvived', 'time_survived'),
+        ('vehicleDestroys', 'vehicle_destroys'),
+        ('walkDistance', 'walk_distance'),
+        ('weaponsAcquired', 'weapons_acquired'),
+        ('winPlace', 'win_place'),
+        ('winPoints', 'win_points'),
+    ]
+
     class Meta:
         model = models.PlayerMatchStats
         exclude = ('player_match',)
 
-
-class PlayerMatchSerializer(serializers.ModelSerializer):
-    """
-    @brief      Contains info about a Match for a certain Player
-    """
-    id = serializers.CharField(source='match_id')
-    match = MatchSummarySerializer(source='roster_match.match', default=None)
-    stats = PlayerMatchStatsSerializer()
-
-    class Meta:
-        model = models.PlayerMatch
-        fields = ('id', 'stats', 'match')
+    @staticmethod
+    def convert_dev_data(dev_data):
+        # Map each field from the API name to the model name. Fields excluded from the mapping are
+        # not included in the output.
+        return {model_name: dev_data[api_name] for api_name, model_name
+                in PlayerMatchStatsSerializer.FIELD_MAPPINGS}
 
 
 class MatchPlayerSerializer(serializers.ModelSerializer):
     """
-    @brief      Contains info about a Player for a certain Match
+    @brief      Serialization/deserialization for a Player in a certain Match
     """
-    id = serializers.CharField(source='player_id')
-    name = serializers.CharField(source='player_name')
     stats = PlayerMatchStatsSerializer()
 
     class Meta:
         model = models.PlayerMatch
-        fields = ('id', 'name', 'stats')
+        fields = ('player_id', 'player_name', 'stats')
+        read_only_fields = ('player_name',)
+        extra_kwargs = {
+            'roster': {'write_only': True},
+        }
 
 
 class MatchRosterSerializer(serializers.ModelSerializer):
@@ -93,26 +126,188 @@ class MatchRosterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.RosterMatch
-        exclude = ('match',)
+        fields = ('win_place', 'players')
 
 
-class MatchSerializer(serializers.ModelSerializer):
+class PlayerMatchSerializer(serializers.ModelSerializer):
+    """
+    @brief      Contains info about a Match for a certain Player
+    """
+    match = MatchSummarySerializer(source='roster.match', default=None, read_only=True)
+    stats = PlayerMatchStatsSerializer(read_only=True)
+
+    class Meta:
+        model = models.PlayerMatch
+        fields = ('player_name', 'match_id', 'stats', 'match')
+        extra_kwargs = {
+            'player_name': {'write_only': True},
+        }
+
+
+class MatchSerializer(DevDeserializer):
     rosters = MatchRosterSerializer(many=True)
 
     class Meta:
         model = models.Match
-        exclude = ('telemetry_url',)
+        fields = ('id', 'shard', 'mode', 'perspective', 'map_name', 'date', 'duration',
+                  'telemetry_url', 'rosters')
+        extra_kwargs = {
+            'telemetry_url': {'write_only': True},
+        }
+
+    @staticmethod
+    def convert_dev_data(dev_data):
+        data = dev_data['data']
+
+        attrs = data['attributes']
+        mode, perspective = attrs['gameMode'].split('-')
+
+        # Separate 'included' objects by type: we'll need to access all 3 types later
+        incl = defaultdict(list)
+        for e in dev_data['included']:
+            incl[e['type']].append(e)
+        tel_asset = incl['asset'][0]  # Get the first asset, which is always telemetry metadata
+
+        # Dict of each PlayerMatch data, keyed on participant ID
+        player_matches = {}
+        for participant in incl['participant']:
+            stats_dev_data = participant['attributes']['stats']
+            player_id = stats_dev_data.pop('playerId')  # We need this, but not in the stats
+            stats = PlayerMatchStatsSerializer.convert_dev_data(stats_dev_data)
+
+            player_matches[participant['id']] = {
+                'player_id': player_id,
+                'stats': stats,
+            }
+
+        # Build a RosterMatch dict for each team in the game, and nest a list of PlayerMatches
+        # in each one
+        roster_matches = []
+        for roster in incl['roster']:
+            participant_data = roster['relationships']['participants']['data']
+            roster_matches.append({
+                # 'id': roster['id'],
+                'win_place': roster['attributes']['stats']['rank'],
+                'players': [player_matches[pdata['id']] for pdata in participant_data],
+            })
+
+        return {
+            'id': data['id'],
+            'shard': attrs['shardId'],
+            'mode': mode,
+            'perspective': perspective,
+            'map_name': attrs.get('mapName', ''),  # This isn't always in the data for some reason
+            'date': attrs['createdAt'],
+            'duration': attrs['duration'],
+            'telemetry_url': tel_asset['attributes']['URL'],
+            'rosters': roster_matches,
+        }
+
+    @transaction.atomic
+    def create(self, validated_data):
+        rosters = validated_data.pop('rosters')
+
+        # Build a list where each element is a list of players for a roster, and build a dict of
+        # player ID to stats object
+        player_lists = [roster.pop('players') for roster in rosters]  # List of lists
+        player_to_stats = {}
+        for players in player_lists:
+            for player in players:
+                player_to_stats[player['player_id']] = player.pop('stats')
+
+        # Create the Match
+        match = models.Match.objects.create(**validated_data)
+        match_id = match.id
+
+        # Create each RosterMatch
+        models.RosterMatch.objects.bulk_create(
+            models.RosterMatch(match=match, **roster) for roster in rosters
+        )
+        # Re-fect RosterMatches to get copies with the IDs
+        roster_matches = models.RosterMatch.objects.filter(match=match)
+
+        # Build a dict of player ID to RosterMatch. This relies on the fact that the ordering of
+        # player_lists corresponds to that of roster_matches (which will always be the case).
+        player_to_roster = {}
+        for players, roster_match in zip(player_lists, roster_matches):
+            for player in players:
+                player_to_roster[player['player_id']] = roster_match
+
+        # Figure out which PlayerMatches are already in the DB so they can be updated
+        existing_pms = models.PlayerMatch.objects.filter(match_id=match_id).exclude(player_id=None)
+
+        # Set the roster on each pre-existing PlayerMatch
+        for player in existing_pms:
+            player.roster = player_to_roster[player.player_id]
+            player.save()
+
+        # Create all the missing PlayerMatches
+        existing_set = set(existing_pms.values_list('player_id', flat=True))  # Existing player IDs
+        models.PlayerMatch.objects.bulk_create(
+            models.PlayerMatch(roster=player_to_roster[player['player_id']], match_id=match_id,
+                               **player)
+            for players in player_lists for player in players  # Loop through nested list
+            if player['player_id'] not in existing_set
+        )
+
+        # Create all Stats objects. We have to re-query for all the PlayerMatch objects in order
+        # to get full copies
+        models.PlayerMatchStats.objects.bulk_create(
+            models.PlayerMatchStats(player_match=pm, **player_to_stats[pm.player_id])
+            for pm in models.PlayerMatch.objects.filter(match_id=match_id)
+        )
+
+        return player
 
 
-class PlayerSerializer(serializers.ModelSerializer):
+class PlayerSerializer(DevDeserializer):
     matches = PlayerMatchSerializer(many=True)
 
     class Meta:
         model = models.Player
         fields = '__all__'
 
+    @staticmethod
+    def convert_dev_data(dev_data):
+        attrs = dev_data['attributes']
 
-class TelemetrySerializer(serializers.ModelSerializer):
+        # Build a list of PlayerMatch dicts
+        player_id = dev_data['id']
+        player_name = attrs['name']
+        matches = [{
+            'player_name': player_name,
+            'match_id': m['id'],
+        } for m in dev_data['relationships']['matches']['data']]
+
+        return {
+            'id': player_id,
+            'name': player_name,
+            'shard': attrs['shardId'],
+            'matches': matches,
+        }
+
+    @transaction.atomic
+    def create(self, validated_data):
+        matches = validated_data.pop('matches')
+
+        player = models.Player.objects.create(**validated_data)
+        player_id = player.id
+
+        # Figure out which PlayerMatches are already in the DB and update them
+        existing = models.PlayerMatch.objects.filter(player_id=player_id).exclude(match_id=None)
+        existing.update(player_name=player.name, player_ref=player)
+
+        # Create all the PlayerMatches that are missing
+        existing_set = set(existing.values_list('match_id', flat=True))  # Existing match IDs
+        models.PlayerMatch.objects.bulk_create(
+            models.PlayerMatch(player_id=player_id, player_ref=player, **match)
+            for match in matches if match['match_id'] not in existing_set
+        )
+
+        return player
+
+
+class TelemetrySerializer(DevDeserializer):
     events = serializers.SerializerMethodField()
 
     class Meta:
@@ -127,6 +322,67 @@ class TelemetrySerializer(serializers.ModelSerializer):
             serializer = event.serializer(event)  # Serialize the data
             events.append(serializer.data)
         return events
+
+    @staticmethod
+    def parse_player_create(event):
+        char = event['character']
+        return {
+            'id': char['accountId'],
+            'name': char['name'],
+        }
+
+    def run_validation(self, data):
+        match = data['match']
+
+        # Parse each event
+        events = []
+        players = []  # We'll build a list of all players in the game
+        for event in data['telemetry']:
+            typ = event['_T']
+
+            # Special case for this event type, to initialize players
+            if typ == 'LogPlayerCreate':
+                players.append(self.parse_player_create(event))
+
+            # If this is an event type we care about, save it for later
+            if typ in EVENT_SERIALIZERS:
+                events.append(event)
+
+        return {
+            'match': match,
+            'players': players,
+            'events': events,
+        }
+
+    @transaction.atomic
+    def create(self, validated_data):
+        match = validated_data['match']
+
+        # Update each PlayerMatch with the player's name
+        for player in validated_data['players']:
+            # There is usually already an existing PlayerMatch, but if a player logged out during
+            # the game then they wouldn't have been listed in the Match summary, so we'll create
+            # them now.
+            new_vals = {'player_name': player['name']}
+            models.PlayerMatch.objects.update_or_create(
+                player_id=player['id'],
+                match_id=match.id,
+                defaults=new_vals,
+            )
+
+        telemetry = models.Telemetry.objects.create(match=validated_data['match'])
+
+        # Save each serialized event
+        for event in validated_data['events']:
+            event['telemetry'] = telemetry
+
+            # Parse the event data with a serializer
+            deserializer_class = EVENT_SERIALIZERS[event['_T']]
+            serializer = deserializer_class(data=event)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+        return telemetry
 
 
 class EventSerializer(WritableNestedModelSerializer, metaclass=DevDeserializerMeta):
@@ -199,261 +455,19 @@ class PlayerEventSerializer(EventSerializer):
             'player': {'write_only': True},
         }
 
+    def to_representation(self, obj):
+        print(obj)
+        return super().to_representation(obj)
+
     def run_validation(self, data):
         rv = super().run_validation(data)
         char = data['character']
 
         player_id = char['accountId']
-        match_id = rv['telemetry'].match.id
-        player_match = models.PlayerMatch.objects.get(player_id=player_id, match_id=match_id)
+        player_match = self.context['players'].get(player_id=player_id)
         rv.update({
             'player': player_match,
             'position': char['location'],
             'health': char['health'],
         })
         return rv
-
-
-# ~~~ BEWARE, HERE BE VERBOSE AND KINDA DISGUSTING DEV API DESERIALIZERS ~~~
-
-
-class PlayerMatchStatsDevDeserializer(serializers.ModelSerializer):
-    """
-    @brief      Deserialize player stats data from the dev API into our model format.
-                Maps dev API field names to our model field names. Names that match between the two
-                (e.g. 'boosts') don't need to be explicitly mapped.
-    """
-    DBNOs = serializers.IntegerField(source='dbnos')
-    damageDealt = serializers.FloatField(source='damage_dealt')
-    deathType = serializers.CharField(source='death_type')
-    headshotKills = serializers.IntegerField(source='headshot_kills')
-    killPlace = serializers.IntegerField(source='kill_place')
-    killPoints = serializers.IntegerField(source='kill_points')
-    killStreaks = serializers.IntegerField(source='kill_streaks')
-    longestKill = serializers.IntegerField(source='longest_kill')
-    mostDamage = serializers.IntegerField(source='most_damage')
-    rideDistance = serializers.FloatField(source='ride_distance')
-    roadKills = serializers.IntegerField(source='road_kills')
-    teamKills = serializers.IntegerField(source='team_kills')
-    timeSurvived = serializers.IntegerField(source='time_survived')
-    vehicleDestroys = serializers.IntegerField(source='vehicle_destroys')
-    walkDistance = serializers.FloatField(source='walk_distance')
-    weaponsAcquired = serializers.IntegerField(source='weapons_acquired')
-    winPlace = serializers.IntegerField(source='win_place')
-    winPoints = serializers.IntegerField(source='win_points')
-
-    class Meta:
-        model = models.PlayerMatchStats
-        fields = ('player_match',
-                  'DBNOs', 'assists', 'boosts', 'damageDealt', 'deathType', 'headshotKills',
-                  'heals', 'killPlace', 'killPoints', 'killStreaks', 'kills', 'longestKill',
-                  'mostDamage', 'revives', 'rideDistance', 'roadKills', 'teamKills', 'timeSurvived',
-                  'vehicleDestroys', 'walkDistance', 'weaponsAcquired', 'winPlace', 'winPoints')
-
-
-class MatchDevDeserializer(serializers.ModelSerializer, metaclass=DevDeserializerMeta):
-    class Meta:
-        model = models.Match
-        fields = '__all__'
-
-    def run_validation(self, data):
-        d = data['data']
-
-        match_id = d['id']
-        attrs = d['attributes']
-        mode, perspective = attrs['gameMode'].split('-')
-
-        # Separate 'included' objects by type: we'll need to access all 3 types later
-        incl = defaultdict(list)
-        for e in data['included']:
-            incl[e['type']].append(e)
-        tel_asset = incl['asset'][0]  # Get the first asset, which is always telemetry metadata
-
-        match = {
-            'id': match_id,
-            'shard': attrs['shardId'],
-            'mode': mode,
-            'perspective': perspective,
-            'map_name': attrs.get('mapName', ''),  # This isn't always in the data for some reason
-            'date': attrs['createdAt'],
-            'duration': attrs['duration'],
-            'telemetry_url': tel_asset['attributes']['URL'],
-        }
-
-        # Build a RosterMatch dict for each team in the game
-        roster_matches = [{
-            'id': roster['id'],
-            'win_place': roster['attributes']['stats']['rank'],
-            'participants': [d['id'] for d in roster['relationships']['participants']['data']],
-        } for roster in incl['roster']]
-
-        # Build a PLayerMatch dict for each player in the game
-        player_matches = []
-        for participant in incl['participant']:  # For each participant
-            stats = participant['attributes']['stats']
-
-            player_matches.append({
-                'player_id': stats['playerId'],
-                'match_id': match_id,
-                'participant_id': participant['id'],
-                'stats': stats,
-            })
-
-        return {
-            'match': match,
-            'roster_matches': roster_matches,
-            'player_matches': player_matches,
-        }
-
-    @transaction.atomic
-    def create(self, validated_data):
-        match = models.Match.objects.create(**validated_data['match'])
-
-        # Create RosterMatch objects
-        participant_rosters = {}
-        for roster_match in validated_data['roster_matches']:
-            # Pop participants from the dict, pass the remaining values to the new model instance
-            participants = roster_match.pop('participants')
-            roster_match_obj = models.RosterMatch.objects.create(match=match, **roster_match)
-
-            # Save this RosterMatch in a dict for each participant on the roster
-            for participant_id in participants:
-                participant_rosters[participant_id] = roster_match_obj
-
-        # Build a PLayerMatch for each player in the game
-        for player_match in validated_data['player_matches']:  # For each PlayerMatch dict...
-            participant_id = player_match['participant_id']
-            stats = player_match['stats']
-
-            # Look up RosterMatch by participant ID
-            new_vals = {'roster_match': participant_rosters[participant_id]}
-            player_match_obj, created = models.PlayerMatch.objects.update_or_create(
-                player_id=player_match['player_id'],
-                match_id=player_match['match_id'],
-                defaults=new_vals,  # New values to insert
-            )
-
-            # Deserialize the stats and save them
-            stats['player_match'] = player_match_obj.id
-            stats_serializer = PlayerMatchStatsDevDeserializer(data=stats)
-            stats_serializer.is_valid(raise_exception=True)
-            stats_serializer.save()
-
-        return match
-
-
-class PlayerDevDeserializer(serializers.ModelSerializer, metaclass=DevDeserializerMeta):
-    class Meta:
-        model = models.Player
-        fields = '__all__'
-
-    def run_validation(self, data):
-        # Build the Player object
-        attrs = data['attributes']
-        player = {
-            'id': data['id'],
-            'name': attrs['name'],
-            'shard': attrs['shardId'],
-        }
-
-        # Collect the ID of every match this player has participated in
-        match_ids = [m['id'] for m in data['relationships']['matches']['data']]
-
-        return {'player': player, 'match_ids': match_ids}
-
-    @transaction.atomic
-    def create(self, validated_data):
-        player = models.Player.objects.create(**validated_data['player'])
-
-        # Create a PlayerMatch object for each match
-        for match_id in validated_data['match_ids']:
-            # If the PlayerMatch already exists, update it with the player reference
-            # Otherwise, create a new one
-            new_vals = {
-                'player_ref': player,
-            }
-            models.PlayerMatch.objects.update_or_create(
-                player_id=player.id,
-                match_id=match_id,
-                defaults=new_vals,  # New values to insert
-            )
-
-        return player
-
-
-class TelemetryDevDeserializer(serializers.ModelSerializer, metaclass=DevDeserializerMeta):
-    class Meta:
-        model = models.Telemetry
-        fields = '__all__'
-
-    @staticmethod
-    def parse_player_create(event):
-        char = event['character']
-        return {
-            'id': char['accountId'],
-            'name': char['name'],
-        }
-
-    def run_validation(self, data):
-        match = data['match']
-
-        # Parse each event
-        events = []
-        players = []  # We'll build a list of all players in the game
-        for event in data['telemetry']:
-            typ = event['_T']
-
-            # Special case for this event type, to initialize players
-            if typ == 'LogPlayerCreate':
-                players.append(self.parse_player_create(event))
-
-            # If this is an event type we care about, save it for later
-            if typ in EVENT_SERIALIZERS:
-                events.append(event)
-
-        return {
-            'match': match,
-            'players': players,
-            'events': events,
-        }
-
-    @transaction.atomic
-    def create(self, validated_data):
-        match = validated_data['match']
-
-        # Update each PlayerMatch with the player's name
-        for player in validated_data['players']:
-            # There is usually already an existing PlayerMatch, but if a player logged out during
-            # the game then they wouldn't have been listed in the Match summary, so we'll create
-            # them now.
-            new_vals = {'player_name': player['name']}
-            models.PlayerMatch.objects.update_or_create(
-                player_id=player['id'],
-                match_id=match.id,
-                defaults=new_vals,
-            )
-
-        telemetry = models.Telemetry.objects.create(match=validated_data['match'])
-
-        # Save each serialized event
-        for event in validated_data['events']:
-            event['telemetry'] = telemetry
-
-            # Parse the event data with a serializer
-            deserializer_class = EVENT_SERIALIZERS[event['_T']]
-            serializer = deserializer_class(data=event)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-
-        return telemetry
-
-
-class EventDeserializer(WritableNestedModelSerializer):
-    telemetry = serializers.PrimaryKeyRelatedField(queryset=models.Telemetry.objects)
-
-    class Meta:
-        model = models.Event
-        exclude = ('id',)
-
-    def run_validation(self, data):
-        return {'telemetry': data['telemetry'], 'time': data['_D']}
