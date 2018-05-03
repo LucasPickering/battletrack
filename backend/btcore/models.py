@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from model_utils.managers import InheritanceManager
 
@@ -91,7 +92,7 @@ class Telemetry(models.Model):
 
 
 class RosterMatch(models.Model):
-    id = models.CharField(primary_key=True, max_length=util.ROSTER_ID_LENGTH)
+    # id = models.CharField(primary_key=True, max_length=util.ROSTER_ID_LENGTH)
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='rosters')
     win_place = models.PositiveSmallIntegerField()
 
@@ -101,15 +102,21 @@ class PlayerMatch(models.Model):
     player_id = models.CharField(max_length=util.PLAYER_ID_LENGTH)
     player_name = models.CharField(max_length=30)
     # Null if match isn't in the DB yet
-    player_ref = models.ForeignKey(Player, on_delete=models.CASCADE, null=True,
+    player_ref = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True,
                                    related_name='matches')
     match_id = models.CharField(max_length=36)
     # Null if match isn't in the DB yet
-    roster_match = models.ForeignKey(RosterMatch, on_delete=models.CASCADE, null=True,
-                                     related_name='players')
+    roster = models.ForeignKey(RosterMatch, on_delete=models.SET_NULL, null=True,
+                               related_name='players')
 
     class Meta:
         unique_together = ('player_id', 'match_id')
+
+    def clean(self):
+        super().clean()
+        # Make sure at least one of player/roster is set
+        if self.player_ref is None and self.roster is None:
+            raise ValidationError('No player or roster set')
 
 
 # This object will only be create when a PlayerMatch is populated from the Match side
@@ -130,7 +137,7 @@ class PlayerMatchStats(models.Model):
     longest_kill = models.PositiveSmallIntegerField()
     most_damage = models.PositiveSmallIntegerField()
     revives = models.PositiveSmallIntegerField()
-    ride_distance = models.PositiveSmallIntegerField()
+    ride_distance = models.FloatField()
     road_kills = models.PositiveSmallIntegerField()
     team_kills = models.PositiveSmallIntegerField()
     time_survived = models.PositiveSmallIntegerField()
