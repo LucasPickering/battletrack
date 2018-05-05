@@ -19,7 +19,10 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/', include('btcore.urls')),
+    url(r'^api/', include([
+        url(r'^core/', include('btcore.urls')),
+        url(r'^telemetry/', include('telemetry.urls')),
+    ])),
 ]
 
 if settings.DEBUG:
