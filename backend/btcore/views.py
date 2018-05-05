@@ -1,10 +1,7 @@
-from django.conf import settings
-from rest_framework import generics, views
+from rest_framework import views
 from rest_framework.response import Response
 
-from . import devapi, models, serializers
-
-api = devapi.DevAPI.from_file(settings.DEV_API_KEY_FILE)
+from . import models, serializers
 
 
 class MatchView(views.APIView):
@@ -48,10 +45,3 @@ class PlayerView(views.APIView):
 
         serializer = self.serializer_class(player)
         return Response(serializer.data)
-
-
-class TelemetryView(generics.RetrieveAPIView):
-    queryset = models.Telemetry.objects
-    serializer_class = serializers.TelemetrySerializer
-    lookup_field = 'match'
-    lookup_url_kwarg = 'id'

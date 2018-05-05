@@ -40,6 +40,7 @@ INTERNAL_IPS = [
 
 INSTALLED_APPS = [
     'btcore',
+    'telemetry',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
