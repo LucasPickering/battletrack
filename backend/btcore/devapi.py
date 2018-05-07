@@ -1,5 +1,6 @@
 import logging
 import requests
+import time
 
 from django.conf import settings
 
@@ -13,6 +14,7 @@ class DevAPI:
     def __init__(self, key):
         self._headers = {
             'Accept': 'application/vnd.api+json',
+            'Accept-Encoding': 'gzip',
             'Authorization': key,
         }
 
@@ -24,8 +26,10 @@ class DevAPI:
         return cls(key)  # Instantiate the API
 
     def get(self, url):
+        start = time.time()
         r = requests.get(url, headers=self._headers)
-        logger.info(f"Dev API GET {url} {r.status_code}")
+        elapsed = time.time() - start
+        logger.info(f"Dev API GET {url} {r.status_code} {elapsed:.3f}s")
         r.raise_for_status()
         return r.json()
 

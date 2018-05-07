@@ -6,7 +6,7 @@ from btcore.models import Match
 from btcore.serializers import DevDeserializer
 
 from . import models
-from .fields import CircleSerializerField, PositionSerializerField
+from .fields import EventPlayer, Item, Vehicle, EventSerializerField
 
 
 class TelemetrySerializer(DevDeserializer):
@@ -27,7 +27,7 @@ class TelemetrySerializer(DevDeserializer):
         # Iterate over each event (and convert each one from Event to the proper subclass)
         return [
             event.serializer(event).data
-            for event in obj.events.all().select_subclasses()
+            for event in obj.events.select_subclasses()
         ]
 
     @staticmethod
@@ -39,7 +39,8 @@ class TelemetrySerializer(DevDeserializer):
         }
 
     @classmethod
-    def convert_dev_data(cls, dev_data):
+    def convert_dev_data(cls, dev_data, **kwargs):
+        match_id = dev_data['match_id']
         # Parse each event
         events = []
         for event in dev_data['telemetry']:
@@ -54,7 +55,7 @@ class TelemetrySerializer(DevDeserializer):
             events.append(event_serializer.convert_dev_data(event))
 
         return {
-            'match': dev_data['match_id'],
+            'match': match_id,
             'events_write': events,
         }
 
@@ -78,7 +79,7 @@ class EventSerializer(DevDeserializer, NestedCreateMixin):
         exclude = ('id', 'telemetry')
 
     @classmethod
-    def convert_dev_data(cls, dev_data):
+    def convert_dev_data(cls, dev_data, **kwargs):
         # Convert Dev API-formatted data into our format
         return {
             'type': dev_data['_T'],
@@ -87,13 +88,13 @@ class EventSerializer(DevDeserializer, NestedCreateMixin):
 
 
 class GameStatePeriodicEventSerializer(EventSerializer):
-    red_zone = CircleSerializerField()
-    white_zone = CircleSerializerField()
-    blue_zone = CircleSerializerField()
+    red_zone = EventSerializerField()
+    white_zone = EventSerializerField()
+    blue_zone = EventSerializerField()
 
     class Meta:
         model = models.GameStatePeriodicEvent
-        exclude = ('id',)
+        exclude = ('id', 'telemetry')
 
     @staticmethod
     def parse_circle(prefix, game_state):
@@ -108,8 +109,8 @@ class GameStatePeriodicEventSerializer(EventSerializer):
         return None
 
     @classmethod
-    def convert_dev_data(cls, dev_data):
-        rv = super(cls, cls).convert_dev_data(dev_data)
+    def convert_dev_data(cls, dev_data, **kwargs):
+        rv = super(GameStatePeriodicEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
         game_state = dev_data['gameState']
         rv.update({
             'red_zone': cls.parse_circle('redZone', game_state),
@@ -120,36 +121,155 @@ class GameStatePeriodicEventSerializer(EventSerializer):
 
 
 class PlayerEventSerializer(EventSerializer):
-    position = PositionSerializerField()
-    player_id = serializers.CharField(source='player.player_id')
-    player_name = serializers.CharField(source='player.player_name')
+    player = EventSerializerField()
 
     class Meta:
         model = models.PlayerEvent
-        fields = (
-            'type', 'time', 'position', 'health',  # Read/write
-            'telemetry', 'player',  # Read-only
-            'player_id', 'player_name'  # Write-only
-        )
-        read_only_fields = ('player_id', 'player_name')
-        extra_kwargs = {
-            'telemetry': {'write_only': True},
-            'player': {'write_only': True},
-        }
+        exclude = ('id', 'telemetry')
 
-    def to_representation(self, obj):
-        print(obj)
-        return super().to_representation(obj)
+    @classmethod
+    def convert_dev_data(cls, dev_data, player_key='character', **kwargs):
+        rv = super(PlayerEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
 
-    def run_validation(self, data):
-        rv = super().run_validation(data)
-        char = data['character']
-
-        player_id = char['accountId']
-        player_match = self.context['players'].get(player_id=player_id)
         rv.update({
-            'player': player_match,
-            'position': char['location'],
-            'health': char['health'],
+            'player': EventPlayer.convert_dev_data(dev_data[player_key])
+        })
+        return rv
+
+
+class PlayerAttackEventSerializer(PlayerEventSerializer):
+    weapon = EventSerializerField()
+    vehicle = EventSerializerField()
+
+    class Meta:
+        model = models.PlayerAttackEvent
+        exclude = ('id', 'telemetry')
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        rv = super(PlayerAttackEventSerializer, cls).convert_dev_data(dev_data,
+                                                                      player_key='attacker',
+                                                                      **kwargs)
+
+        rv.update({
+            'attack_type': dev_data['attackType'],
+            'weapon': Item.convert_dev_data(dev_data['weapon']),
+            'vehicle': Vehicle.convert_dev_data(dev_data['vehicle']),
+        })
+        return rv
+
+
+class PlayerVictimEventSerializer(PlayerEventSerializer):
+    attacker = EventSerializerField()
+
+    class Meta:
+        model = models.PlayerVictimEvent
+        exclude = ('id', 'telemetry')
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, attacker_key='killer', **kwargs):
+        rv = super(PlayerVictimEventSerializer, cls).convert_dev_data(dev_data, player_key='victim',
+                                                                      **kwargs)
+
+        rv.update({
+            'attacker': EventPlayer.convert_dev_data(dev_data[attacker_key]),
+            'damage_type': dev_data['damageTypeCategory'],
+            'damage_causer': dev_data['damageCauserName'],
+        })
+        return rv
+
+
+class PlayerTakeDamageEventSerializer(PlayerVictimEventSerializer):
+    class Meta:
+        model = models.PlayerTakeDamageEvent
+        exclude = ('id', 'telemetry')
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        rv = super(PlayerTakeDamageEventSerializer, cls).convert_dev_data(dev_data,
+                                                                          attacker_key='attacker',
+                                                                          **kwargs)
+
+        rv.update({
+            'damage': dev_data['damage'],
+            'damage_reason': dev_data['damageReason'],
+        })
+        return rv
+
+
+class ItemEventSerializer(PlayerEventSerializer):
+    class Meta:
+        model = models.ItemEvent
+        exclude = ('id', 'telemetry')
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, item_key='item', **kwargs):
+        rv = super(ItemEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
+
+        rv.update({
+            'item': Item.convert_dev_data(dev_data[item_key]),
+        })
+        return rv
+
+
+class ItemAttachEventSerializer(ItemEventSerializer):
+    class Meta:
+        model = models.ItemAttachEvent
+        exclude = ('id', 'telemetry')
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        rv = super(ItemAttachEventSerializer, cls).convert_dev_data(dev_data, item_key='parentItem',
+                                                                    **kwargs)
+
+        rv.update({
+            'child_item': Item.convert_dev_data(dev_data['childItem']),
+        })
+        return rv
+
+
+class VehicleEventSerializer(PlayerEventSerializer):
+    class Meta:
+        model = models.VehicleEvent
+        exclude = ('id', 'telemetry')
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        rv = super(VehicleEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
+
+        rv.update({
+            'vehicle': Vehicle.convert_dev_data(dev_data['vehicle']),
+        })
+        return rv
+
+
+class VehicleDestroyEventSerializer(VehicleEventSerializer):
+    class Meta:
+        model = models.VehicleDestroyEvent
+        exclude = ('id', 'telemetry')
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        rv = super(VehicleDestroyEventSerializer, cls).convert_dev_data(dev_data,
+                                                                        player_key='attacker',
+                                                                        **kwargs)
+
+        rv.update({
+            'attacker': EventPlayer.convert_dev_data(dev_data['attacker']),
+        })
+        return rv
+
+
+class CarePackageEventSerializer(EventSerializer):
+    class Meta:
+        model = models.CarePackageEvent
+        exclude = ('id', 'telemetry')
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        rv = super(CarePackageEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
+
+        rv.update({
+            'position': dev_data['itemPackage']['location'],
         })
         return rv
