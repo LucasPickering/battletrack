@@ -22,7 +22,7 @@ class DevDeserializerMeta(serializers.SerializerMetaclass):
 
 class DevDeserializer(serializers.ModelSerializer, metaclass=DevDeserializerMeta):
     @classmethod
-    def convert_dev_data(cls, dev_data):
+    def convert_dev_data(cls, dev_data, **kwargs):
         pass
 
     @classmethod
@@ -69,7 +69,7 @@ class PlayerMatchStatsSerializer(DevDeserializer):
         exclude = ('player_match',)
 
     @classmethod
-    def convert_dev_data(cls, dev_data):
+    def convert_dev_data(cls, dev_data, **kwargs):
         # Map each field from the API name to the model name. Fields excluded from the mapping are
         # not included in the output.
         return {model_name: dev_data[api_name] for api_name, model_name
@@ -128,7 +128,7 @@ class MatchSerializer(DevDeserializer):
         }
 
     @classmethod
-    def convert_dev_data(cls, dev_data):
+    def convert_dev_data(cls, dev_data, **kwargs):
         data = dev_data['data']
 
         attrs = data['attributes']
@@ -199,7 +199,7 @@ class MatchSerializer(DevDeserializer):
         models.RosterMatch.objects.bulk_create(
             models.RosterMatch(match=match, **roster) for roster in rosters
         )
-        # Re-fect RosterMatches to get copies with the IDs
+        # Re-fetch RosterMatches to get copies with the IDs
         roster_matches = models.RosterMatch.objects.filter(match=match)
 
         # Build a dict of player ID to RosterMatch. This relies on the fact that the ordering of
@@ -244,7 +244,7 @@ class PlayerSerializer(DevDeserializer):
         fields = '__all__'
 
     @classmethod
-    def convert_dev_data(cls, dev_data):
+    def convert_dev_data(cls, dev_data, **kwargs):
         attrs = dev_data['attributes']
 
         # Build a list of PlayerMatch dicts

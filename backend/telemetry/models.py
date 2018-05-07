@@ -1,10 +1,10 @@
 from django.db import models
 from model_utils.managers import InheritanceManager
 
-from btcore.models import api, Match, PlayerMatch
+from btcore.models import api, Match
 from btcore.query import DevAPIManager
 
-from .fields import CircleField, PositionField
+from .fields import CircleField, PositionField, EventPlayerField, ItemField, VehicleField
 
 
 # Dict that stores event name (e.g. 'LogPlayerKill') and corresponding model. Populated by the
@@ -55,20 +55,6 @@ class Telemetry(models.Model):
         }
 
 
-class Item(models.Model):
-    item_name = models.CharField(max_length=75)
-    stack_count = models.PositiveSmallIntegerField()
-    category = models.CharField(max_length=20)
-    subcategory = models.CharField(max_length=20)
-
-
-class Vehicle(models.Model):
-    vehicle_type = models.CharField(max_length=40)
-    vehicle_name = models.CharField(max_length=40)
-    health = models.FloatField()
-    fuel = models.FloatField()
-
-
 class Event(models.Model):
     objects = InheritanceManager()
 
@@ -85,49 +71,52 @@ class GameStatePeriodicEvent(Event):
     blue_zone = CircleField()
 
 
+@event_model('LogPlayerPosition')
 class PlayerEvent(Event):
-    player = models.ForeignKey(PlayerMatch, on_delete=models.CASCADE)
-    position = PositionField()
-    health = models.FloatField()
+    player = EventPlayerField()
 
 
+@event_model('LogPlayerAttack')
 class PlayerAttackEvent(PlayerEvent):
     attack_type = models.CharField(max_length=20)
-    weapon = models.OneToOneField(Item, on_delete=models.PROTECT)
-    vehicle = models.OneToOneField(Vehicle, on_delete=models.PROTECT)
+    weapon = ItemField()
+    vehicle = VehicleField()
 
 
-class PlayerTakeDamageEvent(PlayerEvent):
-    attacker = models.ForeignKey(PlayerMatch, on_delete=models.CASCADE,
-                                 blank=True, null=True)  # Null if non-player damage
+@event_model('LogPlayerKill')
+class PlayerVictimEvent(PlayerEvent):
+    attacker = EventPlayerField(blank=True)  # Blank if non-player damage
+    damage_type = models.CharField(max_length=40)  # e.g. Damage_Gun
+    damage_causer = models.CharField(max_length=40)  # e.g. WeapHK416_C
+
+
+@event_model('LogPlayerTakeDamage')
+class PlayerTakeDamageEvent(PlayerVictimEvent):
     damage = models.FloatField()
-    damage_type = models.CharField(max_length=40)  # e.g. Damage_Gun
     damage_reason = models.CharField(max_length=40)  # e.g. ArmShot
-    damage_causer = models.CharField(max_length=40)  # e.g. WeapHK416_C
 
 
-class PlayerKillEvent(PlayerEvent):
-    attacker = models.ForeignKey(PlayerMatch, on_delete=models.CASCADE,
-                                 blank=True)  # Null if non-player death
-    damage_type = models.CharField(max_length=40)  # e.g. Damage_Gun
-    damage_causer = models.CharField(max_length=40)  # e.g. WeapHK416_C
+@event_model('LogItemPickup', 'LogItemDrop', 'LogItemEquip', 'LogItemUnequip', 'LogItemUse')
+class ItemEvent(PlayerEvent):
+    item = ItemField()
 
 
-class ItemEvent(Event):
-    player = models.ForeignKey(PlayerMatch, on_delete=models.CASCADE)
-    item = models.OneToOneField(Item, on_delete=models.PROTECT)
-    position = PositionField()
+@event_model('LogItemAttach', 'LogItemDetach')
+class ItemAttachEvent(ItemEvent):
+    child_item = ItemField()
 
 
-class VehicleEvent(Event):
-    player = models.ForeignKey(PlayerMatch, on_delete=models.CASCADE)
-    vehicle = models.OneToOneField(Vehicle, on_delete=models.PROTECT)
+@event_model('LogVehicleRide', 'LogVehicleLeave')
+class VehicleEvent(PlayerEvent):
+    vehicle = VehicleField()
 
 
+@event_model('LogVehicleDestroy')
 class VehicleDestroyEvent(VehicleEvent):
-    attacker = models.ForeignKey(PlayerMatch, on_delete=models.CASCADE,
-                                 blank=True)  # Null if destroyed by non-player damage
+    attacker = EventPlayerField(blank=True)  # Blank if destroyed by non-player damage
 
 
+@event_model('LogCarePackageSpawn', 'LogCarePackageLand')
 class CarePackageEvent(Event):
     position = PositionField()
+    # TODO: Add items
