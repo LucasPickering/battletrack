@@ -31,12 +31,12 @@ _ACTIONS = {
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('action')
-    parser.add_argument('input')
+    parser.add_argument('infile')
     parser.add_argument('--save', '-s', default=None, nargs='?', action='store', const='')
     args = parser.parse_args()
 
     func = _ACTIONS[args.action]
-    data = pd.read_pickle(args.input)
+    data = pd.read_pickle(args.infile)
 
     fig = func(data)
 
@@ -45,7 +45,7 @@ if __name__ == '__main__':
             outfile = args.save
         else:
             # Determine output file name
-            inbase, _ = os.path.splitext(args.input)
+            inbase, _ = os.path.splitext(args.infile)
             outfile = f'{inbase}_{args.action}.png'
         plt.savefig(outfile)
         print(f"Saved to '{outfile}'")

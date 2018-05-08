@@ -18,7 +18,7 @@ class MatchView(views.APIView):
             for roster_match in match.rosters.all().select_related('players')[0]:  # Rate limiting!
                 for player_match in roster_match.players.all()[:5]:
                     # If there is no Player for this PlayerMatch, then the Player isn't in the DB.
-                    # Run a get for it by ID get it pulled from the API.
+                    # Run a get for it by ID to get it pulled from the API.
                     if not player_match.player_ref:
                         Player.objects.get(id=player_match.player_id)
         if request.GET.get('popTelemetry', False) is not False:

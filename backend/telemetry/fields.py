@@ -8,6 +8,17 @@ from btcore.util import PLAYER_ID_LENGTH
 _FLOAT_MAX_LENGTH = 20  # Max character length of a float number
 
 
+def convert_distance(dist):
+    """
+    @brief      Converts the given distance from the API's weird units to meters.
+
+    @param      dist  The distance, in PUBG stupid units
+
+    @return     the distance, in meters
+    """
+    return dist / 101.7782696  # Calculated from circle widths - probably needs tweaking
+
+
 class Position:
     MAX_LENGTH = _FLOAT_MAX_LENGTH * 3 + 2
 
@@ -23,6 +34,10 @@ class Position:
     @classmethod
     def from_dict(cls, d):
         return cls(**d)
+
+    @staticmethod
+    def convert_dev_data(dev_data):
+        return {k: convert_distance(v) for k, v in dev_data.items()}
 
     def to_dict(self):
         return {'x': self.x, 'y': self.y, 'z': self.z}
@@ -53,6 +68,12 @@ class Circle:
     @classmethod
     def from_dict(cls, d):
         return cls(d['radius'], Position(**d['pos']))
+
+    @staticmethod
+    def convert_dev_data(radius, pos):
+        if radius > 0:
+            return {'radius': convert_distance(radius), 'pos': Position.convert_dev_data(pos)}
+        return None
 
     def to_db_string(self):
         return ','.join([str(self.radius), self.pos.to_db_string()])
@@ -93,7 +114,7 @@ class EventPlayer:
                 'id': id_,
                 'name': dev_data['name'],
                 'health': dev_data['health'],
-                'pos': dev_data['location'],
+                'pos': Position.convert_dev_data(dev_data['location']),
             }
         return None
 
