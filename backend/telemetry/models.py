@@ -60,7 +60,7 @@ class Event(models.Model):
 
     telemetry = models.ForeignKey(Telemetry, on_delete=models.CASCADE, related_name='events')
     type = models.CharField(max_length=20)
-    time = models.DateTimeField()
+    time = models.FloatField()
 
 
 @event_model('GameStatePeriodic')
@@ -118,5 +118,5 @@ class VehicleDestroyEvent(VehicleEvent):
 
 @event_model('CarePackageSpawn', 'CarePackageLand')
 class CarePackageEvent(Event):
-    position = PositionField()
+    pos = PositionField()
     # TODO: Add items

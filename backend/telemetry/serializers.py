@@ -1,3 +1,5 @@
+import dateutil.parser
+
 from django.db import transaction
 from rest_framework import serializers
 from drf_writable_nested import NestedCreateMixin
@@ -6,7 +8,7 @@ from btcore.models import Match
 from btcore.serializers import DevDeserializer
 
 from . import models
-from .fields import EventPlayer, Item, Vehicle, EventSerializerField
+from .fields import Position, Circle, EventPlayer, Item, Vehicle, EventSerializerField
 
 
 # A prefix at the beginning of each event type in the API data, this will be stripped
@@ -14,7 +16,33 @@ _EVENT_TYPE_PREFIX = 'Log'
 
 
 def get_event_type(event):
+    """
+    @brief      Gets the event type, without the common prefix (which was 'Log' when I wrote this)
+
+    @param      event  The event
+
+    @return     The event type, with the prefix removed
+    """
     return event['_T'][len(_EVENT_TYPE_PREFIX):]  # Remove prefix from event type
+
+
+def get_event_time(event, start_time=None):
+    """
+    @brief      Gets the event time relative to the start time of the match. If no start time is
+                specified, the time is returned as an absolute datetime object.
+
+    @param      event       The event
+    @param      start_time  The start time of the match, as a datetime object
+
+    @return     The event time, in seconds (float)
+    """
+    dt = dateutil.parser.parse(event['_D'])
+
+    # If start time is defined, caluculate difference from start
+    if start_time:
+        delta = dt - start_time
+        return delta.total_seconds()
+    return dt  # Otherwise just return the time
 
 
 class TelemetrySerializer(DevDeserializer):
@@ -56,18 +84,31 @@ class TelemetrySerializer(DevDeserializer):
     @classmethod
     def convert_dev_data(cls, dev_data, **kwargs):
         match_id = dev_data['match_id']
+
         # Parse each event
         events = []
-        for event in dev_data['telemetry']:
+        dev_events = dev_data['telemetry']
+
+        # Track the time of the actual match start, marked by the LogMatchStart event. All events
+        # before match start will be ignored.
+        start_time = None
+
+        for event in dev_events:
             typ = get_event_type(event)  # Remove prefix from event type
 
-            # See if this is an event type we care about. If so, save it for later.
-            try:
-                # Get the event model class by type name, then get the serializer class from that
-                event_serializer = models.get_event_model(typ).serializer
-            except KeyError:
-                continue  # We don't care about this event type, skip it
-            events.append(event_serializer.convert_dev_data(event))
+            # Special case for match start
+            if typ == 'MatchStart':
+                start_time = get_event_time(event)
+
+            # If start time hasn't been defined yet, this event is from the lobby so we don't care
+            if start_time:
+                # See if this is an event type we care about. If so, save it for later.
+                try:
+                    # Get the event model class by type name, then get the serializer class
+                    event_serializer = models.get_event_model(typ).serializer
+                except KeyError:
+                    continue  # We don't care about this event type, skip it
+                events.append(event_serializer.convert_dev_data(event, start_time=start_time))
 
         return {
             'match': match_id,
@@ -94,11 +135,11 @@ class EventSerializer(DevDeserializer, NestedCreateMixin):
         exclude = ('id', 'telemetry')
 
     @classmethod
-    def convert_dev_data(cls, dev_data, **kwargs):
+    def convert_dev_data(cls, dev_data, start_time, **kwargs):
         # Convert Dev API-formatted data into our format
         return {
             'type': get_event_type(dev_data),
-            'time': dev_data['_D'],
+            'time': get_event_time(dev_data, start_time=start_time),
         }
 
 
@@ -111,26 +152,17 @@ class GameStatePeriodicEventSerializer(EventSerializer):
         model = models.GameStatePeriodicEvent
         exclude = ('id', 'telemetry')
 
-    @staticmethod
-    def parse_circle(prefix, game_state):
-        radius = game_state[prefix + 'Radius']
-
-        # If radius is 0, return None
-        if radius > 0:
-            return {
-                'pos': game_state[prefix + 'Position'],
-                'radius': radius,
-            }
-        return None
-
     @classmethod
     def convert_dev_data(cls, dev_data, **kwargs):
         rv = super(GameStatePeriodicEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
         game_state = dev_data['gameState']
         rv.update({
-            'red_zone': cls.parse_circle('redZone', game_state),
-            'white_zone': cls.parse_circle('poisonGasWarning', game_state),
-            'blue_zone': cls.parse_circle('safetyZone', game_state),
+            'red_zone': Circle.convert_dev_data(game_state['redZoneRadius'],
+                                                game_state['redZonePosition']),
+            'white_zone': Circle.convert_dev_data(game_state['poisonGasWarningRadius'],
+                                                  game_state['poisonGasWarningPosition']),
+            'blue_zone': Circle.convert_dev_data(game_state['safetyZoneRadius'],
+                                                 game_state['safetyZonePosition']),
         })
         return rv
 
@@ -213,6 +245,8 @@ class PlayerTakeDamageEventSerializer(PlayerVictimEventSerializer):
 
 
 class ItemEventSerializer(PlayerEventSerializer):
+    item = EventSerializerField()
+
     class Meta:
         model = models.ItemEvent
         exclude = ('id', 'telemetry')
@@ -228,6 +262,8 @@ class ItemEventSerializer(PlayerEventSerializer):
 
 
 class ItemAttachEventSerializer(ItemEventSerializer):
+    child_item = EventSerializerField()
+
     class Meta:
         model = models.ItemAttachEvent
         exclude = ('id', 'telemetry')
@@ -245,6 +281,8 @@ class ItemAttachEventSerializer(ItemEventSerializer):
 
 
 class VehicleEventSerializer(PlayerEventSerializer):
+    vehicle = EventSerializerField()
+
     class Meta:
         model = models.VehicleEvent
         exclude = ('id', 'telemetry')
@@ -260,6 +298,8 @@ class VehicleEventSerializer(PlayerEventSerializer):
 
 
 class VehicleDestroyEventSerializer(VehicleEventSerializer):
+    attacker = EventSerializerField()
+
     class Meta:
         model = models.VehicleDestroyEvent
         exclude = ('id', 'telemetry')
@@ -277,6 +317,8 @@ class VehicleDestroyEventSerializer(VehicleEventSerializer):
 
 
 class CarePackageEventSerializer(EventSerializer):
+    pos = EventSerializerField()
+
     class Meta:
         model = models.CarePackageEvent
         exclude = ('id', 'telemetry')
@@ -286,6 +328,6 @@ class CarePackageEventSerializer(EventSerializer):
         rv = super(CarePackageEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
 
         rv.update({
-            'position': dev_data['itemPackage']['location'],
+            'pos': Position.convert_dev_data(dev_data['itemPackage']['location']),
         })
         return rv
