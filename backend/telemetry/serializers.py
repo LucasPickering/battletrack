@@ -9,6 +9,14 @@ from . import models
 from .fields import EventPlayer, Item, Vehicle, EventSerializerField
 
 
+# A prefix at the beginning of each event type in the API data, this will be stripped
+_EVENT_TYPE_PREFIX = 'Log'
+
+
+def get_event_type(event):
+    return event['_T'][len(_EVENT_TYPE_PREFIX):]  # Remove prefix from event type
+
+
 class TelemetrySerializer(DevDeserializer):
     match = serializers.PrimaryKeyRelatedField(queryset=Match.objects)
     events = serializers.SerializerMethodField()
@@ -24,10 +32,17 @@ class TelemetrySerializer(DevDeserializer):
         return data  # Frigg off Mr. Lahey
 
     def get_events(self, obj):
+        # Check for type filtering. None/empty means no filtering.
+        types = self.context.get('types', None)
+        if types:
+            types = set(types)  # Convert to set for faster membership check
+
         # Iterate over each event (and convert each one from Event to the proper subclass)
+        # Serializing events that match the filter
         return [
             event.serializer(event).data
             for event in obj.events.select_subclasses()
+            if types is None or event.type in types
         ]
 
     @staticmethod
@@ -44,7 +59,7 @@ class TelemetrySerializer(DevDeserializer):
         # Parse each event
         events = []
         for event in dev_data['telemetry']:
-            typ = event['_T']
+            typ = get_event_type(event)  # Remove prefix from event type
 
             # See if this is an event type we care about. If so, save it for later.
             try:
@@ -82,7 +97,7 @@ class EventSerializer(DevDeserializer, NestedCreateMixin):
     def convert_dev_data(cls, dev_data, **kwargs):
         # Convert Dev API-formatted data into our format
         return {
-            'type': dev_data['_T'],
+            'type': get_event_type(dev_data),
             'time': dev_data['_D'],
         }
 
@@ -219,7 +234,8 @@ class ItemAttachEventSerializer(ItemEventSerializer):
 
     @classmethod
     def convert_dev_data(cls, dev_data, **kwargs):
-        rv = super(ItemAttachEventSerializer, cls).convert_dev_data(dev_data, item_key='parentItem',
+        rv = super(ItemAttachEventSerializer, cls).convert_dev_data(dev_data,
+                                                                    item_key='parentItem',
                                                                     **kwargs)
 
         rv.update({

@@ -63,7 +63,7 @@ class Event(models.Model):
     time = models.DateTimeField()
 
 
-@event_model('LogGameStatePeriodic')
+@event_model('GameStatePeriodic')
 class GameStatePeriodicEvent(Event):
     # God bless America
     red_zone = CircleField(blank=True)  # Blank if no active red zone
@@ -71,52 +71,52 @@ class GameStatePeriodicEvent(Event):
     blue_zone = CircleField()
 
 
-@event_model('LogPlayerPosition')
+@event_model('PlayerPosition')
 class PlayerEvent(Event):
     player = EventPlayerField()
 
 
-@event_model('LogPlayerAttack')
+@event_model('PlayerAttack')
 class PlayerAttackEvent(PlayerEvent):
     attack_type = models.CharField(max_length=20)
     weapon = ItemField()
     vehicle = VehicleField()
 
 
-@event_model('LogPlayerKill')
+@event_model('PlayerKill')
 class PlayerVictimEvent(PlayerEvent):
     attacker = EventPlayerField(blank=True)  # Blank if non-player damage
     damage_type = models.CharField(max_length=40)  # e.g. Damage_Gun
     damage_causer = models.CharField(max_length=40)  # e.g. WeapHK416_C
 
 
-@event_model('LogPlayerTakeDamage')
+@event_model('PlayerTakeDamage')
 class PlayerTakeDamageEvent(PlayerVictimEvent):
     damage = models.FloatField()
     damage_reason = models.CharField(max_length=40)  # e.g. ArmShot
 
 
-@event_model('LogItemPickup', 'LogItemDrop', 'LogItemEquip', 'LogItemUnequip', 'LogItemUse')
+@event_model('ItemPickup', 'ItemDrop', 'ItemEquip', 'ItemUnequip', 'ItemUse')
 class ItemEvent(PlayerEvent):
     item = ItemField()
 
 
-@event_model('LogItemAttach', 'LogItemDetach')
+@event_model('ItemAttach', 'ItemDetach')
 class ItemAttachEvent(ItemEvent):
     child_item = ItemField()
 
 
-@event_model('LogVehicleRide', 'LogVehicleLeave')
+@event_model('VehicleRide', 'VehicleLeave')
 class VehicleEvent(PlayerEvent):
     vehicle = VehicleField()
 
 
-@event_model('LogVehicleDestroy')
+@event_model('VehicleDestroy')
 class VehicleDestroyEvent(VehicleEvent):
     attacker = EventPlayerField(blank=True)  # Blank if destroyed by non-player damage
 
 
-@event_model('LogCarePackageSpawn', 'LogCarePackageLand')
+@event_model('CarePackageSpawn', 'CarePackageLand')
 class CarePackageEvent(Event):
     position = PositionField()
     # TODO: Add items
