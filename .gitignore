@@ -20,4 +20,5 @@ yarn-error.log*
 *.pyc
 *.log
 *.sql
+*.p
 !package.json

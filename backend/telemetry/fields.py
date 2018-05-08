@@ -2,8 +2,15 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from rest_framework import serializers
 
+from btcore.util import PLAYER_ID_LENGTH
+
+
+_FLOAT_MAX_LENGTH = 20  # Max character length of a float number
+
 
 class Position:
+    MAX_LENGTH = _FLOAT_MAX_LENGTH * 3 + 2
+
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
@@ -26,8 +33,14 @@ class Position:
     def __str__(self):
         return f"({self.x}, {self.y}, {self.z})"
 
+    def __eq__(self, other):
+        return isinstance(other, Position) \
+            and self.x == other.x and self.y == other.y and self.z == other.z
+
 
 class Circle:
+    MAX_LENGTH = _FLOAT_MAX_LENGTH + Position.MAX_LENGTH + 1
+
     def __init__(self, radius, pos):
         self.radius = radius
         self.pos = pos
@@ -50,8 +63,13 @@ class Circle:
     def __str__(self):
         return f"({self.radius}, {self.pos})"
 
+    def __eq__(self, other):
+        return isinstance(other, Circle) and self.radius == other.radius and self.pos == other.pos
+
 
 class EventPlayer:
+    MAX_LENGTH = PLAYER_ID_LENGTH + 20 + _FLOAT_MAX_LENGTH + Position.MAX_LENGTH + 3
+
     def __init__(self, id, name, health, pos):
         self.id = id
         self.name = name
@@ -90,6 +108,8 @@ class EventPlayer:
 
 
 class Item:
+    MAX_LENGTH = 100
+
     def __init__(self, name, stack_count, category, subcategory):
         self.name = name
         self.stack_count = stack_count
@@ -129,6 +149,8 @@ class Item:
 
 
 class Vehicle:
+    MAX_LENGTH = 100
+
     def __init__(self, type, name, health, fuel):
         self.type = type
         self.name = name
@@ -195,27 +217,27 @@ class EventField(models.CharField):
 
 class PositionField(EventField):
     def __init__(self, *args, **kwargs):
-        super().__init__(Position, max_length=64)
+        super().__init__(Position, max_length=Position.MAX_LENGTH)
 
 
 class CircleField(EventField):
     def __init__(self, *args, **kwargs):
-        super().__init__(Circle, max_length=85)
+        super().__init__(Circle, max_length=Circle.MAX_LENGTH)
 
 
 class EventPlayerField(EventField):
     def __init__(self, *args, **kwargs):
-        super().__init__(EventPlayer, max_length=64)
+        super().__init__(EventPlayer, max_length=EventPlayer.MAX_LENGTH)
 
 
 class ItemField(EventField):
     def __init__(self, *args, **kwargs):
-        super().__init__(Item, max_length=100)
+        super().__init__(Item, max_length=Item.MAX_LENGTH)
 
 
 class VehicleField(EventField):
     def __init__(self, *args, **kwargs):
-        super().__init__(Vehicle, max_length=80)
+        super().__init__(Vehicle, max_length=Vehicle.MAX_LENGTH)
 
 
 class EventSerializerField(serializers.Field):

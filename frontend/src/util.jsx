@@ -45,13 +45,13 @@ export function playerLink(playerName) {
   return `/players/${playerName}`;
 }
 
-export function sortKeyFunc(keyFunc) {
+export function sortKeyFunc(keyFunc, invert = false) {
   return (e1, e2) => {
     const [k1, k2] = [e1, e2].map(keyFunc); // Apply the key extractor to each element
     if (k1 < k2) {
-      return -1;
+      return invert ? 1 : -1;
     } else if (k2 < k1) {
-      return 1;
+      return invert ? -1 : 1;
     }
     return 0;
   }
