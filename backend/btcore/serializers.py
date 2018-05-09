@@ -26,14 +26,25 @@ class DevDeserializer(serializers.ModelSerializer, metaclass=DevDeserializerMeta
         pass
 
     @classmethod
-    def from_dev_data(cls, dev_data, *args, **kwargs):
-        return cls(*args, data=cls.convert_dev_data(dev_data), **kwargs)
+    def from_dev_data(cls, dev_data, many=False, *args, **kwargs):
+        # Special case to nicely handle converting data for a "many" serializer
+        if many:
+            data = [cls.convert_dev_data(e) for e in dev_data]
+        else:
+            data = cls.convert_dev_data(dev_data)
+        return cls(*args, data=data, many=many, **kwargs)
 
 
 class MatchSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Match
         fields = ('mode', 'perspective', 'map_name', 'date', 'duration')
+
+
+class PlayerSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.PlayerMatch
+        fields = ('player_id', 'player_name')
 
 
 class PlayerMatchStatsSerializer(DevDeserializer):
@@ -101,16 +112,29 @@ class MatchRosterSerializer(serializers.ModelSerializer):
         fields = ('win_place', 'players')
 
 
+class RosterMatchSerializer(serializers.ModelSerializer):
+    """
+    @brief      Serialization for a certain Player's roster in a match
+    """
+    players = PlayerSummarySerializer(many=True)
+
+    class Meta:
+        model = models.RosterMatch
+        fields = ('players',)
+
+
 class PlayerMatchSerializer(serializers.ModelSerializer):
     """
     @brief      Contains info about a Match for a certain Player
     """
     match = MatchSummarySerializer(source='roster.match', default=None, read_only=True)
+    roster = PlayerSummarySerializer(source='roster.players', default=None, read_only=True,
+                                     many=True)
     stats = PlayerMatchStatsSerializer(read_only=True)
 
     class Meta:
         model = models.PlayerMatch
-        fields = ('player_name', 'match_id', 'stats', 'match')
+        fields = ('player_name', 'match_id', 'match', 'roster', 'stats')
         extra_kwargs = {
             'player_name': {'write_only': True},
         }
