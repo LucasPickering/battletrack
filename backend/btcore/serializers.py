@@ -242,7 +242,7 @@ class MatchSerializer(DevDeserializer):
             player.save()
 
         # Create all the missing PlayerMatches
-        existing_set = set(existing_pms.values_list('player_id', flat=True))  # Existing player IDs
+        existing_set = set(pm.player_id for pm in existing_pms)  # Existing player IDs
         models.PlayerMatch.objects.bulk_create(
             models.PlayerMatch(roster=player_to_roster[player['player_id']], match_id=match_id,
                                **player)
@@ -251,13 +251,13 @@ class MatchSerializer(DevDeserializer):
         )
 
         # Create all Stats objects. We have to re-query for all the PlayerMatch objects in order
-        # to get full copies
+        # to get copies with the primary keys
         models.PlayerMatchStats.objects.bulk_create(
             models.PlayerMatchStats(player_match=pm, **player_to_stats[pm.player_id])
             for pm in models.PlayerMatch.objects.filter(match_id=match_id)
         )
 
-        return player
+        return match
 
 
 class PlayerSerializer(DevDeserializer):

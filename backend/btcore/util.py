@@ -28,3 +28,15 @@ def timed(func):
 
     # Only run the timing wrapper if debug mode is enabled
     return wrapper if settings.DEBUG else func
+
+
+class Timed:
+    def __init__(self, msg):
+        self._msg = msg
+
+    def __enter__(self):
+        self._start = time.time()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        elapsed = time.time() - self.start()
+        print(self.msg + f" took {elapsed:.3f}s")

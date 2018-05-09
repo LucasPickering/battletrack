@@ -1,12 +1,12 @@
 from rest_framework import views
 from rest_framework.response import Response
 
-from .models import Telemetry
-from . import serializers
+from . import models, serializers
 
 
 class TelemetryView(views.APIView):
-    queryset = Telemetry.objects
+    queryset = models.Telemetry.objects.prefetch_related(*models.get_all_event_related_names())
+    # queryset = models.Telemetry.objects
     serializer_class = serializers.TelemetrySerializer
 
     def get(self, request, id):

@@ -15,7 +15,7 @@ def pull_from_api(model, *args, **kwargs):
     # Deserialize the data and save it
     serializer = model.serializer.from_dev_data(data)
     serializer.is_valid(raise_exception=True)
-    serializer.save()
+    return serializer.save()
 
 
 class DevAPIQuerySet(models.QuerySet):
@@ -28,7 +28,7 @@ class DevAPIQuerySet(models.QuerySet):
                 pull_from_api(self.model, *args, **kwargs)
 
                 # Re-run the original query to make sure we re-use select_related, etc.
-                return super().get(*args, **kwargs)
+                return self.get(*args, **kwargs)
             except requests.exceptions.HTTPError as e:
                 if e.response.status_code == 404:
                     # If it was a 404, re-throw it as a Django 404

@@ -28,8 +28,7 @@ def calc_shift_factor(c1, c2):
 
 
 def get_circles_for_telemetry(telemetry):
-    events = telemetry.events.filter(type='GameStatePeriodic') \
-        .select_subclasses('gamestateperiodicevent')
+    events = telemetry.gamestateperiodicevents
     circles = []
 
     last_white = None
