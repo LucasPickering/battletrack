@@ -1,5 +1,4 @@
 django
-django-model-utils
 djangorestframework
 drf-writeable-nested
 requests
