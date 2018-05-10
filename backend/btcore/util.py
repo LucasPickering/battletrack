@@ -4,8 +4,21 @@ import time
 
 from django.conf import settings
 
-GAME_MODES = [('solo', 'Solo'), ('duo', 'Duo'), ('squad', 'Squad')]
-PERSPECTIVES = [('tpp', 'TPP'), ('fpp', 'FPP')]
+# Django expects a tuple of (DB name, human-readable name) for each of these
+SHARDS = [(shard, shard.upper()) for shard in [
+    'pc-as',
+    'pc-eu',
+    'pc-kakao',
+    'pc-krjp',
+    'pc-jp',
+    'pc-na',
+    'pc-oc',
+    'pc-ru',
+    'pc-sa',
+    'pc-sea',
+]]
+GAME_MODES = [(gm, gm.capitalize()) for gm in ['solo', 'duo', 'squad']]
+PERSPECTIVES = [(persp, persp.upper()) for persp in ['fpp', 'tpp']]
 
 MATCH_ID_LENGTH = 36
 PLAYER_ID_LENGTH = 40
@@ -38,5 +51,5 @@ class Timed:
         self._start = time.time()
 
     def __exit__(self, exc_type, exc_value, traceback):
-        elapsed = time.time() - self.start()
-        print(self.msg + f" took {elapsed:.3f}s")
+        elapsed = time.time() - self._start
+        logger.debug(self._msg.format(time=f"{elapsed:.3f}s"))

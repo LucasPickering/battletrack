@@ -1,6 +1,5 @@
 import dateutil.parser
 import itertools
-import time
 from collections import defaultdict
 
 from django.db import transaction
@@ -73,6 +72,7 @@ class TelemetrySerializer(DevDeserializer):
             event_rns = set(models.get_event_related_name(typ) for typ in types)  # De-dup
 
         # Fetch all events from the DB by getting a QuerySet for each one and chaining them
+        # Order by ascending time
         events = itertools.chain.from_iterable(getattr(telemetry, related_name).all()
                                                for related_name in event_rns)
 

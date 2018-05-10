@@ -82,6 +82,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'battletrack.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}
+
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.timer.TimerPanel',
     'debug_toolbar.panels.settings.SettingsPanel',
@@ -89,7 +95,6 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.sql.SQLPanel',
     'debug_toolbar.panels.profiling.ProfilingPanel',
 ]
-
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
