@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { ListGroup } from 'react-bootstrap';
 
 import api from '../api';
+import { sortKeyFunc } from '../util';
 import PlayerMatchSummary from './PlayerMatchSummary';
 import '../styles/Player.css';
 
@@ -30,7 +31,7 @@ class Player extends Component {
   updatePlayerData() {
     this.setState({ playerData: null }); // Wipe any old data
     // Load player's data from the API
-    api.get(`/api/players/pc-na/${this.props.match.params.playerName}?popMatches`)
+    api.get(`/api/core/players/pc-na/${this.props.match.params.playerName}?popMatches`)
       .then(response => this.setState({ playerData: response.data }))
       .catch(console.error);
   }
@@ -44,6 +45,7 @@ class Player extends Component {
         <ListGroup>
           {playerData.matches
             .filter(m => m.match) // Filter out null matches
+            .sort(sortKeyFunc(m => m.match.date, true)) // Sort by date
             .map(m => <PlayerMatchSummary key={m.match_id} data={m} />)}
         </ListGroup>
       </div>

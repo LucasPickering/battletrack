@@ -8,7 +8,6 @@ import {
   formatGameMode,
   formatPerspective,
   formatMap,
-  makeTable,
   sortKeyFunc,
 } from '../util';
 import RosterMatchSummary from './RosterMatchSummary';
@@ -26,7 +25,7 @@ class Match extends Component {
 
   componentDidMount() {
     // Load player's data from the API
-    api.get(`/api/matches/${this.matchId}?popTelemetry`)
+    api.get(`/api/core/matches/${this.matchId}`)
       .then(response => this.setState({ matchData: response.data }))
       .catch(console.error);
   }
@@ -42,11 +41,9 @@ class Match extends Component {
     return (
       <div className="match">
         <h2>{formatGameMode(matchData.mode)} {formatPerspective(matchData.perspective)}</h2>
-        <h3>{formatDate(matchData.date)}</h3>
-        {makeTable([
-          ['Map', formatMap(matchData.map_name)],
-          ['Duration', formatSeconds(matchData.duration)],
-        ])}
+        <h2>{formatMap(matchData.map_name)}</h2>
+        <h3>{formatDate(matchData.date, 'MMMM D, YYYY HH:mm:ss')}</h3>
+        <h3>{formatSeconds(matchData.duration)}</h3>
         <Panel className="rosters">
           {rosters.map(r => <RosterMatchSummary key={r.id} data={r} />)}
         </Panel>

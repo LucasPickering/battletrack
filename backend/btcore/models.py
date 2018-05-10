@@ -82,7 +82,7 @@ class PlayerMatch(models.Model):
         super().clean()
         # Make sure at least one of player/roster is set
         if self.player_ref is None and self.roster is None:
-            raise ValidationError('No player or roster set')
+            raise ValidationError("No player or roster set")
 
 
 # This object will only be create when a PlayerMatch is populated from the Match side

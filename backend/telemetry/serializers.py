@@ -4,7 +4,6 @@ from itertools import chain
 
 from django.db import transaction
 from rest_framework import serializers
-from drf_writable_nested import NestedCreateMixin
 
 from btcore.models import Match
 from btcore.serializers import DevDeserializer
@@ -47,20 +46,11 @@ def get_event_time(event, start_time=None):
     return dt  # Otherwise just return the time
 
 
-class TelemetrySerializer(DevDeserializer):
-    match = serializers.PrimaryKeyRelatedField(queryset=Match.objects)
-    events = serializers.SerializerMethodField()
+class EventsSerializer(serializers.ListField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(self, *args, source='*', **kwargs)
 
-    class Meta:
-        model = models.Telemetry
-        fields = ('match', 'events')
-
-    def run_validation(self, data):
-        # Lazy hack to stop it from stripping the 'events' field during validation, because
-        # SerializerMethodFields are read-only
-        return data  # Frigg off Mr. Lahey
-
-    def get_events(self, telemetry):
+    def to_representation(self, telemetry):
         # Check for type filtering. None/empty means no filtering.
         types = self.context.get('types', None)
 
@@ -91,6 +81,15 @@ class TelemetrySerializer(DevDeserializer):
 
         # Sort the events by time and return them. Sort takes <1s for ~20k events (typical match)
         return sorted(serialized_events, key=lambda e: e['time'])
+
+
+class TelemetrySerializer(DevDeserializer):
+    match = serializers.PrimaryKeyRelatedField(queryset=Match.objects)
+    events = EventsSerializer()
+
+    class Meta:
+        model = models.Telemetry
+        fields = ('match', 'events')
 
     @staticmethod
     def parse_player_create(event):
@@ -139,10 +138,10 @@ class TelemetrySerializer(DevDeserializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        match_id = validated_data['match']
-        events = validated_data['events']
+        match = validated_data['match']  # Match object
+        events = validated_data['events']  # List of event dicts
 
-        telemetry = models.Telemetry.objects.create(match_id=match_id)
+        telemetry = models.Telemetry.objects.create(match=match)
 
         # Group events by type
         events_by_type = defaultdict(list)
@@ -165,7 +164,7 @@ class TelemetrySerializer(DevDeserializer):
 
 # ABSTRACT EVENT SERIALIZERS
 
-class AbstractEventSerializer(DevDeserializer, NestedCreateMixin):
+class AbstractEventSerializer(DevDeserializer):
     @classmethod
     def convert_dev_data(cls, dev_data, start_time, **kwargs):
         # Convert Dev API-formatted data into our format

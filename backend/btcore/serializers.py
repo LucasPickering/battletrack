@@ -135,10 +135,7 @@ class PlayerMatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.PlayerMatch
-        fields = ('match', 'roster', 'match_id', 'player_name', 'shard', 'stats')
-        extra_kwargs = {
-            'player_name': {'write_only': True},
-        }
+        fields = ('match', 'roster', 'match_id', 'shard', 'stats')
 
 
 class MatchSerializer(DevDeserializer):
@@ -236,8 +233,8 @@ class MatchSerializer(DevDeserializer):
             for player in players:
                 player_to_roster[player['player_id']] = roster_match
 
-        # Figure out which PlayerMatches are already in the DB so they can be updated
-        existing_pms = models.PlayerMatch.objects.filter(match_id=match_id).exclude(player_id=None)
+        # Figure out which PlayerMatches are already in the DB and need their roster/stats linked
+        existing_pms = models.PlayerMatch.objects.filter(match_id=match_id, roster=None)
 
         # Set the roster on each pre-existing PlayerMatch
         for player in existing_pms:
@@ -279,7 +276,6 @@ class PlayerSerializer(DevDeserializer):
         player_name = attrs['name']
         shard = attrs['shardId']
         matches = [{
-            'player_name': player_name,
             'match_id': m['id'],
             'shard': shard,
         } for m in dev_data['relationships']['matches']['data']]
@@ -290,22 +286,33 @@ class PlayerSerializer(DevDeserializer):
             'matches': matches,
         }
 
+    def _update_or_create_matches(self, player, matches):
+        pid, name = player.id, player.name
+
+        # Find the PlayerMatches that are already in the DB
+        existing = models.PlayerMatch.objects.filter(player_id=pid)
+
+        # Link the Player object to PlayerMatches that don't have it yet
+        existing.filter(player_ref=None).update(player_ref=player)
+
+        # Create all the PlayerMatches that are missing
+        existing_match_ids = set(pm.match_id for pm in existing)
+        models.PlayerMatch.objects.bulk_create(
+            models.PlayerMatch(player_id=pid, player_name=name, player_ref=player, **match)
+            for match in matches if match['match_id'] not in existing_match_ids
+        )
+
+    @transaction.atomic
+    def update(self, player, validated_data):
+        self._update_or_create_matches(player, validated_data.pop('matches'))
+        return player
+
     @transaction.atomic
     def create(self, validated_data):
         matches = validated_data.pop('matches')
 
+        # Create the Player, then update PlayerMatches
         player = models.Player.objects.create(**validated_data)
-        player_id = player.id
-
-        # Figure out which PlayerMatches are already in the DB and update them
-        existing = models.PlayerMatch.objects.filter(player_id=player_id).exclude(match_id=None)
-        existing.update(player_name=player.name, player_ref=player)
-
-        # Create all the PlayerMatches that are missing
-        existing_set = set(existing.values_list('match_id', flat=True))  # Existing match IDs
-        models.PlayerMatch.objects.bulk_create(
-            models.PlayerMatch(player_id=player_id, player_ref=player, **match)
-            for match in matches if match['match_id'] not in existing_set
-        )
+        self._update_or_create_matches(player, matches)
 
         return player
