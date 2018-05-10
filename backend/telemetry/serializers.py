@@ -1,6 +1,6 @@
 import dateutil.parser
-import itertools
 from collections import defaultdict
+from itertools import chain
 
 from django.db import transaction
 from rest_framework import serializers
@@ -54,32 +54,43 @@ class TelemetrySerializer(DevDeserializer):
     class Meta:
         model = models.Telemetry
         fields = ('match', 'events')
-        extra_kwargs = {
-            'events_write': {'write_only': True},
-        }
 
     def run_validation(self, data):
+        # Lazy hack to stop it from stripping the 'events' field during validation, because
+        # SerializerMethodFields are read-only
         return data  # Frigg off Mr. Lahey
 
     def get_events(self, telemetry):
         # Check for type filtering. None/empty means no filtering.
         types = self.context.get('types', None)
 
-        # Figure out which event types to fetch
+        # Build a dict of EventModelTuple:QuerySet, where the QuerySet contains all relevant
+        # objects of that event model. The key tuple contains (model, related_name), and these
+        # are accessible by those names. The dict will be used to build one serializer for each
+        # entry.
         if types is None:
-            event_rns = models.get_all_event_related_names()
+            # No filtering, just get every model's events
+            events = {mt: getattr(telemetry, mt.related_name).all()
+                      for mt in models.get_all_event_models()}
         else:
-            event_rns = set(models.get_event_related_name(typ) for typ in types)  # De-dup
+            # Decide which models we care about, and which types we want for each model.
+            # We may want to get only one type of many for a model, so this will allow us to filter
+            # on the type(s) we care about.
+            models_to_types = defaultdict(set)
+            for typ in types:
+                models_to_types[models.get_event_model(typ)].add(typ)
 
-        # Fetch all events from the DB by getting a QuerySet for each one and chaining them
-        # Order by ascending time
-        events = itertools.chain.from_iterable(getattr(telemetry, related_name).all()
-                                               for related_name in event_rns)
+            # For each model we want, get all the objects of the type(s) we want.
+            events = {mt: getattr(telemetry, mt.related_name).filter(type__in=mt_types)
+                      for mt, mt_types in models_to_types.items()}
 
-        sorted_events = sorted(events, key=lambda e: e.time)  # Sort by time (takes ~1.5s tops)
+        # Create one serializer per model, for all events of that model. Then, chain all the
+        # outputs together to get one long iterable of serialized events.
+        serialized_events = chain.from_iterable(mt.model.serializer(mt_events, many=True).data
+                                                for mt, mt_events in events.items())
 
-        # Serialize each event
-        return [event.serializer(event).data for event in sorted_events]
+        # Sort the events by time and return them. Sort takes <1s for ~20k events (typical match)
+        return sorted(serialized_events, key=lambda e: e['time'])
 
     @staticmethod
     def parse_player_create(event):
@@ -116,20 +127,20 @@ class TelemetrySerializer(DevDeserializer):
                 # See if this is an event type we care about. If so, save it for later.
                 try:
                     # Get the event model class by type name, then get the serializer class
-                    event_serializer = models.get_event_model(typ).serializer
+                    event_serializer = models.get_event_model(typ).model.serializer
                 except KeyError:
                     continue  # We don't care about this event type, skip it
                 events.append(event_serializer.convert_dev_data(event, start_time=start_time))
 
         return {
             'match': match_id,
-            'events_write': events,
+            'events': events,
         }
 
     @transaction.atomic
     def create(self, validated_data):
         match_id = validated_data['match']
-        events = validated_data['events_write']
+        events = validated_data['events']
 
         telemetry = models.Telemetry.objects.create(match_id=match_id)
 
@@ -141,7 +152,7 @@ class TelemetrySerializer(DevDeserializer):
         # Regroup events by model (multiple types can map to one model, so we want to reduce that)
         events_by_model = defaultdict(list)
         for typ, subevents in events_by_type.items():
-            events_by_model[models.get_event_model(typ)] += subevents
+            events_by_model[models.get_event_model(typ).model] += subevents
 
         # Create every event, with one bulk_create for each model
         for model, subevents in events_by_model.items():

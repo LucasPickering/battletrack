@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 from django.db import models
 
 from btcore.models import Match
@@ -6,8 +8,9 @@ from .fields import CircleField, PositionField, EventPlayerField, ItemField, Veh
 from .query import TelemetryQuerySet
 
 
+EventModelTuple = namedtuple('EventModelTuple', 'model related_name')
 # Dict of evernt type to event model and model related name,
-# e.g. 'VehicleRide':(VehicleEvent, 'vehicleevents')
+# e.g. 'VehicleRide':EventModelTuple(VehicleEvent, 'vehicleevents')
 # This can have duplicate values, because multiple event types can map to one model
 _EVENT_MODELS = {}
 
@@ -20,30 +23,37 @@ def event_model(*names):
     @param      name  the event type
     """
     def inner(cls):
+        related_name = cls._meta.get_field('telemetry').related_query_name()
+        model_tuple = EventModelTuple(cls, related_name)
         for name in names:
             if name in _EVENT_MODELS:
                 raise ValueError(f"Cannot register {cls} under {name}: Name already in use")
-            related_name = cls._meta.get_field('telemetry').related_query_name()
-            _EVENT_MODELS[name] = (cls, related_name)
+            _EVENT_MODELS[name] = model_tuple
 
         return cls
     return inner
 
 
 def get_event_model(event_type):
-    return _EVENT_MODELS[event_type][0]
+    """
+    @brief      Gets the event model, as a tuple of (model, related_name). These two fields in the
+                tuple are accessible by named.
 
+    @param      event_type  The event type, e.g. 'PlayerKill'
 
-def get_event_related_name(event_type):
-    return _EVENT_MODELS[event_type][1]
-
-
-def get_all_event_related_names():
-    return set(rn for model, rn in _EVENT_MODELS.values())  # De-dup
+    @return     The event model, e.g. (PlayerKillEvent, 'playerkillevents')
+    """
+    return _EVENT_MODELS[event_type]
 
 
 def get_all_event_models():
-    return set(model for model, rn in _EVENT_MODELS.values())  # De-dup
+    """
+    @brief      Gets a set of all event model tuples. Each tuple is (model, related_name), and these
+                fields are accessible by those names.
+
+    @return     All event models, in a set
+    """
+    return set(_EVENT_MODELS.values())  # De-dup
 
 
 class Telemetry(models.Model):
