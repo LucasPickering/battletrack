@@ -44,7 +44,7 @@ class Match(models.Model):
     shard = models.CharField(max_length=20)
     mode = models.CharField(max_length=10, choices=util.GAME_MODES)
     perspective = models.CharField(max_length=10, choices=util.PERSPECTIVES)
-    map_name = models.CharField(max_length=50)
+    map_name = models.CharField(max_length=50, choices=util.MAPS)
     date = models.DateTimeField()
     duration = models.PositiveSmallIntegerField()
     telemetry_url = models.URLField()

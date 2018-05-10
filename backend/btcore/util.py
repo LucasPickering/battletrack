@@ -19,6 +19,10 @@ SHARDS = [(shard, shard.upper()) for shard in [
 ]]
 GAME_MODES = [(gm, gm.capitalize()) for gm in ['solo', 'duo', 'squad']]
 PERSPECTIVES = [(persp, persp.upper()) for persp in ['fpp', 'tpp']]
+MAPS = [
+    ('Erangel_Main', 'Erangel'),
+    ('Desert_Main', 'Miramar'),
+]
 
 MATCH_ID_LENGTH = 36
 PLAYER_ID_LENGTH = 40
