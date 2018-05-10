@@ -95,9 +95,10 @@ class MatchPlayerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.PlayerMatch
-        fields = ('player_id', 'player_name', 'stats')
+        fields = ('roster', 'player_id', 'player_name', 'shard', 'stats')
         extra_kwargs = {
             'roster': {'write_only': True},
+            'shard': {'write_only': True},
         }
 
 
@@ -134,7 +135,7 @@ class PlayerMatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.PlayerMatch
-        fields = ('player_name', 'match_id', 'match', 'roster', 'stats')
+        fields = ('match', 'roster', 'match_id', 'player_name', 'shard', 'stats')
         extra_kwargs = {
             'player_name': {'write_only': True},
         }
@@ -157,6 +158,7 @@ class MatchSerializer(DevDeserializer):
 
         attrs = data['attributes']
         mode, perspective = attrs['gameMode'].split('-')
+        shard = attrs['shardId']
 
         # Separate 'included' objects by type: we'll need to access all 3 types later
         incl = defaultdict(list)
@@ -178,6 +180,7 @@ class MatchSerializer(DevDeserializer):
             player_matches[participant['id']] = {
                 'player_id': player_id,
                 'player_name': player_name,
+                'shard': shard,
                 'stats': stats,
             }
 
@@ -193,7 +196,7 @@ class MatchSerializer(DevDeserializer):
 
         return {
             'id': data['id'],
-            'shard': attrs['shardId'],
+            'shard': shard,
             'mode': mode,
             'perspective': perspective,
             'map_name': attrs.get('mapName', ''),  # This isn't always in the data for some reason
@@ -274,15 +277,16 @@ class PlayerSerializer(DevDeserializer):
         # Build a list of PlayerMatch dicts
         player_id = dev_data['id']
         player_name = attrs['name']
+        shard = attrs['shardId']
         matches = [{
             'player_name': player_name,
             'match_id': m['id'],
+            'shard': shard,
         } for m in dev_data['relationships']['matches']['data']]
 
         return {
             'id': player_id,
             'name': player_name,
-            'shard': attrs['shardId'],
             'matches': matches,
         }
 

@@ -1,11 +1,8 @@
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from . import devapi, util
-from .query import DevAPIManager
-
-api = devapi.DevAPI.from_file(settings.DEV_API_KEY_FILE)
+from . import util
+from .query import MatchQuerySet, PlayerQuerySet
 
 
 """
@@ -41,8 +38,7 @@ objects where possible. An unlinked in this case PlayerMatch will have a null re
 
 
 class Match(models.Model):
-    get_from_api = api.get_match
-    objects = DevAPIManager()
+    objects = MatchQuerySet.as_manager()
 
     id = models.CharField(primary_key=True, max_length=util.MATCH_ID_LENGTH)
     shard = models.CharField(max_length=20)
@@ -55,15 +51,10 @@ class Match(models.Model):
 
 
 class Player(models.Model):
-    get_from_api = api.get_player
-    objects = DevAPIManager()
+    objects = PlayerQuerySet.as_manager()
 
     id = models.CharField(primary_key=True, max_length=util.PLAYER_ID_LENGTH)
-    name = models.CharField(max_length=50)
-    shard = models.CharField(max_length=20)
-
-    class Meta:
-        unique_together = (('id', 'shard'), ('name', 'shard'))
+    name = models.CharField(max_length=50, unique=True)
 
 
 class RosterMatch(models.Model):
@@ -72,16 +63,17 @@ class RosterMatch(models.Model):
 
 
 class PlayerMatch(models.Model):
-    # Store the player's ID and name, because those can be gotten from match object
-    player_id = models.CharField(max_length=util.PLAYER_ID_LENGTH)
-    player_name = models.CharField(max_length=30)
-    # Null if match isn't in the DB yet
-    player_ref = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True,
-                                   related_name='matches')
-    match_id = models.CharField(max_length=36)
-    # Null if match isn't in the DB yet
+    # Null if match/player isn't in the DB yet
     roster = models.ForeignKey(RosterMatch, on_delete=models.SET_NULL, null=True,
                                related_name='players')
+    player_ref = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True,
+                                   related_name='matches')
+
+    # Store these additional fields, because they can be gotten from match OR player data
+    match_id = models.CharField(max_length=36)
+    player_id = models.CharField(max_length=util.PLAYER_ID_LENGTH)
+    player_name = models.CharField(max_length=30)
+    shard = models.CharField(max_length=20, choices=util.SHARDS)
 
     class Meta:
         unique_together = ('player_id', 'match_id')

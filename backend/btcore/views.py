@@ -15,7 +15,7 @@ class MatchView(views.APIView):
 
         # If requested, populate missing telemetry data for the match
         if request.GET.get('popTelemetry', False) is not False:
-            Telemetry.objects.preload('match', [match.id])  # Will pull from the API if necessary
+            Telemetry.objects.preload(match=match.id)  # Will pull from the API if necessary
 
         serializer = self.serializer_class(match)
         return Response(serializer.data)
@@ -25,14 +25,15 @@ class PlayerView(views.APIView):
     queryset = Player.objects.prefetch_related('matches__stats', 'matches__roster__match')
     serializer_class = serializers.PlayerSerializer
 
-    def get(self, request, **kwargs):
-        # kwargs will have shard and either name or ID - this handles either case
-        player = self.queryset.get(**kwargs)
+    def get(self, request, shard, **kwargs):
+        # kwargs will have either name or ID - this handles either case
+        # Only fetch PlayerMatches from the specified shard
+        player = self.queryset.filter(matches__shard=shard).distinct().get(shard=shard, **kwargs)
 
         # If requested, populate all missing match matches for the player
         if request.GET.get('popMatches', False) is not False:
             match_ids = [pm.match_id for pm in player.matches.all()][:5]
-            Match.objects.preload('id', match_ids)
+            Match.objects.multi_preload('id', match_ids)
             player = self.queryset.get(**kwargs)  # Refresh the object
 
         serializer = self.serializer_class(player)
