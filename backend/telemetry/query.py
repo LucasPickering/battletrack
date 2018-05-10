@@ -3,7 +3,7 @@ from btcore.query import api, DevAPIQuerySet
 
 
 class TelemetryQuerySet(DevAPIQuerySet):
-    def _execute_api_query(self, match):
+    def _execute_api_query(self, match_id):
         """
         @brief      Gets telemetry data from the dev API, given a match ID. Looks up the match by
                     ID in the DB, which will fetch it from the API if necessary. Then, gets the
@@ -13,8 +13,8 @@ class TelemetryQuerySet(DevAPIQuerySet):
 
         @return     Dict of match ID and telemetry data from the API.
         """
-        match_obj = Match.objects.get(id=match)  # Will pull from the API if necessary
+        match_obj = Match.objects.get(id=match_id)  # Will pull from the API if necessary
         return {
-            'match_id': match,  # Include match ID in output
+            'match_id': match_id,  # Include match ID in output
             'telemetry': api.get(match_obj.telemetry_url),  # Pull the data from the API
         }

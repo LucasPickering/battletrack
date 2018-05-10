@@ -4,7 +4,7 @@ import math
 import os
 import pandas as pd
 import sys
-sys.path.append('')  # So we can import battletrack and its apps
+sys.path.append('')  # Add cwd to path so we can import battletrack and its apps
 
 # Configure Django settings
 import battletrack.settings
@@ -54,10 +54,10 @@ def get_circles_for_telemetry(telemetry):
 
 
 def pull_data(outfile):
-    # Get the Telemetry object for every PlayerMatch in the DB. We have to do one get for each
+    # Get the Telemetry object for every Match in the DB. We have to do one get for each
     # object to make sure each Telemetry gets pulled from the API if necessary.
-    telemetries = (Telemetry.objects.get(match=match)
-                   for match in Match.objects.all().select_related('telemetry'))
+    telemetries = (Telemetry.objects.get(match_id=match_id)
+                   for match_id in Match.objects.values_list('id', flat=True))
 
     matches = [get_circles_for_telemetry(tel) for tel in telemetries]
 

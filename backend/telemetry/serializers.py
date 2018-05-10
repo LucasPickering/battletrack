@@ -47,8 +47,38 @@ def get_event_time(event, start_time=None):
 
 
 class EventsSerializer(serializers.ListField):
-    def __init__(self, *args, **kwargs):
-        super().__init__(self, *args, source='*', **kwargs)
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        # Parse each event
+        events = []
+
+        # Track the time of the actual match start, marked by the LogMatchStart event. All events
+        # before match start will be ignored.
+        start_time = None
+
+        for event in dev_data:
+            typ = get_event_type(event)  # Remove prefix from event type
+
+            # Special case for match start
+            if typ == 'MatchStart':
+                start_time = get_event_time(event)
+            elif typ == 'MatchEnd':
+                # Skip the extra events after the game ends
+                break
+
+            # If start time hasn't been defined yet, this event is from the lobby so we don't care
+            if start_time:
+                # See if this is an event type we care about. If so, save it for later.
+                try:
+                    # Get the event model class by type name, then get the serializer class
+                    event_serializer = models.get_event_model(typ).model.serializer
+                except KeyError:
+                    continue  # We don't care about this event type, skip it
+                events.append(event_serializer.convert_dev_data(event, start_time=start_time))
+        return events
+
+    def run_validation(self, data):
+        return {'events': data}  # Wrap the list in a dict to make DRF happy
 
     def to_representation(self, telemetry):
         # Check for type filtering. None/empty means no filtering.
@@ -85,55 +115,17 @@ class EventsSerializer(serializers.ListField):
 
 class TelemetrySerializer(DevDeserializer):
     match = serializers.PrimaryKeyRelatedField(queryset=Match.objects)
-    events = EventsSerializer()
+    events = EventsSerializer(source='*', read_only=False)
 
     class Meta:
         model = models.Telemetry
         fields = ('match', 'events')
 
-    @staticmethod
-    def parse_player_create(event):
-        char = event['character']
-        return {
-            'id': char['accountId'],
-            'name': char['name'],
-        }
-
     @classmethod
     def convert_dev_data(cls, dev_data, **kwargs):
-        match_id = dev_data['match_id']
-
-        # Parse each event
-        events = []
-        dev_events = dev_data['telemetry']
-
-        # Track the time of the actual match start, marked by the LogMatchStart event. All events
-        # before match start will be ignored.
-        start_time = None
-
-        for event in dev_events:
-            typ = get_event_type(event)  # Remove prefix from event type
-
-            # Special case for match start
-            if typ == 'MatchStart':
-                start_time = get_event_time(event)
-            elif typ == 'MatchEnd':
-                # Skip the extra events after the game ends
-                break
-
-            # If start time hasn't been defined yet, this event is from the lobby so we don't care
-            if start_time:
-                # See if this is an event type we care about. If so, save it for later.
-                try:
-                    # Get the event model class by type name, then get the serializer class
-                    event_serializer = models.get_event_model(typ).model.serializer
-                except KeyError:
-                    continue  # We don't care about this event type, skip it
-                events.append(event_serializer.convert_dev_data(event, start_time=start_time))
-
         return {
-            'match': match_id,
-            'events': events,
+            'match': dev_data['match_id'],
+            'events': EventsSerializer.convert_dev_data(dev_data['telemetry'], **kwargs),
         }
 
     @transaction.atomic
