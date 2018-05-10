@@ -1,7 +1,8 @@
 from rest_framework import views
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from . import serializers
+from . import serializers, util
 from .models import Match, Player
 from telemetry.models import Telemetry
 
@@ -22,7 +23,8 @@ class MatchView(views.APIView):
 
 
 class PlayerView(views.APIView):
-    queryset = Player.objects.prefetch_related('matches__stats', 'matches__roster__match')
+    queryset = Player.objects.prefetch_related('matches__stats', 'matches__roster__match',
+                                               'matches__roster__players')
     serializer_class = serializers.PlayerSerializer
 
     def get(self, request, shard, **kwargs):
@@ -32,9 +34,14 @@ class PlayerView(views.APIView):
 
         # If requested, populate all missing match matches for the player
         if request.GET.get('popMatches', False) is not False:
-            match_ids = [pm.match_id for pm in player.matches.all()][:5]
+            match_ids = [pm.match_id for pm in player.matches.all()]
             Match.objects.multi_preload('id', match_ids)
-            player = self.queryset.get(**kwargs)  # Refresh the object
+            player = self.queryset.get(shard=shard, **kwargs)  # Refresh the object
 
         serializer = self.serializer_class(player)
         return Response(serializer.data)
+
+
+@api_view(['GET'])
+def shards(request):
+    return Response(util.SHARDS)

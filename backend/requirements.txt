@@ -1,4 +1,3 @@
 django
 djangorestframework
-drf-writeable-nested
 requests

@@ -82,12 +82,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'battletrack.wsgi.application'
 
-REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    )
-}
-
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.timer.TimerPanel',
     'debug_toolbar.panels.settings.SettingsPanel',

@@ -7,8 +7,8 @@ const MAP_NAMES = {
   Desert_Main: 'Miramar',
 };
 
-export function formatDate(date) {
-  return moment(date).local().format('MMMM D, YYYY HH:mm:ss');
+export function formatDate(date, format) {
+  return moment(date).local().format(format);
 }
 
 export function formatSeconds(seconds) {
