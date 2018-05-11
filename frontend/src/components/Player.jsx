@@ -33,11 +33,11 @@ class Player extends ApiComponent {
   renderMatches() {
     const { playerData } = this.state;
     return (
-      <ListGroup>
+      <ListGroup className="matches">
         {playerData.matches
           .filter(m => m.match) // Filter out null matches
           .sort(sortKeyFunc(m => m.match.date, true)) // Sort by date
-          .map(m => <PlayerMatchSummary key={m.match_id} data={m} />)}
+          .map(m => <PlayerMatchSummary key={m.match_id} playerName={playerData.name} data={m} />)}
       </ListGroup>
     );
   }
