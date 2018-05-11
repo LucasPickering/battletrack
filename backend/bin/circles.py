@@ -28,7 +28,7 @@ def calc_shift_factor(c1, c2):
 
 
 def get_circles_for_telemetry(telemetry):
-    events = telemetry.gamestateperiodicevents
+    events = telemetry.gamestateperiodicevents.all()
     circles = []
 
     last_white = None

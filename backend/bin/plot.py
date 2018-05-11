@@ -2,18 +2,10 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-import pandas as pd
+import pickle
 
 
 def circle_hist(data):
-
-    # Render summary table
-    # plt.table(cellText=[
-    #     ['Average Shift Factor', f"{data['shift_factor'].mean():.2f}"],
-    #     ['Hard Shift %', f"{data['is_hard_shift'].mean() * 100:.1f}"],
-    # ])
-
-    # Render histogram
     r = np.arange(0.0, 1.1, step=0.1)
     data.hist(column='shift_factor', bins=r, weights=np.ones_like(data.index) / len(data.index))
     plt.title(f"Shift Factor Frequency - {len(data)} shifts")
@@ -23,8 +15,18 @@ def circle_hist(data):
     plt.xticks(r)
 
 
+def kill_times_hist(data):
+    num_plots = len(data)
+    bins = range(35)
+    for i, (map_name, kills) in enumerate(data.items(), 1):
+        plt.subplot(num_plots, 1, i)
+        plt.title(map_name)
+        plt.hist(kills / 60., bins=bins)
+
+
 _ACTIONS = {
     'circle_hist': circle_hist,
+    'kill_times_hist': kill_times_hist,
 }
 
 
@@ -36,9 +38,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     func = _ACTIONS[args.action]
-    data = pd.read_pickle(args.infile)
+    with open(args.infile, 'rb') as f:
+        data = pickle.load(f)
 
-    fig = func(data)
+    func(data)
 
     if args.save is not None:
         if args.save:
