@@ -1,12 +1,19 @@
-import React, { Component } from 'react';
-import { ListGroup } from 'react-bootstrap';
+import React from 'react';
+import {
+  ListGroup,
+} from 'react-bootstrap';
 
 import api from '../api';
-import { sortKeyFunc } from '../util';
+import {
+  playerLink,
+  sortKeyFunc,
+} from '../util';
+import ApiComponent from './ApiComponent';
 import PlayerMatchSummary from './PlayerMatchSummary';
+import ShardSelect from './ShardSelect';
 import '../styles/Player.css';
 
-class Player extends Component {
+class Player extends ApiComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -14,40 +21,38 @@ class Player extends Component {
     };
   }
 
-  componentDidMount() {
-    this.updatePlayerData();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { playerName: oldName } = this.props.match.params;
-    const { playerName: newName } = nextProps.match.params;
-
-    // If the player name changed, fetch the new player's data
-    if (oldName !== newName) {
-      this.updatePlayerData();
-    }
-  }
-
-  updatePlayerData() {
-    this.setState({ playerData: null }); // Wipe any old data
-    // Load player's data from the API
-    api.get(`/api/core/players/pc-na/${this.props.match.params.playerName}?popMatches`)
+  refresh(params) {
+    this.setState({ playerData: null }); // Wipe out old player data
+    // Load new player data from the API
+    const { shard, playerName } = params;
+    api.get(`/api/core/players/${shard}/${playerName}?popMatches`)
       .then(response => this.setState({ playerData: response.data }))
       .catch(console.error);
   }
 
-  render() {
+  renderMatches() {
     const { playerData } = this.state;
+    return (
+      <ListGroup>
+        {playerData.matches
+          .filter(m => m.match) // Filter out null matches
+          .sort(sortKeyFunc(m => m.match.date, true)) // Sort by date
+          .map(m => <PlayerMatchSummary key={m.match_id} data={m} />)}
+      </ListGroup>
+    );
+  }
 
-    return playerData && (
+  render() {
+    const { shard, playerName } = this.props.match.params;
+
+    return (
       <div className="player">
-        <h2>{playerData.name}</h2>
-        <ListGroup>
-          {playerData.matches
-            .filter(m => m.match) // Filter out null matches
-            .sort(sortKeyFunc(m => m.match.date, true)) // Sort by date
-            .map(m => <PlayerMatchSummary key={m.match_id} data={m} />)}
-        </ListGroup>
+        <h2>{playerName}</h2>
+        <ShardSelect
+          value={shard}
+          onChange={e => this.props.history.push(playerLink(e.target.value, playerName))}
+        />
+        {this.state.playerData ? this.renderMatches() : 'No data'}
       </div>
     );
   }

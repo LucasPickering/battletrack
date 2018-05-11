@@ -8,6 +8,8 @@ import {
 } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 
+import { playerLink } from '../util';
+import ShardSelect from './ShardSelect';
 import '../styles/PlayerSearch.css'
 
 class PlayerSearch extends Component {
@@ -21,7 +23,7 @@ class PlayerSearch extends Component {
   }
 
   search() {
-    this.props.history.push(`/players/${this.state.searchName}`);
+    this.props.history.push(playerLink('pc-na', this.state.searchName));
   }
 
   render() {
@@ -30,7 +32,6 @@ class PlayerSearch extends Component {
         <InputGroup>
           <FormControl
             type="text"
-            // value={this.state.value}
             placeholder="Player name..."
             onChange={e => this.setState({ searchName: e.target.value })}
             onKeyPress={e =>{
