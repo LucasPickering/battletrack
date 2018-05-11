@@ -1,4 +1,3 @@
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Panel } from 'react-bootstrap';
@@ -27,7 +26,7 @@ const PlayerMatchSummary = (props) => {
           <Panel.Title>
             {formatGameMode(match.mode)} {formatPerspective(match.perspective)}
           </Panel.Title>
-          <Panel.Title style={{'text-align': 'right'}}>
+          <Panel.Title style={{'textAlign': 'right'}}>
             {formatDate(match.date, 'MMMM D, HH:mm')}
           </Panel.Title>
           <Panel.Title>{formatMap(match.map_name)}</Panel.Title>

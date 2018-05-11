@@ -38,12 +38,17 @@ class PlayerView(views.APIView):
             Match.objects.multi_preload('id', match_ids)
 
             # Refresh the object, but don't hit the API this time
-            player = self.queryset.get(shard=shard, from_api=False, **kwargs)
+            player = self.queryset.get(shard=shard, hit_api=False, **kwargs)
 
         serializer = self.serializer_class(player)
         return Response(serializer.data)
 
 
 @api_view(['GET'])
-def shards(request):
-    return Response(util.SHARDS)
+def consts(request):
+    return Response({
+        'shards': util.SHARDS,
+        'game_modes': util.GAME_MODES,
+        'perspectives': util.PERSPECTIVES,
+        'maps': util.MAPS,
+    })

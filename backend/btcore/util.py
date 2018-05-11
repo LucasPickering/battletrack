@@ -6,12 +6,12 @@ from django.conf import settings
 
 # Django expects a tuple of (DB name, human-readable name) for each of these
 SHARDS = [(shard, shard.upper()) for shard in [
-    'pc-as',
+    'pc-na',
     'pc-eu',
+    'pc-as',
     'pc-kakao',
     'pc-krjp',
     'pc-jp',
-    'pc-na',
     'pc-oc',
     'pc-ru',
     'pc-sa',

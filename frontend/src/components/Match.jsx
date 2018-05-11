@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Panel } from 'react-bootstrap';
 
 import api from '../api';
@@ -10,21 +10,21 @@ import {
   formatMap,
   sortKeyFunc,
 } from '../util';
+import ApiComponent from './ApiComponent';
 import RosterMatchSummary from './RosterMatchSummary';
 import '../styles/Match.css';
 
-class Match extends Component {
+class Match extends ApiComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {
       matchData: null,
     };
-
-    this.matchId = props.match.params.matchId;
   }
 
-  componentDidMount() {
-    // Load player's data from the API
+  refresh() {
+    this.setState({ matchData: null }); // Wipe out old match data
+    // Load match data from the API
     api.get(`/api/core/matches/${this.matchId}`)
       .then(response => this.setState({ matchData: response.data }))
       .catch(console.error);
@@ -45,7 +45,7 @@ class Match extends Component {
         <h3>{formatDate(matchData.date, 'MMMM D, YYYY HH:mm:ss')}</h3>
         <h3>{formatSeconds(matchData.duration)}</h3>
         <Panel className="rosters">
-          {rosters.map(r => <RosterMatchSummary key={r.id} data={r} />)}
+          {rosters.map((r, index) => <RosterMatchSummary key={r.index} data={r} />)}
         </Panel>
       </div>
     );

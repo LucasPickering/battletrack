@@ -41,8 +41,8 @@ export function matchLink(matchId) {
   return `/matches/${matchId}`;
 }
 
-export function playerLink(playerName) {
-  return `/players/${playerName}`;
+export function playerLink(shard, playerName) {
+  return `/players/${shard}/${playerName}`;
 }
 
 export function sortKeyFunc(keyFunc, invert = false) {
