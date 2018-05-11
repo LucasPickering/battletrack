@@ -113,8 +113,11 @@ class PlayerQuerySet(DevAPIQuerySet):
         serializer.is_valid(raise_exception=True)
         return serializer.save()
 
-    def get(self, shard, *args, **kwargs):
+    def get(self, shard, from_api=True, *args, **kwargs):
         # Pull latest data from API, will add Player if missing, or if Player is already in DB,
         # will just add latest PlayerMatches
-        self._get_from_api(*args, shard=shard, **kwargs)
-        return self._get_from_db(*args, **kwargs)
+        if from_api:
+            self._get_from_api(*args, shard=shard, **kwargs)
+            return self._get_from_db(*args, **kwargs)
+        else:
+            return super().get(*args, shard=shard, **kwargs)
