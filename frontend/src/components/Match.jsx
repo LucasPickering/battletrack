@@ -25,27 +25,35 @@ class Match extends ApiComponent {
   refresh() {
     this.setState({ matchData: null }); // Wipe out old match data
     // Load match data from the API
-    api.get(`/api/core/matches/${this.matchId}`)
+    api.get(`/api/core/matches/${this.props.match.params.matchId}`)
       .then(response => this.setState({ matchData: response.data }))
       .catch(console.error);
   }
 
   render() {
-    const { matchData } = this.state;
-    if (!matchData) {
+    if (!this.state.matchData) {
       return null;
     }
 
-    const rosters = matchData.rosters.sort(sortKeyFunc(r => r.win_place));
+    const {
+      shard,
+      mode,
+      perspective,
+      map_name,
+      date,
+      duration,
+      rosters,
+    } = this.state.matchData;
+    const sortedRosters = rosters.sort(sortKeyFunc(r => r.win_place)); // Winners first
 
     return (
       <div className="match">
-        <h2>{formatGameMode(matchData.mode)} {formatPerspective(matchData.perspective)}</h2>
-        <h2>{formatMap(matchData.map_name)}</h2>
-        <h3>{formatDate(matchData.date, 'MMMM D, YYYY HH:mm:ss')}</h3>
-        <h3>{formatSeconds(matchData.duration)}</h3>
+        <h2>{formatGameMode(mode)} {formatPerspective(perspective)}</h2>
+        <h2>{formatMap(map_name)}</h2>
+        <h3>{formatDate(date, 'MMMM D, YYYY HH:mm:ss')}</h3>
+        <h3>{formatSeconds(duration)}</h3>
         <Panel className="rosters">
-          {rosters.map((r, index) => <RosterMatchSummary key={r.index} data={r} />)}
+          {sortedRosters.map((r, index) => <RosterMatchSummary key={r.index} shard={shard} data={r} />)}
         </Panel>
       </div>
     );

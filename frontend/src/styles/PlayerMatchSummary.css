@@ -5,8 +5,7 @@
 
 .player-match-summary .panel-body {
   display: grid;
-  grid-template-columns: 60px repeat(3, 1fr);
-  /*grid-template-rows: none;*/
+  grid-template-columns: 10% 25% 30% 35%;
 }
 
 .player-match-summary .panel-body .placement {
@@ -19,6 +18,10 @@
 
 .player-match-summary .panel-body .stats2 {
   grid-column: 3;
+}
+
+.player-match-summary .panel-body .roster {
+  grid-column: 4;
 }
 
 .player-match-summary ul {

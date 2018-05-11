@@ -24,7 +24,6 @@ class ShardSelect extends Component {
       <FormControl
         className="shardSelect"
         componentClass="select"
-        style={{ width: 120 }}
         {...this.props}
       >
         {shards.map(([dbName, humanName]) => (

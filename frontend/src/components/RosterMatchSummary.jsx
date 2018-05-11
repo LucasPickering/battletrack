@@ -9,7 +9,7 @@ import '../styles/RosterMatchSummary.css';
 class RosterMatchSummary extends Component {
   constructor(props, context) {
     super(props, context);
-    this.makePlayerSummary = this.makePlayerSummary.bind();
+    this.makePlayerSummary = this.makePlayerSummary.bind(this);
   }
 
   makePlayerSummary(player) {
