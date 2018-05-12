@@ -1,3 +1,4 @@
+import tinygradient from 'tinygradient';
 import React from 'react';
 import {
   ListGroup,
@@ -32,6 +33,7 @@ class Player extends ApiComponent {
 
   renderMatches() {
     const { playerData } = this.state;
+
     return (
       <ListGroup className="matches">
         {playerData.matches

@@ -32,13 +32,13 @@ class PlayerMatchSummary extends Component {
   }
 
   render() {
-    const { data } = this.props;
+    const { data, color } = this.props;
     const { match_id, match, roster, stats } = data;
     const travelDistance = (stats.walk_distance + stats.ride_distance) / 1000; // Convert to km
     const rosterNames = roster.map(player => player.player_name);
 
     return (
-      <Panel className="player-match-summary">
+      <Panel className="player-match-summary" style={{ backgroundColor: color }}>
         <Panel.Heading>
           <Panel.Title>
             {formatGameMode(match.mode)} {formatPerspective(match.perspective)}
@@ -52,17 +52,25 @@ class PlayerMatchSummary extends Component {
           <h3 className="placement">
             <Link to={matchLink(match_id)}>#{stats.win_place}</Link>
           </h3>
-          <ul className="stats1">
-            <Stat title="Kills" stats={[stats.kills]} />
-          </ul>
-          <ul className="stats2">
-            <Stat title="Survived" stats={[stats.time_survived]} formatter={formatSeconds}/>
-            <Stat
-              title="Traveled"
-              stats={[travelDistance]}
-              formatter={dist => `${dist.toFixed(2)} km`}
-            />
-          </ul>
+          <Stat className="kills" title="Kills" stats={[stats.kills]} />
+          <Stat
+            className="damage"
+            title="Damage"
+            stats={[stats.damage_dealt]}
+            formatter={d => d.toFixed(0)}
+          />
+          <Stat
+            className="survived"
+            title="Survived"
+            stats={[stats.time_survived]}
+            formatter={formatSeconds}
+          />
+          <Stat
+            className="traveled"
+            title="Traveled"
+            stats={[travelDistance]}
+            formatter={dist => `${dist.toFixed(2)} km`}
+          />
           <ul className="roster">
             {rosterNames.map(this.renderPlayerName)}
           </ul>
@@ -75,6 +83,11 @@ class PlayerMatchSummary extends Component {
 PlayerMatchSummary.propTypes = {
   playerName: PropTypes.string.isRequired,
   data: PropTypes.objectOf(PropTypes.any).isRequired,
+  color: PropTypes.string.isRequired,
+};
+
+PlayerMatchSummary.defaultProps = {
+  color: 'white',
 };
 
 export default PlayerMatchSummary;
