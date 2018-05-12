@@ -1,27 +1,43 @@
 .player-match-summary .panel-heading {
   display: grid;
+  background-color: inherit;
   grid-template-columns: repeat(2, 1fr);
 }
 
 .player-match-summary .panel-body {
   display: grid;
   grid-template-columns: 10% 25% 30% 35%;
+  grid-template-rows: repeat(2, 1fr);
 }
 
 .player-match-summary .panel-body .placement {
   grid-column: 1;
+  grid-row: 1 / 3;
 }
 
-.player-match-summary .panel-body .stats1 {
+.player-match-summary .panel-body .kills {
   grid-column: 2;
+  grid-row: 1;
 }
 
-.player-match-summary .panel-body .stats2 {
+.player-match-summary .panel-body .damage {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.player-match-summary .panel-body .survived {
   grid-column: 3;
+  grid-row: 1;
+}
+
+.player-match-summary .panel-body .traveled {
+  grid-column: 3;
+  grid-row: 2;
 }
 
 .player-match-summary .panel-body .roster {
   grid-column: 4;
+  grid-row: 1 / 3;
 }
 
 .player-match-summary ul {

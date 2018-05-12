@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 const Stat = (props) => {
-  const { title, stats, formatter } = props;
+  const { title, stats, formatter, ...rest } = props;
   return (
-    <ul className="stat">
+    <ul className="stat" {...rest}>
       <li><b>{title}</b></li>
       {stats.map((stat, index) => <li key={index}>{formatter(stat)}</li>)}
     </ul>
