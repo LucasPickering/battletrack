@@ -39,7 +39,7 @@ class Match extends ApiComponent {
       shard,
       mode,
       perspective,
-      map_name,
+      map_name: mapName,
       date,
       duration,
       rosters,
@@ -49,14 +49,14 @@ class Match extends ApiComponent {
     return (
       <div className="match">
         <h2>{formatGameMode(mode)} {formatPerspective(perspective)}</h2>
-        <h2>{formatMap(map_name)}</h2>
+        <h2>{formatMap(mapName)}</h2>
         <h3>{formatDate(date, 'MMMM D, YYYY HH:mm:ss')}</h3>
         <h3>{formatSeconds(duration)}</h3>
         <Panel className="rosters">
-          {sortedRosters.map((r, index) => <RosterMatchSummary key={r.index} shard={shard} data={r} />)}
+          {sortedRosters.map((r, index) => <RosterMatchSummary key={index} shard={shard} data={r} />)}
         </Panel>
       </div>
     );
   }
-};
+}
 export default Match;

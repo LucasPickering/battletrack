@@ -1,8 +1,5 @@
-import tinygradient from 'tinygradient';
 import React from 'react';
-import {
-  ListGroup,
-} from 'react-bootstrap';
+import { ListGroup } from 'react-bootstrap';
 
 import api from '../api';
 import {
@@ -58,5 +55,5 @@ class Player extends ApiComponent {
       </div>
     );
   }
-};
+}
 export default Player;

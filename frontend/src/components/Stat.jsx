@@ -1,8 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const Stat = (props) => {
-  const { title, stats, formatter, ...rest } = props;
+const Stat = props => {
+  const {
+    title,
+    stats,
+    formatter,
+    ...rest
+  } = props;
   return (
     <ul className="stat" {...rest}>
       <li><b>{title}</b></li>
@@ -19,6 +24,6 @@ Stat.propTypes = {
 
 Stat.defaultProps = {
   formatter: (e => e),
-}
+};
 
 export default Stat;

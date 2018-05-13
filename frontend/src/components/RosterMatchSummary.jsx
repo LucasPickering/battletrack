@@ -14,10 +14,10 @@ class RosterMatchSummary extends Component {
 
   makePlayerSummary(player) {
     const { shard } = this.props;
-    const { player_id, player_name, stats } = player;
+    const { player_id: id, player_name: name, stats } = player;
     return (
-      <tr key={player_id}>
-        <td><Link to={playerLink(shard, player_name)}>{player_name}</Link></td>
+      <tr key={id}>
+        <td><Link to={playerLink(shard, name)}>{name}</Link></td>
         <td>{stats.kills}</td>
         <td>{formatSeconds(stats.time_survived)}</td>
       </tr>
@@ -26,16 +26,15 @@ class RosterMatchSummary extends Component {
 
   render() {
     const { data } = this.props;
-    const { win_place, players } = data;
+    const { win_place: winPlace, players } = data;
 
     return (
       <Panel className="roster-match-summary">
         <Panel.Body>
-          <h4>#{win_place}</h4>
+          <h4>#{winPlace}</h4>
           <table className="roster-table">
             <thead>
               <tr>
-                <th></th>
                 <th>Kills</th>
                 <th>Time Alive</th>
               </tr>
