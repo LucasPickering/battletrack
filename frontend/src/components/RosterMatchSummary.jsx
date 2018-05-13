@@ -31,10 +31,11 @@ class RosterMatchSummary extends Component {
     return (
       <Panel className="roster-match-summary">
         <Panel.Body>
-          <h4>#{winPlace}</h4>
+          <h4 className="placement">#{winPlace}</h4>
           <table className="roster-table">
             <thead>
               <tr>
+                <th />
                 <th>Kills</th>
                 <th>Time Alive</th>
               </tr>
