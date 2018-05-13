@@ -32,6 +32,6 @@ class ShardSelect extends Component {
       </FormControl>
     );
   }
-};
+}
 
 export default ShardSelect;

@@ -21,4 +21,5 @@ yarn-error.log*
 *.log
 *.sql
 *.p
+!.eslintrc.json
 !package.json

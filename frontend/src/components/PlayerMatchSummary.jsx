@@ -33,7 +33,12 @@ class PlayerMatchSummary extends Component {
 
   render() {
     const { data, color } = this.props;
-    const { match_id, match, roster, stats } = data;
+    const {
+      match_id: matchId,
+      match,
+      roster,
+      stats,
+    } = data;
     const travelDistance = (stats.walk_distance + stats.ride_distance) / 1000; // Convert to km
     const rosterNames = roster.map(player => player.player_name);
 
@@ -43,14 +48,14 @@ class PlayerMatchSummary extends Component {
           <Panel.Title>
             {formatGameMode(match.mode)} {formatPerspective(match.perspective)}
           </Panel.Title>
-          <Panel.Title style={{ textAlign: 'right'}}>
+          <Panel.Title style={{ textAlign: 'right' }}>
             {formatDate(match.date, 'MMMM D, HH:mm')}
           </Panel.Title>
           <Panel.Title>{formatMap(match.map_name)}</Panel.Title>
         </Panel.Heading>
         <Panel.Body>
           <h3 className="placement">
-            <Link to={matchLink(match_id)}>#{stats.win_place}</Link>
+            <Link to={matchLink(matchId)}>#{stats.win_place}</Link>
           </h3>
           <Stat className="kills" title="Kills" stats={[stats.kills]} />
           <Stat
@@ -83,7 +88,7 @@ class PlayerMatchSummary extends Component {
 PlayerMatchSummary.propTypes = {
   playerName: PropTypes.string.isRequired,
   data: PropTypes.objectOf(PropTypes.any).isRequired,
-  color: PropTypes.string.isRequired,
+  color: PropTypes.string,
 };
 
 PlayerMatchSummary.defaultProps = {

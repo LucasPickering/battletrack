@@ -9,8 +9,7 @@ import {
 import { withRouter } from 'react-router-dom';
 
 import { playerLink } from '../util';
-import ShardSelect from './ShardSelect';
-import '../styles/PlayerSearch.css'
+import '../styles/PlayerSearch.css';
 
 class PlayerSearch extends Component {
   constructor(props, context) {
@@ -34,7 +33,7 @@ class PlayerSearch extends Component {
             type="text"
             placeholder="Player name..."
             onChange={e => this.setState({ searchName: e.target.value })}
-            onKeyPress={e =>{
+            onKeyPress={e => {
               if (e.key === 'Enter') {
                 this.search();
               }
@@ -47,10 +46,10 @@ class PlayerSearch extends Component {
       </FormGroup>
     );
   }
-};
-
-PlayerSearch.contextTypes = {
-  router: PropTypes.object,
 }
+
+PlayerSearch.propTypes = {
+  history: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
 
 export default withRouter(PlayerSearch);

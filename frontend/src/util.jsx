@@ -16,7 +16,7 @@ export function formatSeconds(seconds) {
 }
 
 export function formatGameMode(gameMode) {
-  return gameMode.charAt(0).toUpperCase() + gameMode.slice(1);  // Capitalize first letter
+  return gameMode.charAt(0).toUpperCase() + gameMode.slice(1); // Capitalize first letter
 }
 
 export function formatPerspective(perspective) {
@@ -54,5 +54,5 @@ export function sortKeyFunc(keyFunc, invert = false) {
       return invert ? -1 : 1;
     }
     return 0;
-  }
+  };
 }

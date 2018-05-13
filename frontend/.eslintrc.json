@@ -1,0 +1,11 @@
+{
+    "rules": {
+        "arrow-parens": ["error", "as-needed", {
+            "requireForBlockBody": false
+        }],
+        "jsx-a11y/anchor-is-valid": ["error", {
+            "specialLink": ["to"]
+        }]
+    },
+    "extends": "airbnb"
+}

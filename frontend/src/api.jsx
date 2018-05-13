@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 function get(endpoint) {
-    return axios.get(endpoint);
+  return axios.get(endpoint);
 }
 
-const exported = { get: get };
+const exported = { get };
 export default exported;
