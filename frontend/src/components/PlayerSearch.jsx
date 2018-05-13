@@ -49,7 +49,7 @@ class PlayerSearch extends Component {
 }
 
 PlayerSearch.propTypes = {
-  history: PropTypes.arrayOf(PropTypes.string).isRequired,
+  history: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
 export default withRouter(PlayerSearch);
