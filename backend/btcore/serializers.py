@@ -154,7 +154,14 @@ class MatchSerializer(DevDeserializer):
         data = dev_data['data']
 
         attrs = data['attributes']
-        mode, perspective = attrs['gameMode'].split('-')
+
+        # 'squad' = TPP Squad, 'squad-fpp' = FPP Squad
+        mode_temp = attrs['gameMode']
+        if '-' in mode_temp:
+            mode, perspective = mode_temp.split('-')
+        else:
+            mode, perspective = mode_temp, 'tpp'
+
         shard = attrs['shardId']
 
         # Separate 'included' objects by type: we'll need to access all 3 types later
