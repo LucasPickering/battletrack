@@ -1,8 +1,8 @@
-import React from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { Button, Modal, Panel } from 'react-bootstrap';
 import uniqid from 'uniqid';
 
-import api from '../api';
 import {
   formatDate,
   formatSeconds,
@@ -15,26 +15,18 @@ import RosterMatchSummary from './RosterMatchSummary';
 import Replay from './Replay';
 import '../styles/Match.css';
 
-class Match extends ApiComponent {
+class Match extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      match: null,
       showReplay: false,
     };
+    this.renderMatch = this.renderMatch.bind(this);
   }
 
-  refresh() {
-    this.setState({ match: null }); // Wipe out old match data
-    // Load match data from the API
-    api.get(`/api/core/matches/${this.props.match.params.matchId}`)
-      .then(response => this.setState({ match: response.data }))
-      .catch(console.error);
-  }
-
-  renderMatch() {
+  renderMatch(matchData) {
     // Unpack state
-    const { match, showReplay } = this.state;
+    const { showReplay } = this.state;
     const {
       shard,
       mode,
@@ -43,7 +35,7 @@ class Match extends ApiComponent {
       date,
       duration,
       rosters,
-    } = match;
+    } = matchData;
     const sortedRosters = rosters.sort(sortKeyFunc(r => r.win_place)); // Winners first
 
     return (
@@ -54,7 +46,7 @@ class Match extends ApiComponent {
         >
           <Modal.Header closeButton />
           <Modal.Body>
-            <Replay match={match} />
+            <Replay matchData={matchData} />
           </Modal.Body>
         </Modal>
 
@@ -73,8 +65,17 @@ class Match extends ApiComponent {
   }
 
   render() {
-    return this.state.match && this.renderMatch();
+    return (
+      <ApiComponent
+        url={`/api/core/matches/${this.props.match.params.matchId}`}
+        render={this.renderMatch}
+      />
+    );
   }
 }
+
+Match.propTypes = {
+  match: PropTypes.objectOf(PropTypes.any).isRequired,
+};
 
 export default Match;
