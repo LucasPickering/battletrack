@@ -2,9 +2,10 @@ import moment from 'moment';
 import React from 'react';
 import { Table } from 'react-bootstrap';
 
-const MAP_NAMES = {
-  Erangel_Main: 'Erangel',
-  Desert_Main: 'Miramar',
+import Erangel from './images/maps/Erangel.jpg';
+
+const MAP_IMAGES = {
+  Erangel,
 };
 
 export function formatDate(date, format) {
@@ -15,16 +16,8 @@ export function formatSeconds(seconds) {
   return moment.utc(seconds * 1000).format('m[m] ss[s]');
 }
 
-export function formatGameMode(gameMode) {
-  return gameMode.charAt(0).toUpperCase() + gameMode.slice(1); // Capitalize first letter
-}
-
-export function formatPerspective(perspective) {
-  return perspective.toUpperCase();
-}
-
-export function formatMap(mapName) {
-  return MAP_NAMES[mapName];
+export function mapImage(mapName) {
+  return MAP_IMAGES[mapName];
 }
 
 export function makeTable(rows) {

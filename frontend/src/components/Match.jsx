@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Panel } from 'react-bootstrap';
 
@@ -5,13 +6,11 @@ import api from '../api';
 import {
   formatDate,
   formatSeconds,
-  formatGameMode,
-  formatPerspective,
-  formatMap,
   sortKeyFunc,
 } from '../util';
 import ApiComponent from './ApiComponent';
 import RosterMatchSummary from './RosterMatchSummary';
+import Replay from './Replay';
 import '../styles/Match.css';
 
 class Match extends ApiComponent {
@@ -30,11 +29,13 @@ class Match extends ApiComponent {
       .catch(console.error);
   }
 
-  render() {
-    if (!this.state.matchData) {
-      return null;
-    }
+  renderMatch() {
+    // Unpack props
+    const { consts } = this.props;
+    const { game_modes: gameModes, perspectives, maps } = consts;
 
+    // Unpack state
+    const { matchData } = this.state;
     const {
       shard,
       mode,
@@ -43,20 +44,32 @@ class Match extends ApiComponent {
       date,
       duration,
       rosters,
-    } = this.state.matchData;
+    } = matchData;
     const sortedRosters = rosters.sort(sortKeyFunc(r => r.win_place)); // Winners first
 
     return (
       <div className="match">
-        <h2>{formatGameMode(mode)} {formatPerspective(perspective)}</h2>
-        <h2>{formatMap(mapName)}</h2>
+        <h2>{gameModes[mode]} {perspectives[perspective]}</h2>
+        <h2>{maps[mapName]}</h2>
         <h3>{formatDate(date, 'MMMM D, YYYY HH:mm:ss')}</h3>
         <h3>{formatSeconds(duration)}</h3>
         <Panel className="rosters">
-          {sortedRosters.map((r, index) => <RosterMatchSummary key={index} shard={shard} data={r} />)}
+          {sortedRosters.map((r, index) => (
+            <RosterMatchSummary key={index} shard={shard} data={r} />
+          ))}
         </Panel>
+        <Replay consts={consts} match={matchData} />
       </div>
     );
   }
+
+  render() {
+    return this.state.matchData && this.renderMatch();
+  }
 }
+
+Match.propTypes = {
+  consts: PropTypes.objectOf(PropTypes.object).isRequired,
+};
+
 export default Match;
