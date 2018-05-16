@@ -1,12 +1,10 @@
 import itertools
 import logging
 import time
-from collections import OrderedDict
 
 from django.conf import settings
 
-# Django expects a tuple of (DB name, human-readable name) for each of these
-SHARDS = OrderedDict((shard, shard.upper()) for shard in [
+SHARDS = [
     'pc-na',
     'pc-eu',
     'pc-as',
@@ -17,19 +15,23 @@ SHARDS = OrderedDict((shard, shard.upper()) for shard in [
     'pc-ru',
     'pc-sa',
     'pc-sea',
-])
-GAME_MODES = OrderedDict((gm, gm.capitalize()) for gm in ['solo', 'duo', 'squad'])
-PERSPECTIVES = OrderedDict((persp, persp.upper()) for persp in ['fpp', 'tpp'])
-MAPS = OrderedDict([
-    ('Erangel_Main', 'Erangel'),
-    ('Desert_Main', 'Miramar'),
-])
+]
+GAME_MODES = ['solo', 'duo', 'squad']
+PERSPECTIVES = ['fpp', 'tpp']
+MAPS = {
+    'Erangel_Main': 'Erangel',
+    'Desert_Main': 'Miramar',
+}
 
 MATCH_ID_LENGTH = 36
 PLAYER_ID_LENGTH = 40
 ROSTER_ID_LENGTH = 36
 
 logger = logging.getLogger(settings.BT_LOGGER_NAME)
+
+
+def choices(it):
+    return ((e, e) for e in it)
 
 
 def timed(func):

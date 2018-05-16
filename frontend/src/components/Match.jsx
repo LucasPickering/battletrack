@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Panel } from 'react-bootstrap';
 import uniqid from 'uniqid';
@@ -7,6 +6,8 @@ import api from '../api';
 import {
   formatDate,
   formatSeconds,
+  formatGameMode,
+  formatPerspective,
   sortKeyFunc,
 } from '../util';
 import ApiComponent from './ApiComponent';
@@ -31,10 +32,6 @@ class Match extends ApiComponent {
   }
 
   renderMatch() {
-    // Unpack props
-    const { consts } = this.props;
-    const { game_modes: gameModes, perspectives, maps } = consts;
-
     // Unpack state
     const { matchData } = this.state;
     const {
@@ -50,11 +47,11 @@ class Match extends ApiComponent {
 
     return (
       <div className="match">
-        <h2>{gameModes[mode]} {perspectives[perspective]}</h2>
-        <h2>{maps[mapName]}</h2>
+        <h2>{formatGameMode(mode)} {formatPerspective(perspective)}</h2>
+        <h2>{mapName}</h2>
         <h3>{formatDate(date, 'MMMM D, YYYY HH:mm:ss')}</h3>
         <h3>{formatSeconds(duration)}</h3>
-        <Replay consts={consts} match={matchData} />
+        <Replay match={matchData} />
         <Panel className="rosters">
           {sortedRosters.map(r => <RosterMatchSummary key={uniqid()} shard={shard} data={r} />)}
         </Panel>
@@ -66,9 +63,5 @@ class Match extends ApiComponent {
     return this.state.matchData && this.renderMatch();
   }
 }
-
-Match.propTypes = {
-  consts: PropTypes.objectOf(PropTypes.object).isRequired,
-};
 
 export default Match;

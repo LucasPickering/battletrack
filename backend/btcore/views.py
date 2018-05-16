@@ -45,10 +45,5 @@ class PlayerView(views.APIView):
 
 
 @api_view(['GET'])
-def consts(request):
-    return Response({
-        'shards': util.SHARDS,
-        'game_modes': util.GAME_MODES,
-        'perspectives': util.PERSPECTIVES,
-        'maps': util.MAPS,
-    })
+def shards(request):
+    return Response(util.SHARDS)

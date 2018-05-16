@@ -41,10 +41,10 @@ class Match(models.Model):
     objects = MatchQuerySet.as_manager()
 
     id = models.CharField(primary_key=True, max_length=util.MATCH_ID_LENGTH)
-    shard = models.CharField(max_length=20, choices=util.SHARDS.items())
-    mode = models.CharField(max_length=10, choices=util.GAME_MODES.items())
-    perspective = models.CharField(max_length=10, choices=util.PERSPECTIVES.items())
-    map_name = models.CharField(max_length=50, choices=util.MAPS.items())
+    shard = models.CharField(max_length=20, choices=util.choices(util.SHARDS))
+    mode = models.CharField(max_length=10, choices=util.choices(util.GAME_MODES))
+    perspective = models.CharField(max_length=10, choices=util.choices(util.PERSPECTIVES))
+    map_name = models.CharField(max_length=50, choices=util.choices(util.MAPS.values()))
     date = models.DateTimeField()
     duration = models.PositiveSmallIntegerField()
     telemetry_url = models.URLField()
@@ -73,7 +73,7 @@ class PlayerMatch(models.Model):
     match_id = models.CharField(max_length=36)
     player_id = models.CharField(max_length=util.PLAYER_ID_LENGTH)
     player_name = models.CharField(max_length=30)
-    shard = models.CharField(max_length=20, choices=util.SHARDS.items())
+    shard = models.CharField(max_length=20, choices=util.choices(util.SHARDS))
 
     class Meta:
         unique_together = ('player_id', 'match_id')

@@ -1,25 +1,37 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
 import { FormControl } from 'react-bootstrap';
 
-const ShardSelect = props => {
-  const { shards, ...rest } = props;
+import api from '../api';
+import { formatShard } from '../util';
 
-  return (
-    <FormControl
-      className="shardSelect"
-      componentClass="select"
-      {...rest}
-    >
-      {Object.entries(shards).map(([dbName, humanName]) => (
-        <option key={dbName} value={dbName}>{humanName}</option>
-      ))}
-    </FormControl>
-  );
-};
+class ShardSelect extends Component {
+  constructor(...args) {
+    super(...args);
+    this.state = {
+      shards: [],
+    };
+  }
 
-ShardSelect.propTypes = {
-  shards: PropTypes.objectOf(PropTypes.string).isRequired,
-};
+  componentWillMount() {
+    api.get('/api/core/shards')
+      .then(response => this.setState({ shards: response.data }))
+      .catch(console.error);
+  }
+
+  render() {
+    const { shards } = this.state;
+    return (
+      <FormControl
+        className="shardSelect"
+        componentClass="select"
+        {...this.props}
+      >
+        {shards.map(shard => (
+          <option key={shard} value={shard}>{formatShard(shard)}</option>
+        ))}
+      </FormControl>
+    );
+  }
+}
 
 export default ShardSelect;
