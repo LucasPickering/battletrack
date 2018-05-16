@@ -10,9 +10,6 @@ class TelemetryView(views.APIView):
     serializer_class = serializers.TelemetrySerializer
 
     def get(self, request, id):
-        type_filter_str = request.GET.get('events')  # Comma-separated string, or None
-        type_filter = type_filter_str and type_filter_str.split(',')  # Split into list (or None)
-
         telemetry = self.queryset.get(match_id=id)
-        serializer = self.serializer_class(telemetry, context={'event_types': type_filter})
+        serializer = self.serializer_class(telemetry, context=request.GET)
         return Response(serializer.data)
