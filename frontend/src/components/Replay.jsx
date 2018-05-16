@@ -14,21 +14,21 @@ class Replay extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      events: null,
+      telemetry: null,
     };
   }
 
   componentWillMount() {
     // Load events from the API
-    api.get(`/api/telemetry/${this.props.match.id}?events=GameStatePeriodic,PlayerPosition`)
-      .then(response => this.setState({ events: response.data.events }))
+    api.get(`/api/telemetry/${this.props.match.id}?events=PlayerKill`)
+      .then(response => this.setState({ telemetry: response.data }))
       .catch(console.error);
   }
 
   render() {
     const { match: { map_name: mapName } } = this.props;
-    const { events } = this.state;
-    return events && (
+    const { telemetry } = this.state;
+    return telemetry && (
       <svg
         width={MAP_SIZE_PIXELS}
         height={MAP_SIZE_PIXELS}
@@ -36,10 +36,9 @@ class Replay extends Component {
       >
         <image href={mapImage(mapName)} width="100%" height="100%" />
 
-        {events.GameStatePeriodic
-          .filter(e => e.white_zone)
-          .map(e => <Zone key={uniqid()} circle={e.white_zone} stroke="#ffffff" />)}
-        {events.PlayerPosition
+        {telemetry.zones
+          .map(zone => <Zone key={uniqid()} circle={zone} stroke="#ffffff" />)}
+        {telemetry.events.PlayerKill
           .map(e => <Circle key={uniqid()} pos={e.player.pos} fill="red" />)}
       </svg>
     );
