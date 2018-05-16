@@ -9,7 +9,7 @@ Circle.propTypes = {
 };
 
 Circle.defaultProps = {
-  r: 10,
+  r: 5,
 };
 
 export default Circle;

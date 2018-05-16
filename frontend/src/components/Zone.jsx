@@ -13,7 +13,7 @@ Zone.propTypes = {
 
 Zone.defaultProps = {
   fill: 'none',
-  strokeWidth: 1,
+  strokeWidth: 10,
 };
 
 export default Zone;
