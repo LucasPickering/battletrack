@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Panel } from 'react-bootstrap';
+import uniqid from 'uniqid';
 
 import api from '../api';
 import {
@@ -53,12 +54,10 @@ class Match extends ApiComponent {
         <h2>{maps[mapName]}</h2>
         <h3>{formatDate(date, 'MMMM D, YYYY HH:mm:ss')}</h3>
         <h3>{formatSeconds(duration)}</h3>
-        <Panel className="rosters">
-          {sortedRosters.map((r, index) => (
-            <RosterMatchSummary key={index} shard={shard} data={r} />
-          ))}
-        </Panel>
         <Replay consts={consts} match={matchData} />
+        <Panel className="rosters">
+          {sortedRosters.map(r => <RosterMatchSummary key={uniqid()} shard={shard} data={r} />)}
+        </Panel>
       </div>
     );
   }

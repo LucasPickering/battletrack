@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import uniqid from 'uniqid';
 
 const Stat = props => {
   const {
@@ -11,7 +12,7 @@ const Stat = props => {
   return (
     <ul className="stat" {...rest}>
       <li><b>{title}</b></li>
-      {stats.map((stat, index) => <li key={index}>{formatter(stat)}</li>)}
+      {stats.map(stat => <li key={uniqid()}>{formatter(stat)}</li>)}
     </ul>
   );
 };

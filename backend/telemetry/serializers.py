@@ -82,7 +82,7 @@ class EventsSerializer(serializers.ListField):
 
     def to_representation(self, telemetry):
         # Check for type filtering. None/empty means no filtering.
-        types = self.context.get('types', None)
+        types = self.context.get('event_types', None)
 
         # Build a dict of EventModelTuple:QuerySet, where the QuerySet contains all relevant
         # objects of that event model. The key tuple contains (model, related_name), and these
@@ -109,8 +109,11 @@ class EventsSerializer(serializers.ListField):
         serialized_events = chain.from_iterable(mt.model.serializer(mt_events, many=True).data
                                                 for mt, mt_events in events.items())
 
-        # Sort the events by time and return them. Sort takes <1s for ~20k events (typical match)
-        return sorted(serialized_events, key=lambda e: e['time'])
+        # Separate serialized events by type (NOT by model - there can be multiple types per model)
+        events_by_type = defaultdict(list)
+        for event in serialized_events:
+            events_by_type[event['type']].append(event)
+        return events_by_type
 
 
 class TelemetrySerializer(DevDeserializer):
