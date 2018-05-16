@@ -9,7 +9,8 @@ from btcore.models import Match
 from btcore.serializers import DevDeserializer
 
 from . import models
-from .fields import Position, Circle, EventPlayer, Item, Vehicle, EventSerializerField
+from .fields import Position, Circle, EventPlayer, Item, Vehicle, EventSerializerField, \
+    EventListSerializerField
 
 
 # A prefix at the beginning of each event type in the API data, this will be stripped
@@ -81,8 +82,8 @@ class EventsSerializer(serializers.ListField):
         return {'events': data}  # Wrap the list in a dict to make DRF happy
 
     def to_representation(self, telemetry):
-        # Check for type filtering. None/empty means no filtering.
-        types = self.context.get('event_types', None)
+        # Check for type filtering. None means no filtering, empty string means filter all.
+        types = self.context['event_types']
 
         # Build a dict of EventModelTuple:QuerySet, where the QuerySet contains all relevant
         # objects of that event model. The key tuple contains (model, related_name), and these
@@ -355,6 +356,7 @@ class VehicleDestroyEventSerializer(AbstractVehicleEventSerializer):
 
 class CarePackageEventSerializer(AbstractEventSerializer):
     pos = EventSerializerField()
+    items = EventListSerializerField()
 
     class Meta:
         model = models.CarePackageEvent
@@ -366,5 +368,6 @@ class CarePackageEventSerializer(AbstractEventSerializer):
 
         rv.update({
             'pos': Position.convert_dev_data(dev_data['itemPackage']['location']),
+            'items': [Item.convert_dev_data(i) for i in dev_data['itemPackage']['items']],
         })
         return rv
