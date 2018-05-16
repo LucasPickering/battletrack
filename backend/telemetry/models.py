@@ -46,6 +46,10 @@ def get_event_model(event_type):
     return _EVENT_MODELS[event_type]
 
 
+def get_all_event_types():
+    return set(_EVENT_MODELS.keys())
+
+
 def get_all_event_models():
     """
     @brief      Gets a set of all event model tuples. Each tuple is (model, related_name), and these
