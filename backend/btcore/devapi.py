@@ -15,7 +15,7 @@ class DevAPI:
     def __init__(self, key):
         self._headers = {
             'Accept': 'application/vnd.api+json',
-            'Accept-Encoding': 'gzip',
+            # 'Accept-Encoding': 'gzip',
             'Authorization': key,
         }
 
@@ -40,15 +40,9 @@ class DevAPI:
     def get_match(self, id):
         return self.get_endpoint('pc-na', f'matches/{id}')  # Matches can be fetched from any shard
 
-    def get_player_by_id(self, shard, id):
-        return self.get_endpoint(shard, f'players/{id}')['data']
-
     def get_players_by_name(self, shard, *names):
         names_str = ','.join(names)
         return self.get_endpoint(shard, f'players?filter[playerNames]={names_str}')['data']
-
-    def get_player_by_name(self, shard, name):
-        return self.get_players_by_name(shard, name)[0]
 
     def get_player(self, shard, id=None, name=None):
         """
@@ -63,7 +57,7 @@ class DevAPI:
         @return     The player with the given ID/name
         """
         if id:
-            return self.get_player_by_id(shard, id)
+            return self.get_endpoint(shard, f'players/{id}')['data']
         elif name:
-            return self.get_player_by_name(shard, name)
+            return self.get_players_by_name(shard, name)[0]
         raise ValueError("No player ID or name specified")
