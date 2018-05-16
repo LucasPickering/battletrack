@@ -43,7 +43,7 @@ def timed(func):
         args_strs = (str(arg) for arg in args)
         kwargs_strs = (f'{k}={v}' for k, v in kwargs.items())
         arg_str = ','.join(itertools.chain(args_strs, kwargs_strs))
-        logger.debug(f"{func.__name__}({arg_str}) took {elapsed:.3f}s")
+        logger.debug(f"{func.__name__}({arg_str}) took {elapsed:.4f}s")
         return rv
 
     # Only run the timing wrapper if debug mode is enabled
@@ -59,4 +59,4 @@ class Timed:
 
     def __exit__(self, exc_type, exc_value, traceback):
         elapsed = time.time() - self._start
-        logger.debug(self._msg.format(time=f"{elapsed:.3f}s"))
+        logger.debug(self._msg.format(time=f"{elapsed:.4f}s"))
