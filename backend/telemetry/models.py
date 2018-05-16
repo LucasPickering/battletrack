@@ -4,7 +4,8 @@ from django.db import models
 
 from btcore.models import Match
 
-from .fields import CircleField, PositionField, EventPlayerField, ItemField, VehicleField
+from .fields import PositionField, CircleField, EventPlayerField, ItemField, VehicleField, \
+    CircleListField, ItemListField
 from .query import TelemetryQuerySet
 
 
@@ -163,4 +164,4 @@ class VehicleDestroyEvent(AbstractVehicleEvent):
 @event_model('CarePackageSpawn', 'CarePackageLand')
 class CarePackageEvent(AbstractEvent):
     pos = PositionField()
-    # TODO: Add items
+    items = ItemListField()

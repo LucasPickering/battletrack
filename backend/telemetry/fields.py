@@ -1,11 +1,7 @@
+import json
 from django.core.exceptions import ValidationError
 from django.db import models
 from rest_framework import serializers
-
-from btcore.util import PLAYER_ID_LENGTH
-
-
-_FLOAT_MAX_LENGTH = 20  # Max character length of a float number
 
 
 def convert_distance(dist):
@@ -20,16 +16,10 @@ def convert_distance(dist):
 
 
 class Position:
-    MAX_LENGTH = _FLOAT_MAX_LENGTH * 3 + 2
-
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
         self.z = z
-
-    @classmethod
-    def from_string(cls, s):
-        return cls(*(float(f) for f in s.split(',')))
 
     @classmethod
     def from_dict(cls, d):
@@ -42,9 +32,6 @@ class Position:
     def to_dict(self):
         return {'x': self.x, 'y': self.y, 'z': self.z}
 
-    def to_db_string(self):
-        return ','.join(str(e) for e in [self.x, self.y, self.z])
-
     def __str__(self):
         return f"({self.x}, {self.y}, {self.z})"
 
@@ -54,16 +41,9 @@ class Position:
 
 
 class Circle:
-    MAX_LENGTH = _FLOAT_MAX_LENGTH + Position.MAX_LENGTH + 1
-
     def __init__(self, radius, pos):
         self.radius = radius
         self.pos = pos
-
-    @classmethod
-    def from_string(cls, s):
-        radius, pos = s.split(',', 1)  # Split on the first comma
-        return cls(float(radius), Position.from_string(pos))
 
     @classmethod
     def from_dict(cls, d):
@@ -74,9 +54,6 @@ class Circle:
         if radius > 0:
             return {'radius': convert_distance(radius), 'pos': Position.convert_dev_data(pos)}
         return None
-
-    def to_db_string(self):
-        return ','.join([str(self.radius), self.pos.to_db_string()])
 
     def to_dict(self):
         return {'radius': self.radius, 'pos': self.pos.to_dict()}
@@ -89,18 +66,11 @@ class Circle:
 
 
 class EventPlayer:
-    MAX_LENGTH = PLAYER_ID_LENGTH + 20 + _FLOAT_MAX_LENGTH + Position.MAX_LENGTH + 3
-
     def __init__(self, id, name, health, pos):
         self.id = id
         self.name = name
         self.health = health
         self.pos = pos
-
-    @classmethod
-    def from_string(cls, s):
-        id, name, health, pos = s.split(',', 3)  # Max 3 splits
-        return cls(id, name, float(health), Position.from_string(pos))
 
     @classmethod
     def from_dict(cls, d):
@@ -118,9 +88,6 @@ class EventPlayer:
             }
         return None
 
-    def to_db_string(self):
-        return ','.join([self.id, self.name, str(self.health), self.pos.to_db_string()])
-
     def to_dict(self):
         return {'id': self.id, 'name': self.name, 'health': self.health, 'pos': self.pos.to_dict()}
 
@@ -129,18 +96,11 @@ class EventPlayer:
 
 
 class Item:
-    MAX_LENGTH = 100
-
     def __init__(self, name, stack_count, category, subcategory):
         self.name = name
         self.stack_count = stack_count
         self.category = category
         self.subcategory = subcategory
-
-    @classmethod
-    def from_string(cls, s):
-        name, stack_count, category, subcategory = s.split(',')
-        return cls(name, int(stack_count), category, subcategory)
 
     @classmethod
     def from_dict(cls, d):
@@ -158,9 +118,6 @@ class Item:
             }
         return None
 
-    def to_db_string(self):
-        return ','.join([self.name, str(self.stack_count), self.category, self.subcategory])
-
     def to_dict(self):
         return {'name': self.name, 'stack_count': self.stack_count,
                 'category': self.category, 'subcategory': self.subcategory}
@@ -170,18 +127,11 @@ class Item:
 
 
 class Vehicle:
-    MAX_LENGTH = 100
-
     def __init__(self, type, name, health, fuel):
         self.type = type
         self.name = name
         self.health = health
         self.fuel = fuel
-
-    @classmethod
-    def from_string(cls, s):
-        type, name, health, fuel = s.split(',')
-        return cls(type, name, float(health), float(fuel))
 
     @classmethod
     def from_dict(cls, d):
@@ -199,9 +149,6 @@ class Vehicle:
             }
         return None
 
-    def to_db_string(self):
-        return ','.join([self.type, self.name, str(self.health), str(self.fuel)])
-
     def to_dict(self):
         return {'type': self.type, 'name': self.name, 'health': self.health, 'fuel': self.fuel}
 
@@ -209,7 +156,7 @@ class Vehicle:
         return f"{self.name} (health={self.health},fuel={self.fuel})"
 
 
-class EventField(models.CharField):
+class EventField(models.TextField):
     def __init__(self, data_cls, *args, **kwargs):
         self._data_cls = data_cls
         super().__init__(*args, **kwargs)
@@ -217,50 +164,77 @@ class EventField(models.CharField):
     def from_db_value(self, value, expression, connection):
         if not value:
             return None
-        return self._data_cls.from_string(value)
+        return self._data_cls.from_dict(json.loads(value))  # Convert from JSON dict
 
-    def to_python(self, value):
-        if not value or isinstance(value, self._data_cls):
+    def get_prep_dict(self, value):
+        if isinstance(value, self._data_cls):
+            return value.to_dict()
+        elif isinstance(value, dict):
             return value
-        return self._data_cls.from_string(value)
+        else:
+            raise ValidationError(f"Unknown type {type(value)} for: {value}")
 
     def get_prep_value(self, value):
         if value is None:
             return ''
-        if isinstance(value, self._data_cls):
-            data = value
-        elif isinstance(value, dict):
-            data = self._data_cls.from_dict(value)
-        else:
-            raise ValidationError(f"Unknown type {type(value)} for: {value}")
-        return data.to_db_string()
+        return json.dumps(self.get_prep_dict(value))  # Convert to JSON dict
+
+
+class EventListField(EventField):
+    def from_db_value(self, value, expression, connection):
+        if not value:
+            return None
+        parsed = json.loads(value)  # Parse JSON list
+        return [self._data_cls.from_dict(d) if d else None for d in parsed]
+
+    def get_prep_value(self, value):
+        if value is None:
+            return ''
+        if isinstance(value, list):
+            return json.dumps([self.get_prep_dict(e) for e in value])  # Convert to JSON list
+        raise ValidationError(f"Unknown type {type(value)} for: {value}")
 
 
 class PositionField(EventField):
     def __init__(self, *args, **kwargs):
-        super().__init__(Position, max_length=Position.MAX_LENGTH)
+        super().__init__(Position, *args, **kwargs)
 
 
 class CircleField(EventField):
     def __init__(self, *args, **kwargs):
-        super().__init__(Circle, max_length=Circle.MAX_LENGTH)
+        super().__init__(Circle, *args, **kwargs)
 
 
 class EventPlayerField(EventField):
     def __init__(self, *args, **kwargs):
-        super().__init__(EventPlayer, max_length=EventPlayer.MAX_LENGTH)
+        super().__init__(EventPlayer, *args, **kwargs)
 
 
 class ItemField(EventField):
     def __init__(self, *args, **kwargs):
-        super().__init__(Item, max_length=Item.MAX_LENGTH)
+        super().__init__(Item, *args, **kwargs)
 
 
 class VehicleField(EventField):
     def __init__(self, *args, **kwargs):
-        super().__init__(Vehicle, max_length=Vehicle.MAX_LENGTH)
+        super().__init__(Vehicle, *args, **kwargs)
+
+
+class CircleListField(EventListField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(Circle, *args, **kwargs)
+
+
+class ItemListField(EventListField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(Item, *args, **kwargs)
 
 
 class EventSerializerField(serializers.Field):
     def to_representation(self, obj):
         return obj.to_dict()  # Object class -> dict
+
+
+class EventListSerializerField(serializers.ListField):
+    def to_representation(self, obj):
+        return [e.to_dict() for e in obj]  # List of object class -> list of dicts
