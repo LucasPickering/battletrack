@@ -9,10 +9,10 @@ import '../styles/RosterMatchSummary.css';
 class RosterMatchSummary extends Component {
   constructor(props, context) {
     super(props, context);
-    this.makePlayerSummary = this.makePlayerSummary.bind(this);
+    this.renderPlayerSummary = this.renderPlayerSummary.bind(this);
   }
 
-  makePlayerSummary(player) {
+  renderPlayerSummary(player) {
     const { shard } = this.props;
     const { player_id: id, player_name: name, stats } = player;
     return (
@@ -41,7 +41,7 @@ class RosterMatchSummary extends Component {
               </tr>
             </thead>
             <tbody>
-              {players.map(this.makePlayerSummary)}
+              {players.map(this.renderPlayerSummary)}
             </tbody>
           </table>
         </Panel.Body>

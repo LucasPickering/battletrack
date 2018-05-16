@@ -6,9 +6,6 @@ import { Link } from 'react-router-dom';
 import {
   formatDate,
   formatSeconds,
-  formatGameMode,
-  formatPerspective,
-  formatMap,
   matchLink,
   playerLink,
 } from '../util';
@@ -32,7 +29,8 @@ class PlayerMatchSummary extends Component {
   }
 
   render() {
-    const { data, color } = this.props;
+    const { consts, data, color } = this.props;
+    const { game_modes: gameModes, perspectives, maps } = consts;
     const {
       match_id: matchId,
       match,
@@ -46,12 +44,12 @@ class PlayerMatchSummary extends Component {
       <Panel className="player-match-summary" style={{ backgroundColor: color }}>
         <Panel.Heading>
           <Panel.Title>
-            {formatGameMode(match.mode)} {formatPerspective(match.perspective)}
+            {gameModes[match.mode]} {perspectives[match.perspective]}
           </Panel.Title>
           <Panel.Title style={{ textAlign: 'right' }}>
             {formatDate(match.date, 'MMMM D, HH:mm')}
           </Panel.Title>
-          <Panel.Title>{formatMap(match.map_name)}</Panel.Title>
+          <Panel.Title>{maps[match.map_name]}</Panel.Title>
         </Panel.Heading>
         <Panel.Body>
           <h3 className="placement">
@@ -86,6 +84,7 @@ class PlayerMatchSummary extends Component {
 }
 
 PlayerMatchSummary.propTypes = {
+  consts: PropTypes.objectOf(PropTypes.object).isRequired,
   playerName: PropTypes.string.isRequired,
   data: PropTypes.objectOf(PropTypes.any).isRequired,
   color: PropTypes.string,

@@ -5,6 +5,7 @@
   "proxy": "http://localhost:4000",
   "dependencies": {
     "axios": "^0.18.0",
+    "fast-json-stable-stringify": "^2.0.0",
     "json-schema-traverse": "^0.4.0",
     "moment": "^2.22.1",
     "moment-timezone": "^0.5.14",
