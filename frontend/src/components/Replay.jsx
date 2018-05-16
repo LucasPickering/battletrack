@@ -26,7 +26,7 @@ class Replay extends Component {
   }
 
   render() {
-    const { consts, match } = this.props;
+    const { match: { map_name: mapName } } = this.props;
     const { events } = this.state;
     return events && (
       <svg
@@ -34,7 +34,7 @@ class Replay extends Component {
         height={MAP_SIZE_PIXELS}
         viewBox={`0 0 ${MAP_SIZE_METERS} ${MAP_SIZE_METERS}`}
       >
-        <image href={mapImage(consts.maps[match.map_name])} width="100%" height="100%" />
+        <image href={mapImage(mapName)} width="100%" height="100%" />
 
         {events.GameStatePeriodic
           .filter(e => e.white_zone)
@@ -47,7 +47,6 @@ class Replay extends Component {
 }
 
 Replay.propTypes = {
-  consts: PropTypes.objectOf(PropTypes.object).isRequired,
   match: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 

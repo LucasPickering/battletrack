@@ -3,7 +3,7 @@ from collections import defaultdict
 from django.db import transaction
 from rest_framework import serializers
 
-from . import models
+from . import models, util
 
 
 class DevDeserializerMeta(serializers.SerializerMetaclass):
@@ -163,6 +163,7 @@ class MatchSerializer(DevDeserializer):
             mode, perspective = mode_temp, 'tpp'
 
         shard = attrs['shardId']
+        map_name = util.MAPS[attrs['mapName']]
 
         # Separate 'included' objects by type: we'll need to access all 3 types later
         incl = defaultdict(list)
@@ -203,7 +204,7 @@ class MatchSerializer(DevDeserializer):
             'shard': shard,
             'mode': mode,
             'perspective': perspective,
-            'map_name': attrs.get('mapName', ''),  # This isn't always in the data for some reason
+            'map_name': map_name,
             'date': attrs['createdAt'],
             'duration': attrs['duration'],
             'telemetry_url': tel_asset['attributes']['URL'],

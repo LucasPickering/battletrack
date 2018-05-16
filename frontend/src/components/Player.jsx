@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { ListGroup } from 'react-bootstrap';
 
@@ -40,7 +39,6 @@ class Player extends ApiComponent {
           .map(m => (
             <PlayerMatchSummary
               key={m.match_id}
-              consts={this.props.consts}
               playerName={playerData.name}
               data={m}
             />
@@ -50,14 +48,12 @@ class Player extends ApiComponent {
   }
 
   render() {
-    const { shards } = this.props.consts;
     const { shard, playerName } = this.props.match.params;
 
     return (
       <div className="player">
         <h2>{playerName}</h2>
         <ShardSelect
-          shards={shards}
           value={shard}
           onChange={e => this.props.history.push(playerLink(e.target.value, playerName))}
         />
@@ -66,9 +62,5 @@ class Player extends ApiComponent {
     );
   }
 }
-
-Player.propTypes = {
-  consts: PropTypes.objectOf(PropTypes.object).isRequired,
-};
 
 export default Player;

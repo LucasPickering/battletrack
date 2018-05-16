@@ -16,6 +16,18 @@ export function formatSeconds(seconds) {
   return moment.utc(seconds * 1000).format('m[m] ss[s]');
 }
 
+export function formatGameMode(gameMode) {
+  return gameMode.charAt(0).toUpperCase() + gameMode.slice(1); // Capitalize first letter
+}
+
+export function formatPerspective(perspective) {
+  return perspective.toUpperCase();
+}
+
+export function formatShard(shard) {
+  return shard.toUpperCase();
+}
+
 export function mapImage(mapName) {
   return MAP_IMAGES[mapName];
 }
