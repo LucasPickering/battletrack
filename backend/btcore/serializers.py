@@ -228,11 +228,9 @@ class MatchSerializer(DevDeserializer):
         match_id = match.id
 
         # Create each RosterMatch
-        models.RosterMatch.objects.bulk_create(
-            models.RosterMatch(match=match, **roster) for roster in rosters
+        roster_matches = match.rosters.bulk_create(
+            models.RosterMatch(match=match, **roster) for roster in rosters,
         )
-        # Re-fetch RosterMatches to get copies with the IDs
-        roster_matches = models.RosterMatch.objects.filter(match=match)
 
         # Build a dict of player ID to RosterMatch. This relies on the fact that the ordering of
         # player_lists corresponds to that of roster_matches (which will always be the case).
@@ -242,7 +240,7 @@ class MatchSerializer(DevDeserializer):
                 player_to_roster[player['player_id']] = roster_match
 
         # Figure out which PlayerMatches are already in the DB and need their roster/stats linked
-        existing_pms = models.PlayerMatch.objects.filter(match_id=match_id, roster=None)
+        existing_pms = list(models.PlayerMatch.objects.filter(match_id=match_id, roster=None))
 
         # Set the roster on each pre-existing PlayerMatch
         for player in existing_pms:
@@ -251,18 +249,19 @@ class MatchSerializer(DevDeserializer):
 
         # Create all the missing PlayerMatches
         existing_set = set(pm.player_id for pm in existing_pms)  # Existing player IDs
-        models.PlayerMatch.objects.bulk_create(
+        created_pms = models.PlayerMatch.objects.bulk_create(
             models.PlayerMatch(roster=player_to_roster[player['player_id']], match_id=match_id,
                                **player)
             for players in player_lists for player in players  # Loop through nested list
             if player['player_id'] not in existing_set
         )
+        all_pms = existing_pms + created_pms
 
         # Create all Stats objects. We have to re-query for all the PlayerMatch objects in order
         # to get copies with the primary keys
         models.PlayerMatchStats.objects.bulk_create(
             models.PlayerMatchStats(player_match=pm, **player_to_stats[pm.player_id])
-            for pm in models.PlayerMatch.objects.filter(match_id=match_id)
+            for pm in all_pms
         )
 
         return match

@@ -94,6 +94,8 @@ DEBUG_TOOLBAR_PANELS = [
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
+    # Warning: Certain object creation procedures rely on the fact that Postgres returns
+    # auto-generated primary keys from bulk_create. Keep that in mind if you change the backend!
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'battletrack',
