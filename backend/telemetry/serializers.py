@@ -53,7 +53,7 @@ class EventsSerializer(serializers.ListField):
         # Parse each event
         events = []
 
-        # Track the time of the actual match start, marked by the LogMatchStart event. All events
+        # Track the time of the actual match start, marked by the MatchStart event. All events
         # before match start will be ignored.
         start_time = None
 
@@ -84,13 +84,12 @@ class EventsSerializer(serializers.ListField):
     def to_representation(self, telemetry):
         # Check for type filtering. None means no filtering, empty string means filter all.
         types_str = self.context.get('events')
-        types = types_str.split(',') if types_str is not None else None
 
         # Build a dict of EventModelTuple:QuerySet, where the QuerySet contains all relevant
         # objects of that event model. The key tuple contains (model, related_name), and these
         # are accessible by those names. The dict will be used to build one serializer for each
         # entry.
-        if types is None:
+        if types_str is None:
             # No filtering, just get every model's events
             events = {mt: getattr(telemetry, mt.related_name).all()
                       for mt in models.get_all_event_models()}
@@ -98,6 +97,7 @@ class EventsSerializer(serializers.ListField):
             # Decide which models we care about, and which types we want for each model.
             # We may want to get only one type of many for a model, so this will allow us to filter
             # on the type(s) we care about.
+            types = filter(None, types_str.split(','))  # Filter out empty string
             models_to_types = defaultdict(set)
             for typ in types:
                 models_to_types[models.get_event_model(typ)].add(typ)
