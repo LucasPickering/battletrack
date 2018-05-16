@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import uniqid from 'uniqid';
 
-import api from '../api';
 import { mapImage } from '../util';
+import ApiComponent from './ApiComponent';
 import Circle from './Circle';
 import Zone from './Zone';
 
@@ -13,22 +13,12 @@ const MAP_SIZE_PIXELS = 800;
 class Replay extends Component {
   constructor(props, context) {
     super(props, context);
-    this.state = {
-      telemetry: null,
-    };
+    this.renderSvg = this.renderSvg.bind(this);
   }
 
-  componentWillMount() {
-    // Load events from the API
-    api.get(`/api/telemetry/${this.props.match.id}?events=PlayerKill`)
-      .then(response => this.setState({ telemetry: response.data }))
-      .catch(console.error);
-  }
-
-  render() {
-    const { match: { map_name: mapName } } = this.props;
-    const { telemetry } = this.state;
-    return telemetry && (
+  renderSvg(telemetry) {
+    const { matchData: { map_name: mapName } } = this.props;
+    return (
       <svg
         width={MAP_SIZE_PIXELS}
         height={MAP_SIZE_PIXELS}
@@ -43,10 +33,19 @@ class Replay extends Component {
       </svg>
     );
   }
+
+  render() {
+    return (
+      <ApiComponent
+        url={`/api/telemetry/${this.props.matchData.id}?events=PlayerKill`}
+        render={this.renderSvg}
+      />
+    );
+  }
 }
 
 Replay.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any).isRequired,
+  matchData: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
 export default Replay;
