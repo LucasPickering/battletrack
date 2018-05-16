@@ -65,6 +65,7 @@ class Telemetry(models.Model):
     objects = TelemetryQuerySet.as_manager()
 
     match = models.OneToOneField(Match, on_delete=models.CASCADE, primary_key=True)
+    zones = CircleListField()
 
 
 # ABSTRACT EVENT MODELS

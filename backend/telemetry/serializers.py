@@ -83,7 +83,8 @@ class EventsSerializer(serializers.ListField):
 
     def to_representation(self, telemetry):
         # Check for type filtering. None means no filtering, empty string means filter all.
-        types = self.context['event_types']
+        types_str = self.context.get('events')
+        types = types_str.split(',') if types_str is not None else None
 
         # Build a dict of EventModelTuple:QuerySet, where the QuerySet contains all relevant
         # objects of that event model. The key tuple contains (model, related_name), and these
@@ -120,10 +121,13 @@ class EventsSerializer(serializers.ListField):
 class TelemetrySerializer(DevDeserializer):
     match = serializers.PrimaryKeyRelatedField(queryset=Match.objects)
     events = EventsSerializer(source='*', read_only=False)
+    # "Read-only" fields because they aren't included in validated data - they are generated during
+    # creation time. They never appear in the data pre-deserialization.
+    zones = EventListSerializerField(read_only=True)
 
     class Meta:
         model = models.Telemetry
-        fields = ('match', 'events')
+        fields = ('match', 'zones', 'events')
 
     @classmethod
     def convert_dev_data(cls, dev_data, **kwargs):
@@ -132,17 +136,34 @@ class TelemetrySerializer(DevDeserializer):
             'events': EventsSerializer.convert_dev_data(dev_data['telemetry'], **kwargs),
         }
 
+    @staticmethod
+    def _parse_zones(zone_events):
+        last_white = None
+        rv = []
+
+        # Every time the white zone changes, store the new value
+        for event in zone_events:
+            white = event['white_zone']
+            if white and white != last_white:
+                rv.append(white)
+                last_white = white
+        return rv
+
     @transaction.atomic
     def create(self, validated_data):
         match = validated_data['match']  # Match object
         events = validated_data['events']  # List of event dicts
 
-        telemetry = models.Telemetry.objects.create(match=match)
-
         # Group events by type
         events_by_type = defaultdict(list)
         for event in events:
             events_by_type[event['type']].append(event)
+
+        # Parse GameStatePeriodic events to find individual white circles
+        zones = self._parse_zones(events_by_type['GameStatePeriodic'])
+
+        # Create models
+        telemetry = models.Telemetry.objects.create(match=match, zones=zones)
 
         # Regroup events by model (multiple types can map to one model, so we want to reduce that)
         events_by_model = defaultdict(list)
