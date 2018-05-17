@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Button, Modal, Panel } from 'react-bootstrap';
+import { Button, Panel } from 'react-bootstrap';
 import uniqid from 'uniqid';
 
 import {
@@ -19,7 +19,7 @@ class Match extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      showReplay: false,
+      showReplay: true, // TODO: change this to false when done developing
     };
     this.renderMatch = this.renderMatch.bind(this);
   }
@@ -40,22 +40,15 @@ class Match extends Component {
 
     return (
       <div className="match">
-        <Modal
-          show={showReplay}
-          onHide={() => this.setState({ showReplay: false })}
-        >
-          <Modal.Header closeButton />
-          <Modal.Body>
-            <Replay matchData={matchData} />
-          </Modal.Body>
-        </Modal>
-
         <h2>{formatGameMode(mode)} {formatPerspective(perspective)}</h2>
         <h2>{mapName}</h2>
         <h3>{formatDate(date, 'MMMM D, YYYY HH:mm:ss')}</h3>
         <h3>{formatSeconds(duration)}</h3>
 
-        <Button onClick={() => this.setState({ showReplay: true })}>Match Replay</Button>
+        <div className="replay-container">
+          <Button onClick={() => this.setState({ showReplay: !showReplay })}>Match Replay</Button>
+          {showReplay && <Replay matchData={matchData} />}
+        </div>
 
         <Panel className="rosters">
           {sortedRosters.map(r => <RosterMatchSummary key={uniqid()} shard={shard} data={r} />)}
