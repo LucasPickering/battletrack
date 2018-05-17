@@ -1,0 +1,11 @@
+.replay {
+    float: right;
+    width: auto;
+    padding: 20px 15px 15px 15px;
+    margin-right: 100px;
+}
+
+.replay .rc-slider {
+    width: 800px;
+    height: 40px;
+}

@@ -12,8 +12,8 @@ export function formatDate(date, format) {
   return moment(date).local().format(format);
 }
 
-export function formatSeconds(seconds) {
-  return moment.utc(seconds * 1000).format('m[m] ss[s]');
+export function formatSeconds(seconds, format = 'm[m] ss[s]') {
+  return moment.utc(seconds * 1000).format(format);
 }
 
 export function formatGameMode(gameMode) {
@@ -60,4 +60,12 @@ export function sortKeyFunc(keyFunc, invert = false) {
     }
     return 0;
   };
+}
+
+export function range(start, end, step = 1) {
+  const rv = new Array(Math.ceil((end - start) / step)); // Pre-allocate necessary space
+  for (let i = start; i < end; i += step) {
+    rv.push(i);
+  }
+  return rv;
 }
