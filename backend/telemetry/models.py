@@ -4,8 +4,8 @@ from django.db import models
 
 from btcore.models import Match
 
-from .fields import PositionField, CircleField, EventPlayerField, ItemField, VehicleField, \
-    CircleListField, ItemListField
+from .fields import Position3Field, CircleField, RayField, EventPlayerField, ItemField, \
+    VehicleField, CircleListField, ItemListField
 from .query import TelemetryQuerySet
 
 
@@ -65,6 +65,7 @@ class Telemetry(models.Model):
     objects = TelemetryQuerySet.as_manager()
 
     match = models.OneToOneField(Match, on_delete=models.CASCADE, primary_key=True)
+    plane = RayField()
     zones = CircleListField()
 
 
@@ -164,5 +165,5 @@ class VehicleDestroyEvent(AbstractVehicleEvent):
 
 @event_model('CarePackageSpawn', 'CarePackageLand')
 class CarePackageEvent(AbstractEvent):
-    pos = PositionField()
+    pos = Position3Field()
     items = ItemListField()

@@ -15,7 +15,31 @@ def convert_distance(dist):
     return dist / 101.7782696  # Calculated from circle widths - probably needs tweaking
 
 
-class Position:
+class Position2:
+    def __init__(self, x, y, z=None):  # Allow z for compatibility
+        self.x = x
+        self.y = y
+
+    @classmethod
+    def from_dict(cls, d):
+        return cls(**d)
+
+    @staticmethod
+    def convert_dev_data(dev_data):
+        return {k: convert_distance(v) for k, v in dev_data.items()}
+
+    def to_dict(self):
+        return {'x': self.x, 'y': self.y}
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"
+
+    def __eq__(self, other):
+        return isinstance(other, Position2) \
+            and self.x == other.x and self.y == other.y
+
+
+class Position3:
     def __init__(self, x, y, z):
         self.x = x
         self.y = y
@@ -36,8 +60,27 @@ class Position:
         return f"({self.x}, {self.y}, {self.z})"
 
     def __eq__(self, other):
-        return isinstance(other, Position) \
+        return isinstance(other, Position3) \
             and self.x == other.x and self.y == other.y and self.z == other.z
+
+
+class Ray:  # Fuckin' way she goes
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+
+    @classmethod
+    def from_dict(cls, d):
+        return cls(Position2(**d['start']), Position2(**d['end']))
+
+    def to_dict(self):
+        return {'start': self.start.to_dict(), 'end': self.end.to_dict()}
+
+    def __str__(self):
+        return f"({self.start}, {self.end})"
+
+    def __eq__(self, other):
+        return isinstance(other, Ray) and self.start == other.start and self.end == other.end
 
 
 class Circle:
@@ -47,12 +90,12 @@ class Circle:
 
     @classmethod
     def from_dict(cls, d):
-        return cls(d['radius'], Position(**d['pos']))
+        return cls(d['radius'], Position2(**d['pos']))
 
     @staticmethod
     def convert_dev_data(radius, pos):
         if radius > 0:
-            return {'radius': convert_distance(radius), 'pos': Position.convert_dev_data(pos)}
+            return {'radius': convert_distance(radius), 'pos': Position2.convert_dev_data(pos)}
         return None
 
     def to_dict(self):
@@ -74,7 +117,7 @@ class EventPlayer:
 
     @classmethod
     def from_dict(cls, d):
-        return cls(d['id'], d['name'], d['health'], Position.from_dict(d['pos']))
+        return cls(d['id'], d['name'], d['health'], Position3.from_dict(d['pos']))
 
     @staticmethod
     def convert_dev_data(dev_data):
@@ -84,7 +127,7 @@ class EventPlayer:
                 'id': id_,
                 'name': dev_data['name'],
                 'health': dev_data['health'],
-                'pos': Position.convert_dev_data(dev_data['location']),
+                'pos': Position3.convert_dev_data(dev_data['location']),
             }
         return None
 
@@ -195,14 +238,24 @@ class EventListField(EventField):
         raise ValidationError(f"Unknown type {type(value)} for: {value}")
 
 
-class PositionField(EventField):
+class Position2Field(EventField):
     def __init__(self, *args, **kwargs):
-        super().__init__(Position, *args, **kwargs)
+        super().__init__(Position2, *args, **kwargs)
+
+
+class Position3Field(EventField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(Position3, *args, **kwargs)
 
 
 class CircleField(EventField):
     def __init__(self, *args, **kwargs):
         super().__init__(Circle, *args, **kwargs)
+
+
+class RayField(EventField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(Ray, *args, **kwargs)
 
 
 class EventPlayerField(EventField):

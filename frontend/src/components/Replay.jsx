@@ -11,6 +11,7 @@ import {
   range,
 } from '../util';
 import ApiComponent from './ApiComponent';
+import Ray from './Ray';
 import Circle from './Circle';
 import Zone from './Zone';
 import '../styles/Replay.css';
@@ -58,6 +59,7 @@ class Replay extends Component {
   renderSvg(telemetry) {
     const { matchData: { map_name: mapName } } = this.props;
     const { timeRange: [minTime, maxTime] } = this.state;
+    const { plane, zones, events } = telemetry;
 
     return (
       <svg
@@ -67,9 +69,9 @@ class Replay extends Component {
       >
         <image href={mapImage(mapName)} width="100%" height="100%" />
 
-        {telemetry.zones
-          .map(zone => <Zone key={uniqid()} circle={zone} stroke="#ffffff" />)}
-        {telemetry.events.VehicleLeave
+        <Ray start={plane.start} end={plane.end} stroke="red" strokeWidth={10} />
+        {zones.map(zone => <Zone key={uniqid()} circle={zone} stroke="#ffffff" />)}
+        {events.PlayerKill
           .filter(e => minTime <= e.time && e.time <= maxTime)
           .map(e => <Circle key={uniqid()} pos={e.player.pos} fill="red" />)}
       </svg>
@@ -88,7 +90,7 @@ class Replay extends Component {
   render() {
     return (
       <ApiComponent
-        url={`/api/telemetry/${this.props.matchData.id}?events=PlayerKill,VehicleLeave`}
+        url={`/api/telemetry/${this.props.matchData.id}?events=PlayerKill`}
         render={this.renderReplay}
       />
     );
