@@ -9,7 +9,7 @@ from btcore.models import Match
 from btcore.serializers import DevDeserializer
 
 from . import models
-from .fields import Position, Circle, EventPlayer, Item, Vehicle, EventSerializerField, \
+from .fields import Position3, Circle, Ray, EventPlayer, Item, Vehicle, EventSerializerField, \
     EventListSerializerField
 
 
@@ -123,11 +123,12 @@ class TelemetrySerializer(DevDeserializer):
     events = EventsSerializer(source='*', read_only=False)
     # "Read-only" fields because they aren't included in validated data - they are generated during
     # creation time. They never appear in the data pre-deserialization.
+    plane = EventSerializerField(read_only=True)
     zones = EventListSerializerField(read_only=True)
 
     class Meta:
         model = models.Telemetry
-        fields = ('match', 'zones', 'events')
+        fields = ('match', 'plane', 'zones', 'events')
 
     @classmethod
     def convert_dev_data(cls, dev_data, **kwargs):
@@ -137,7 +138,18 @@ class TelemetrySerializer(DevDeserializer):
         }
 
     @staticmethod
-    def _parse_zones(zone_events):
+    def _calc_plane(vehicle_leave_events):
+        # Draw a line between the first and last players to leave the plane
+        plane_events = list(filter(lambda e: e['vehicle']['type'] == 'TransportAircraft',
+                                   vehicle_leave_events))
+        first, last = plane_events[0], plane_events[-1]
+        return Ray.from_dict({
+            'start': first['player']['pos'],
+            'end': last['player']['pos'],
+        })
+
+    @staticmethod
+    def _calc_zones(zone_events):
         last_white = None
         rv = []
 
@@ -159,11 +171,12 @@ class TelemetrySerializer(DevDeserializer):
         for event in events:
             events_by_type[event['type']].append(event)
 
-        # Parse GameStatePeriodic events to find individual white circles
-        zones = self._parse_zones(events_by_type['GameStatePeriodic'])
+        # Get extra game data from parsed events
+        plane = self._calc_plane(events_by_type['VehicleLeave'])
+        zones = self._calc_zones(events_by_type['GameStatePeriodic'])
 
         # Create models
-        telemetry = models.Telemetry.objects.create(match=match, zones=zones)
+        telemetry = models.Telemetry.objects.create(match=match, plane=plane, zones=zones)
 
         # Regroup events by model (multiple types can map to one model, so we want to reduce that)
         events_by_model = defaultdict(list)
@@ -388,7 +401,7 @@ class CarePackageEventSerializer(AbstractEventSerializer):
         rv = super(CarePackageEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
 
         rv.update({
-            'pos': Position.convert_dev_data(dev_data['itemPackage']['location']),
+            'pos': Position3.convert_dev_data(dev_data['itemPackage']['location']),
             'items': [Item.convert_dev_data(i) for i in dev_data['itemPackage']['items']],
         })
         return rv
