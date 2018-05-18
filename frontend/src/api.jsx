@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-axios.baseURL = 'localhost:4000';
+axios.baseURL = 'localhost:8000';
 
 function get(endpoint) {
   return axios.get(endpoint);
