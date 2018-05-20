@@ -62,6 +62,10 @@ export function sortKeyFunc(keyFunc, invert = false) {
   };
 }
 
+export function inRange(x, min, max) {
+  return min <= x && x <= max;
+}
+
 export function range(start, end, step = 1) {
   const rv = new Array(Math.ceil((end - start) / step)); // Pre-allocate necessary space
   for (let i = start; i < end; i += step) {
