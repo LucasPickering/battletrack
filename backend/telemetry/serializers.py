@@ -6,7 +6,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from btcore.models import Match
-from btcore.serializers import DevDeserializer
+from btcore.serializers import DevDeserializer, MatchSummarySerializer
 
 from . import models
 from .fields import Position3, Circle, Ray, EventPlayer, Item, Vehicle, EventSerializerField, \
@@ -119,7 +119,10 @@ class EventsSerializer(serializers.ListField):
 
 
 class TelemetrySerializer(DevDeserializer):
-    match = serializers.PrimaryKeyRelatedField(queryset=Match.objects)
+    # Read as a full object, write just as an ID
+    match = MatchSummarySerializer(read_only=True)
+    match_write = serializers.PrimaryKeyRelatedField(queryset=Match.objects, write_only=True)
+
     events = EventsSerializer(source='*', read_only=False)
     # "Read-only" fields because they aren't included in validated data - they are generated during
     # creation time. They never appear in the data pre-deserialization.
@@ -128,12 +131,12 @@ class TelemetrySerializer(DevDeserializer):
 
     class Meta:
         model = models.Telemetry
-        fields = ('match', 'plane', 'zones', 'events')
+        fields = ('match', 'match_write', 'plane', 'zones', 'events')
 
     @classmethod
     def convert_dev_data(cls, dev_data, **kwargs):
         return {
-            'match': dev_data['match_id'],
+            'match_write': dev_data['match_id'],
             'events': EventsSerializer.convert_dev_data(dev_data['telemetry'], **kwargs),
         }
 
@@ -163,7 +166,7 @@ class TelemetrySerializer(DevDeserializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        match = validated_data['match']  # Match object
+        match = validated_data['match_write']  # Match object
         events = validated_data['events']  # List of event dicts
 
         # Group events by type
