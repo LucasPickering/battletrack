@@ -12,11 +12,12 @@ import {
   range,
 } from '../util';
 import ApiComponent from './ApiComponent';
+import GameMap from './GameMap';
 import Ray from './Ray';
 import KillEvent from './KillEvent';
 import CarePackageEvent from './CarePackageEvent';
 import Zone from './Zone';
-import '../styles/Replay.css';
+import '../styles/Overview.css';
 
 const Range = Slider.createSliderWithTooltip(Slider.Range); // Janky AF
 
@@ -36,7 +37,7 @@ const EVENT_TYPES = Object.freeze({
   CarePackageLand: { component: CarePackageEvent, filters: ['Care Packages'] },
 });
 
-class Replay extends Component {
+class Overview extends Component {
   constructor(props, context) {
     super(props, context);
 
@@ -47,7 +48,7 @@ class Replay extends Component {
     };
 
     this.displayFilterEnabled = this.displayFilterEnabled.bind(this);
-    this.renderReplay = this.renderReplay.bind(this);
+    this.renderOverview = this.renderOverview.bind(this);
   }
 
   displayFilterEnabled(filterName) {
@@ -100,13 +101,7 @@ class Replay extends Component {
     const timeFilter = e => inRange(e.time, minTime, maxTime); // Used to filter events by time
 
     return (
-      <svg
-        width={MAP_SIZE_PIXELS}
-        height={MAP_SIZE_PIXELS}
-        viewBox={`0 0 ${MAP_SIZE_METERS} ${MAP_SIZE_METERS}`}
-      >
-        <image href={mapImage(mapName)} width="100%" height="100%" />
-
+      <GameMap mapName={mapName}>
         {this.displayFilterEnabled('Plane') &&
           <Ray start={plane.start} end={plane.end} stroke="red" strokeWidth={10} />}
         {this.displayFilterEnabled('Circles') &&
@@ -128,13 +123,13 @@ class Replay extends Component {
           }
           return null; // Nothing to render
         })}
-      </svg>
+      </GameMap>
     );
   }
 
-  renderReplay(telemetry) {
+  renderOverview(telemetry) {
     return (
-      <Panel className="replay">
+      <Panel className="overview">
         {this.renderTimeRange()}
         {this.renderFilterButtons()}
         <br />
@@ -148,14 +143,14 @@ class Replay extends Component {
     return (
       <ApiComponent
         url={`/api/telemetry/${this.props.matchData.id}?events=${eventTypes}`}
-        render={this.renderReplay}
+        render={this.renderOverview}
       />
     );
   }
 }
 
-Replay.propTypes = {
+Overview.propTypes = {
   matchData: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
-export default Replay;
+export default Overview;

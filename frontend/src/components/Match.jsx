@@ -12,21 +12,21 @@ import {
 } from '../util';
 import ApiComponent from './ApiComponent';
 import RosterMatchSummary from './RosterMatchSummary';
-import Replay from './Replay';
+import Overview from './Overview';
 import '../styles/Match.css';
 
 class Match extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      showReplay: true, // TODO: change this to false when done developing
+      showOverview: true, // TODO: change this to false when done developing
     };
     this.renderMatch = this.renderMatch.bind(this);
   }
 
   renderMatch(matchData) {
     // Unpack state
-    const { showReplay } = this.state;
+    const { showOverview } = this.state;
     const {
       shard,
       mode,
@@ -46,8 +46,8 @@ class Match extends Component {
         <h3>{formatSeconds(duration)}</h3>
 
         <div className="replay-container">
-          <Button onClick={() => this.setState({ showReplay: !showReplay })}>Match Replay</Button>
-          {showReplay && <Replay matchData={matchData} />}
+          <Button onClick={() => this.setState({ showOverview: !showOverview })}>Overview</Button>
+          {showOverview && <Overview matchData={matchData} />}
         </div>
 
         <Panel className="rosters">
