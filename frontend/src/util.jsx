@@ -46,6 +46,10 @@ export function matchLink(matchId) {
   return `/matches/${matchId}`;
 }
 
+export function overviewLink(matchId) {
+  return `${matchLink(matchId)}/overview`;
+}
+
 export function playerLink(shard, playerName) {
   return `/players/${shard}/${playerName}`;
 }
@@ -72,4 +76,8 @@ export function range(start, end, step = 1) {
     rv.push(i);
   }
   return rv;
+}
+
+export function routeComponent(component) {
+  return ({ match, ...rest }) => React.createElement(component, { ...match.params, ...rest });
 }

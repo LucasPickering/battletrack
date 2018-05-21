@@ -11,44 +11,44 @@ import PlayerMatchSummary from './PlayerMatchSummary';
 import ShardSelect from './ShardSelect';
 import '../styles/Player.css';
 
-function renderMatches(playerData) {
-  return (
-    <ListGroup className="matches">
-      {playerData.matches
-        .filter(m => m.match) // Filter out null matches
-        .sort(sortKeyFunc(m => m.match.date, true)) // Sort by date
-        .map(m => (
-          <PlayerMatchSummary
-            key={m.match_id}
-            playerName={playerData.name}
-            data={m}
-          />
-        ))}
-    </ListGroup>
-  );
-}
+const PlayerMatches = ({ playerData }) => (
+  <ListGroup className="matches">
+    {playerData.matches
+      .filter(m => m.match) // Filter out null matches
+      .sort(sortKeyFunc(m => m.match.date, true)) // Sort by date
+      .map(m => (
+        <PlayerMatchSummary
+          key={m.match_id}
+          playerName={playerData.name}
+          data={m}
+        />
+      ))}
+  </ListGroup>
+);
 
-const Player = props => {
-  const { history, match: { params: { shard, playerName } } } = props;
-
-  return (
-    <div className="player">
-      <h2>{playerName}</h2>
-      <ShardSelect
-        value={shard}
-        onChange={e => history.push(playerLink(e.target.value, playerName))}
-      />
-      <ApiComponent
-        url={`/api/core/players/${shard}/${playerName}?popMatches`}
-        render={renderMatches}
-      />
-    </div>
-  );
+PlayerMatches.propTypes = {
+  playerData: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
+const Player = ({ shard, playerName, history }) => (
+  <div className="player">
+    <h2>{playerName}</h2>
+    <ShardSelect
+      value={shard}
+      onChange={e => history.push(playerLink(e.target.value, playerName))}
+    />
+    <ApiComponent
+      url={`/api/core/players/${shard}/${playerName}?popMatches`}
+      component={PlayerMatches}
+      dataProp="playerData"
+    />
+  </div>
+);
+
 Player.propTypes = {
+  shard: PropTypes.string.isRequired,
+  playerName: PropTypes.string.isRequired,
   history: PropTypes.objectOf(PropTypes.any).isRequired,
-  match: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
 export default Player;

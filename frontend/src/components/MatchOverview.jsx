@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Panel, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import Slider from 'rc-slider';
 import uniqid from 'uniqid';
 import 'rc-slider/assets/index.css';
 
 import {
   formatSeconds,
-  mapImage,
+  matchLink,
   inRange,
   range,
 } from '../util';
@@ -17,12 +18,9 @@ import Ray from './Ray';
 import KillEvent from './KillEvent';
 import CarePackageEvent from './CarePackageEvent';
 import Zone from './Zone';
-import '../styles/Overview.css';
+import '../styles/MatchOverview.css';
 
 const Range = Slider.createSliderWithTooltip(Slider.Range); // Janky AF
-
-const MAP_SIZE_METERS = 8000;
-const MAP_SIZE_PIXELS = 800;
 
 const DISPLAY_FILTERS = [
   'Circles',
@@ -37,18 +35,17 @@ const EVENT_TYPES = Object.freeze({
   CarePackageLand: { component: CarePackageEvent, filters: ['Care Packages'] },
 });
 
-class Overview extends Component {
+class MatchOverviewHelper extends Component {
   constructor(props, context) {
     super(props, context);
 
     this.state = {
-      timeRange: [0, props.matchData.duration], // Time range to display events in
+      timeRange: [0, props.telemetry.match.duration], // Time range to display events in
       displayFilters: DISPLAY_FILTERS.slice(), // Copy the array
       // eventTypes: Object.keys(EVENT_TYPES), // Event types to display
     };
 
     this.displayFilterEnabled = this.displayFilterEnabled.bind(this);
-    this.renderOverview = this.renderOverview.bind(this);
   }
 
   displayFilterEnabled(filterName) {
@@ -56,7 +53,7 @@ class Overview extends Component {
   }
 
   renderTimeRange() {
-    const { matchData: { duration } } = this.props;
+    const { telemetry: { match: { duration } } } = this.props;
     const { timeRange } = this.state;
 
     // Build an object of marks to put on the slider
@@ -94,14 +91,20 @@ class Overview extends Component {
     );
   }
 
-  renderSvg(telemetry) {
-    const { matchData: { map_name: mapName } } = this.props;
+  renderSvg() {
+    const {
+      telemetry: {
+        match,
+        plane,
+        zones,
+        events,
+      },
+    } = this.props;
     const { timeRange: [minTime, maxTime] } = this.state;
-    const { plane, zones, events } = telemetry;
     const timeFilter = e => inRange(e.time, minTime, maxTime); // Used to filter events by time
 
     return (
-      <GameMap mapName={mapName}>
+      <GameMap mapName={match.map_name}>
         {this.displayFilterEnabled('Plane') &&
           <Ray start={plane.start} end={plane.end} stroke="red" strokeWidth={10} />}
         {this.displayFilterEnabled('Circles') &&
@@ -127,30 +130,38 @@ class Overview extends Component {
     );
   }
 
-  renderOverview(telemetry) {
-    return (
-      <Panel className="overview">
-        {this.renderTimeRange()}
-        {this.renderFilterButtons()}
-        <br />
-        {this.renderSvg(telemetry)}
-      </Panel>
-    );
-  }
-
   render() {
-    const eventTypes = Object.keys(EVENT_TYPES).join();
+    const { matchId } = this.props;
     return (
-      <ApiComponent
-        url={`/api/telemetry/${this.props.matchData.id}?events=${eventTypes}`}
-        render={this.renderOverview}
-      />
+      <div>
+        <Panel className="overview">
+          {this.renderTimeRange()}
+          {this.renderFilterButtons()}
+          <br />
+          {this.renderSvg()}
+        </Panel>
+        <Link to={matchLink(matchId)}><h3>Back to Match</h3></Link>
+      </div>
     );
   }
 }
 
-Overview.propTypes = {
-  matchData: PropTypes.objectOf(PropTypes.any).isRequired,
+MatchOverviewHelper.propTypes = {
+  matchId: PropTypes.string.isRequired,
+  telemetry: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
-export default Overview;
+const MatchOverview = ({ matchId }) => (
+  <ApiComponent
+    url={`/api/telemetry/${matchId}?events=${Object.keys(EVENT_TYPES).join()}`}
+    component={MatchOverviewHelper}
+    dataProp="telemetry"
+    matchId={matchId}
+  />
+);
+
+MatchOverview.propTypes = {
+  matchId: PropTypes.string.isRequired,
+};
+
+export default MatchOverview;
