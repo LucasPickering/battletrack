@@ -26,7 +26,7 @@ class GameMap extends Component {
 
 GameMap.propTypes = {
   mapName: PropTypes.string.isRequired,
-  children: PropTypes.arrayOf(PropTypes.element),
+  children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.any)]),
 };
 
 GameMap.defaultProps = {

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { Button, Panel } from 'react-bootstrap';
+import React from 'react';
+import { Panel } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import uniqid from 'uniqid';
 
 import {
@@ -8,26 +9,17 @@ import {
   formatSeconds,
   formatGameMode,
   formatPerspective,
+  overviewLink,
   sortKeyFunc,
 } from '../util';
 import ApiComponent from './ApiComponent';
 import RosterMatchSummary from './RosterMatchSummary';
-import Overview from './Overview';
 import '../styles/Match.css';
 
-class Match extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      showOverview: true, // TODO: change this to false when done developing
-    };
-    this.renderMatch = this.renderMatch.bind(this);
-  }
-
-  renderMatch(matchData) {
-    // Unpack state
-    const { showOverview } = this.state;
-    const {
+const MatchHelper = props => {
+  const {
+    matchId,
+    matchData: {
       shard,
       mode,
       perspective,
@@ -35,40 +27,42 @@ class Match extends Component {
       date,
       duration,
       rosters,
-    } = matchData;
-    const sortedRosters = rosters.sort(sortKeyFunc(r => r.win_place)); // Winners first
+    },
+  } = props;
+  const sortedRosters = rosters.sort(sortKeyFunc(r => r.win_place)); // Winners first
 
-    return (
-      <div className="match">
-        <h2>{formatGameMode(mode)} {formatPerspective(perspective)}</h2>
-        <h2>{mapName}</h2>
-        <h3>{formatDate(date, 'MMMM D, YYYY HH:mm:ss')}</h3>
-        <h3>{formatSeconds(duration)}</h3>
+  return (
+    <div className="match">
+      <h2>{formatGameMode(mode)} {formatPerspective(perspective)}</h2>
+      <h2>{mapName}</h2>
+      <h3>{formatDate(date, 'MMMM D, YYYY HH:mm:ss')}</h3>
+      <h3>{formatSeconds(duration)}</h3>
 
-        <div className="replay-container">
-          <Button onClick={() => this.setState({ showOverview: !showOverview })}>Overview</Button>
-          {showOverview && <Overview matchData={matchData} />}
-        </div>
+      <Link to={overviewLink(matchId)}><h3>Overview</h3></Link>
 
-        <Panel className="rosters">
-          {sortedRosters.map(r => <RosterMatchSummary key={uniqid()} shard={shard} data={r} />)}
-        </Panel>
-      </div>
-    );
-  }
+      <Panel className="rosters">
+        {sortedRosters.map(r => <RosterMatchSummary key={uniqid()} shard={shard} data={r} />)}
+      </Panel>
+    </div>
+  );
+};
 
-  render() {
-    return (
-      <ApiComponent
-        url={`/api/core/matches/${this.props.match.params.matchId}`}
-        render={this.renderMatch}
-      />
-    );
-  }
-}
+MatchHelper.propTypes = {
+  matchId: PropTypes.string.isRequired,
+  matchData: PropTypes.objectOf(PropTypes.any).isRequired,
+};
+
+const Match = ({ matchId }) => (
+  <ApiComponent
+    url={`/api/core/matches/${matchId}`}
+    component={MatchHelper}
+    dataProp="matchData"
+    matchId={matchId}
+  />
+);
 
 Match.propTypes = {
-  match: PropTypes.objectOf(PropTypes.any).isRequired,
+  matchId: PropTypes.string.isRequired,
 };
 
 export default Match;

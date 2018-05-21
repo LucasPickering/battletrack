@@ -39,7 +39,12 @@ class ApiComponent extends Component {
   }
 
   render() {
-    const { loader, render } = this.props;
+    const {
+      loader,
+      component,
+      dataProp,
+      ...rest
+    } = this.props;
     const { loading, data, error } = this.state;
 
     if (loading) {
@@ -47,8 +52,8 @@ class ApiComponent extends Component {
     }
 
     if (data) {
-      // Loading finished and we have data so we can render
-      return render(data);
+      // Loading finished and we have data so we can render the element
+      return React.createElement(component, { [dataProp]: data, ...rest });
     }
 
     if (error) {
@@ -64,13 +69,14 @@ class ApiComponent extends Component {
 
 ApiComponent.propTypes = {
   url: PropTypes.string.isRequired,
+  component: PropTypes.func.isRequired,
+  dataProp: PropTypes.string,
   loader: PropTypes.func, // Should be a Loader class
-  render: PropTypes.func,
 };
 
 ApiComponent.defaultProps = {
   loader: BarLoader,
-  render: (() => null),
+  dataProp: 'data',
 };
 
 export default ApiComponent;
