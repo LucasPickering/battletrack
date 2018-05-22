@@ -231,6 +231,7 @@ class MatchSerializer(DevDeserializer):
         roster_matches = match.rosters.bulk_create(
             models.RosterMatch(match=match, **roster) for roster in rosters,
         )
+        match.cache_related('rosters', *roster_matches)  # Cache each RosterMatch on the Match
 
         # Build a dict of player ID to RosterMatch. This relies on the fact that the ordering of
         # player_lists corresponds to that of roster_matches (which will always be the case).
@@ -256,6 +257,10 @@ class MatchSerializer(DevDeserializer):
             if player['player_id'] not in existing_set
         )
         all_pms = existing_pms + created_pms
+
+        # Cache each PlayerMatch on its associated RosterMatch object
+        for pm in all_pms:
+            player_to_roster[pm.player_id].cache_related('players', pm)
 
         # Create all Stats objects. We have to re-query for all the PlayerMatch objects in order
         # to get copies with the primary keys
