@@ -3,8 +3,8 @@
   margin-right: auto;
   width: 500px;
   display: grid;
-  grid-template-columns: auto 120px;
   grid-template-rows: 40px auto;
+  grid-template-columns: auto 120px;
 }
 
 .player h2, .shardSelect {

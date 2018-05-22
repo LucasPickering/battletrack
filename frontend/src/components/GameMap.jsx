@@ -4,17 +4,15 @@ import React, { Component } from 'react';
 import { mapImage } from '../util';
 
 const MAP_SIZE_METERS = 8000;
-const MAP_SIZE_PIXELS = 800;
 
 // eslint-disable-next-line react/prefer-stateless-function
 class GameMap extends Component {
   render() {
-    const { mapName, children } = this.props;
+    const { mapName, children, ...rest } = this.props;
     return (
       <svg
-        width={MAP_SIZE_PIXELS}
-        height={MAP_SIZE_PIXELS}
         viewBox={`0 0 ${MAP_SIZE_METERS} ${MAP_SIZE_METERS}`}
+        {...rest}
       >
         <image href={mapImage(mapName)} width="100%" height="100%" />
 
