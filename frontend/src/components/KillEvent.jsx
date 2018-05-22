@@ -5,6 +5,8 @@ import Circle from './Circle';
 import Ray from './Ray';
 import EventTooltip from './EventTooltip';
 
+const DOT_SIZE = 10;
+
 const MouseStates = Object.freeze({
   Kill: 'kill',
   Death: 'death',
@@ -50,7 +52,7 @@ class KillEvent extends Component {
   }
 
   render() {
-    const { event, filters } = this.props;
+    const { event, playerColors, filters } = this.props;
     const { attacker, player } = event;
     const { mouseOver } = this.state;
 
@@ -70,8 +72,8 @@ class KillEvent extends Component {
         {renderKill && (
           <Circle
             pos={attacker.pos}
-            r={30}
-            fill="red"
+            r={DOT_SIZE}
+            fill={playerColors[attacker.id]}
             onMouseEnter={killSetter}
             onMouseLeave={nullSetter}
           />
@@ -79,8 +81,8 @@ class KillEvent extends Component {
         {renderDeath && (
           <Circle
             pos={player.pos}
-            r={30}
-            fill="black"
+            r={DOT_SIZE}
+            fill={playerColors[player.id]}
             onMouseEnter={deathSetter}
             onMouseLeave={nullSetter}
           />
@@ -93,6 +95,7 @@ class KillEvent extends Component {
 
 KillEvent.propTypes = {
   event: PropTypes.objectOf(PropTypes.any).isRequired,
+  playerColors: PropTypes.objectOf(PropTypes.string).isRequired,
   filters: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 

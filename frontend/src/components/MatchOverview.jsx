@@ -1,3 +1,4 @@
+import palette from 'google-palette';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Panel, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
@@ -94,7 +95,7 @@ class MatchOverviewHelper extends Component {
   renderSvg() {
     const {
       telemetry: {
-        match,
+        match: { map_name: mapName, rosters },
         plane,
         zones,
         events,
@@ -103,10 +104,19 @@ class MatchOverviewHelper extends Component {
     const { timeRange: [minTime, maxTime] } = this.state;
     const timeFilter = e => inRange(e.time, minTime, maxTime); // Used to filter events by time
 
+    // Generate a color palette, with one color per roster
+    const playerColors = {};
+    palette('tol-rainbow', rosters.length).map(c => `#${c}`).forEach((color, index) => {
+      rosters[index].players.forEach(player => {
+        playerColors[player.player_id] = color;
+      });
+    });
+    Object.freeze(playerColors);
+
     return (
-      <GameMap mapName={match.map_name}>
+      <GameMap mapName={mapName}>
         {this.displayFilterEnabled('Plane') &&
-          <Ray start={plane.start} end={plane.end} color="white" />}
+          <Ray start={plane.start} end={plane.end} color="white" showTailTip />}
         {this.displayFilterEnabled('Circles') &&
           zones.map(zone => <Zone key={uniqid()} circle={zone} stroke="#ffffff" />)}
 
@@ -119,10 +129,12 @@ class MatchOverviewHelper extends Component {
           if (enabledFilters.length > 0) {
             return events[type]
               .filter(timeFilter) // Filter by time
-              .map(event => React.createElement(
-                component,
-                { key: uniqid(), event, filters: enabledFilters },
-              ));
+              .map(event => React.createElement(component, {
+                  key: uniqid(),
+                  event,
+                  playerColors,
+                  filters: enabledFilters,
+              }));
           }
           return null; // Nothing to render
         })}
