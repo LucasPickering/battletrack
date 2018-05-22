@@ -15,7 +15,7 @@ class DevAPI:
     def __init__(self, key):
         self._headers = {
             'Accept': 'application/vnd.api+json',
-            # 'Accept-Encoding': 'gzip',
+            'Accept-Encoding': 'gzip',
             'Authorization': key,
         }
 
