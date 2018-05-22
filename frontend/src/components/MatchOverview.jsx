@@ -106,7 +106,7 @@ class MatchOverviewHelper extends Component {
     return (
       <GameMap mapName={match.map_name}>
         {this.displayFilterEnabled('Plane') &&
-          <Ray start={plane.start} end={plane.end} stroke="red" strokeWidth={10} />}
+          <Ray start={plane.start} end={plane.end} color="white" />}
         {this.displayFilterEnabled('Circles') &&
           zones.map(zone => <Zone key={uniqid()} circle={zone} stroke="#ffffff" />)}
 
