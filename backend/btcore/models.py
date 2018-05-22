@@ -75,6 +75,7 @@ class Player(RelatedCacheModel):
 
 
 class RosterMatch(RelatedCacheModel):
+    id = models.CharField(primary_key=True, max_length=util.ROSTER_ID_LENGTH)
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='rosters')
     win_place = models.PositiveSmallIntegerField()
 

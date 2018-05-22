@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import React from 'react';
 import { Table } from 'react-bootstrap';
 
@@ -9,7 +9,7 @@ const MAP_IMAGES = {
 };
 
 export function formatDate(date, format) {
-  return moment(date).local().format(format);
+  return moment(date).format(format);
 }
 
 export function formatSeconds(seconds, format = 'm[m] ss[s]') {
