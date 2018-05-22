@@ -6,7 +6,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from btcore.models import Match
-from btcore.serializers import DevDeserializer, MatchSummarySerializer
+from btcore.serializers import DevDeserializer, MatchSerializer
 
 from . import models
 from .fields import Position3, Circle, Ray, EventPlayer, Item, Vehicle, EventSerializerField, \
@@ -120,7 +120,7 @@ class EventsSerializer(serializers.ListField):
 
 class TelemetrySerializer(DevDeserializer):
     # Read as a full object, write just as an ID
-    match = MatchSummarySerializer(read_only=True)
+    match = MatchSerializer(read_only=True)
     match_write = serializers.PrimaryKeyRelatedField(queryset=Match.objects, write_only=True)
 
     events = EventsSerializer(source='*', read_only=False)

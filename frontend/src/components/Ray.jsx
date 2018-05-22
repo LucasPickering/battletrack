@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Circle from './Circle';
-
 const Ray = ({
   start,
   end,
   color,
-  size,
+  showTailTip,
   ...rest
 }) => (
   <g>
@@ -15,25 +13,34 @@ const Ray = ({
       <marker
         id="arrow"
         orient="auto"
-        markerWidth={100}
-        markerHeight={100}
+        markerWidth={10}
+        markerHeight={10}
         refX={0}
         refY={3}
         markerUnits="strokeWidth"
       >
         <path d="M0,0 V6 L5,3 Z" fill={color} />
       </marker>
+      <marker
+        id="dot"
+        markerWidth={4}
+        markerHeight={4}
+        refX={2}
+        refY={2}
+        markerUnits="strokeWidth"
+      >
+        <circle cx={2} cy={2} r={2} fill={color} />
+      </marker>
     </defs>
 
-    <Circle pos={start} r={size * 2} fill={color} />
     <line
-      markerEnd="url(#arrow)"
+      markerStart={showTailTip ? 'url(#dot)' : null}
+      markerEnd={showTailTip ? 'url(#arrow)' : null}
       x1={start.x}
       y1={start.y}
       x2={end.x}
       y2={end.y}
       stroke={color}
-      strokeWidth={size}
       {...rest}
     />
   </g>
@@ -49,12 +56,14 @@ Ray.propTypes = {
     y: PropTypes.number.isRequired,
   }).isRequired,
   color: PropTypes.string,
-  size: PropTypes.number,
+  strokeWidth: PropTypes.number,
+  showTailTip: PropTypes.bool,
 };
 
 Ray.defaultProps = {
   color: 'white',
-  size: 10,
+  strokeWidth: 10,
+  showTailTip: false,
 };
 
 export default Ray;
