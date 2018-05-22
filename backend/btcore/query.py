@@ -44,11 +44,8 @@ class DevAPIQuerySet(models.QuerySet):
         try:
             return self._get_from_db(*args, **kwargs)
         except self.model.DoesNotExist:
-            # Object isn't in the DB, try to fetch it from the API
-            self._get_from_api(*args, **kwargs)
-
-            # Re-run the original query to make sure we re-use select_related, etc.
-            return self._get_from_db(*args, **kwargs)
+            # Object isn't in the DB, fetch it from the API
+            return self._get_from_api(*args, **kwargs)
 
     def preload(self, **kwargs):
         """
