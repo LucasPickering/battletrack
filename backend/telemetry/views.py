@@ -5,8 +5,7 @@ from . import models, serializers
 
 
 class TelemetryView(views.APIView):
-    queryset = models.Telemetry.objects \
-        .prefetch_related(*(mt.related_name for mt in models.get_all_event_models()))
+    queryset = models.Telemetry.objects.select_related('match')
     serializer_class = serializers.TelemetrySerializer
 
     def get(self, request, id):
