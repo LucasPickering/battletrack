@@ -61,7 +61,7 @@ class MatchOverviewHelper extends Component {
     range(0, duration, 300).forEach(i => {
       marks[i] = formatSeconds(i, 'm[m]');
     });
-    marks[duration] = formatSeconds(duration); // Add the final mark
+    marks[duration] = formatSeconds(duration, 'm[m]'); // Add the final mark
 
     return (
       <Range

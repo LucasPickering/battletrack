@@ -28,6 +28,11 @@ export function formatShard(shard) {
   return shard.toUpperCase();
 }
 
+export function formatItem(item) {
+  const { name, stack_count: stackCount } = item;
+  return `${stackCount}x ${name}`;
+}
+
 export function mapImage(mapName) {
   return MAP_IMAGES[mapName];
 }
