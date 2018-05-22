@@ -160,7 +160,7 @@ class TelemetrySerializer(DevDeserializer):
         for event in zone_events:
             white = event['white_zone']
             if white and white != last_white:
-                rv.append(white)
+                rv.append(Circle.from_dict(white))
                 last_white = white
         return rv
 
