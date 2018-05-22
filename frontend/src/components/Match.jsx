@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import uniqid from 'uniqid';
 
 import {
   formatDate,
@@ -35,13 +34,13 @@ const MatchHelper = props => {
     <div className="match">
       <h2>{formatGameMode(mode)} {formatPerspective(perspective)}</h2>
       <h2>{mapName}</h2>
-      <h3>{formatDate(date, 'MMMM D, YYYY HH:mm:ss')}</h3>
+      <h3>{formatDate(date, 'MMMM D, YYYY - HH:mm:ss')}</h3>
       <h3>{formatSeconds(duration)}</h3>
 
       <Link to={overviewLink(matchId)}><h3>Overview</h3></Link>
 
       <Panel className="rosters">
-        {sortedRosters.map(r => <RosterMatchSummary key={uniqid()} shard={shard} data={r} />)}
+        {sortedRosters.map(r => <RosterMatchSummary key={r.id} shard={shard} data={r} />)}
       </Panel>
     </div>
   );

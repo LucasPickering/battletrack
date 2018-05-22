@@ -110,7 +110,7 @@ class MatchRosterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.RosterMatch
-        fields = ('win_place', 'players')
+        fields = ('id', 'win_place', 'players')
 
 
 class RosterMatchSerializer(serializers.ModelSerializer):
@@ -121,7 +121,7 @@ class RosterMatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.RosterMatch
-        fields = ('players',)
+        fields = ('id', 'players')
 
 
 class PlayerMatchSerializer(serializers.ModelSerializer):
@@ -195,6 +195,7 @@ class MatchSerializer(DevDeserializer):
         for roster in incl['roster']:
             participant_data = roster['relationships']['participants']['data']
             roster_matches.append({
+                'id': roster['id'],
                 'win_place': roster['attributes']['stats']['rank'],
                 'players': [player_matches[pdata['id']] for pdata in participant_data],
             })
@@ -214,34 +215,28 @@ class MatchSerializer(DevDeserializer):
     @transaction.atomic
     def create(self, validated_data):
         rosters = validated_data.pop('rosters')
+        print(rosters[0].keys())
 
-        # Build a list where each element is a list of players for a roster, and build a dict of
-        # player ID to stats object
-        player_lists = [roster.pop('players') for roster in rosters]  # List of lists
-        player_to_stats = {}
-        for players in player_lists:
-            for player in players:
-                player_to_stats[player['player_id']] = player.pop('stats')
+        # Make two dicts: RosterID:List(PlayerMatch-dict), and PlayerID:PlayerMatchStats-dict
+        roster_to_players = {roster['id']: roster.pop('players') for roster in rosters}
+        player_to_stats = {player['player_id']: player.pop('stats')
+                           for players in roster_to_players.values() for player in players}
 
         # Create the Match
         match = models.Match.objects.create(**validated_data)
-        match_id = match.id
 
         # Create each RosterMatch
-        roster_matches = match.rosters.bulk_create(
+        roster_matches = models.RosterMatch.objects.bulk_create(
             models.RosterMatch(match=match, **roster) for roster in rosters,
         )
         match.cache_related('rosters', *roster_matches)  # Cache each RosterMatch on the Match
 
-        # Build a dict of player ID to RosterMatch. This relies on the fact that the ordering of
-        # player_lists corresponds to that of roster_matches (which will always be the case).
-        player_to_roster = {}
-        for players, roster_match in zip(player_lists, roster_matches):
-            for player in players:
-                player_to_roster[player['player_id']] = roster_match
+        # Using our dict of RosterID:List(PlayerMatch-dict), build a dict of PlayerID:RosterMatch
+        player_to_roster = {player['player_id']: rm
+                            for rm in roster_matches for player in roster_to_players[rm.id]}
 
         # Figure out which PlayerMatches are already in the DB and need their roster/stats linked
-        existing_pms = list(models.PlayerMatch.objects.filter(match_id=match_id, roster=None))
+        existing_pms = list(models.PlayerMatch.objects.filter(match_id=match.id, roster=None))
 
         # Set the roster on each pre-existing PlayerMatch
         for player in existing_pms:
@@ -251,9 +246,9 @@ class MatchSerializer(DevDeserializer):
         # Create all the missing PlayerMatches
         existing_set = set(pm.player_id for pm in existing_pms)  # Existing player IDs
         created_pms = models.PlayerMatch.objects.bulk_create(
-            models.PlayerMatch(roster=player_to_roster[player['player_id']], match_id=match_id,
+            models.PlayerMatch(roster=player_to_roster[player['player_id']], match_id=match.id,
                                **player)
-            for players in player_lists for player in players  # Loop through nested list
+            for players in roster_to_players.values() for player in players  # Nested list
             if player['player_id'] not in existing_set
         )
         all_pms = existing_pms + created_pms
