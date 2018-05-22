@@ -1,7 +1,7 @@
 import palette from 'google-palette';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Panel, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
+import { Checkbox, Panel, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Slider from 'rc-slider';
 import uniqid from 'uniqid';
@@ -14,6 +14,7 @@ import {
   range,
 } from '../util';
 import ApiComponent from './ApiComponent';
+import RosterCheckList from './RosterCheckList';
 import GameMap from './GameMap';
 import Ray from './Ray';
 import KillEvent from './KillEvent';
@@ -40,10 +41,17 @@ class MatchOverviewHelper extends Component {
   constructor(props, context) {
     super(props, context);
 
+    const { telemetry: { match: { duration, rosters } } } = props;
     this.state = {
-      timeRange: [0, props.telemetry.match.duration], // Time range to display events in
+      timeRange: [0, duration], // Time range to display events in
       displayFilters: DISPLAY_FILTERS.slice(), // Copy the array
-      // eventTypes: Object.keys(EVENT_TYPES), // Event types to display
+      enabledPlayers: rosters.reduce(
+        (acc, roster) => {
+          roster.players.forEach(player => acc.add(player.player_id));
+          return acc;
+        },
+        new Set(),
+      ),
     };
 
     this.displayFilterEnabled = this.displayFilterEnabled.bind(this);
@@ -81,6 +89,7 @@ class MatchOverviewHelper extends Component {
     const { displayFilters } = this.state;
     return (
       <ToggleButtonGroup
+        className="filter-buttons"
         type="checkbox"
         value={displayFilters}
         onChange={val => this.setState({ displayFilters: val })}
@@ -89,6 +98,20 @@ class MatchOverviewHelper extends Component {
           <ToggleButton key={e} value={e}>{e}</ToggleButton>
         ))}
       </ToggleButtonGroup>
+    );
+  }
+
+  renderPlayerList() {
+    const { telemetry: { match: { rosters } } } = this.props;
+    const { enabledPlayers } = this.state;
+    return (
+      <Panel className="player-list">
+        <RosterCheckList
+          rosters={rosters}
+          enabledPlayers={enabledPlayers}
+          onChange={val => this.setState({ enabledPlayers: val })}
+        />
+      </Panel>
     );
   }
 
@@ -114,7 +137,7 @@ class MatchOverviewHelper extends Component {
     Object.freeze(playerColors);
 
     return (
-      <GameMap mapName={mapName}>
+      <GameMap className="map" mapName={mapName}>
         {this.displayFilterEnabled('Plane') &&
           <Ray start={plane.start} end={plane.end} color="white" showTailTip />}
         {this.displayFilterEnabled('Circles') &&
@@ -145,15 +168,14 @@ class MatchOverviewHelper extends Component {
   render() {
     const { matchId } = this.props;
     return (
-      <div>
-        <Panel className="overview">
-          {this.renderTimeRange()}
-          {this.renderFilterButtons()}
-          <br />
-          {this.renderSvg()}
-        </Panel>
-        <Link to={matchLink(matchId)}><h3>Back to Match</h3></Link>
-      </div>
+      <Panel className="overview">
+        <Link className="match-link" to={matchLink(matchId)}><h3>Back to Match</h3></Link>
+        {this.renderTimeRange()}
+        {this.renderFilterButtons()}
+        {this.renderPlayerList()}
+        <br />
+        {this.renderSvg()}
+      </Panel>
     );
   }
 }

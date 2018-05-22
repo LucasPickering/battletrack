@@ -1,0 +1,21 @@
+.roster-check-list .roster {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 20px 40px auto;
+  border-bottom: 1px solid #bbbbbb;
+}
+
+.roster-check-list .roster p {
+  margin-top: 10px;
+}
+
+.roster-check-list .roster .roster-players {
+  width: 100%;
+  padding: 0;
+  list-style: none;
+}
+
+.roster-check-list .roster .roster-players li {
+  display: flex;
+  height: 30px;
+}
