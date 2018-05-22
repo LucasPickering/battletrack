@@ -12,7 +12,7 @@ class ShardSelect extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     api.get('/api/core/shards')
       .then(response => this.setState({ shards: response.data }))
       .catch(console.error);

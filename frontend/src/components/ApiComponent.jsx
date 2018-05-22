@@ -18,12 +18,13 @@ class ApiComponent extends Component {
     this.loadData(this.props.url);
   }
 
-  componentWillReceiveProps(nextProps) {
-    const { url } = nextProps;
+  componentDidUpdate(prevProps) {
+    const { url: oldUrl } = prevProps;
+    const { url: newUrl } = this.props;
 
     // If the URL changed, load new data
-    if (this.props.url !== url) {
-      this.loadData(url);
+    if (oldUrl !== newUrl) {
+      this.loadData(newUrl);
     }
   }
 
