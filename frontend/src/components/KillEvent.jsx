@@ -3,11 +3,39 @@ import React, { Component } from 'react';
 
 import Circle from './Circle';
 import Ray from './Ray';
+import EventTooltip from './EventTooltip';
 
 const MouseStates = Object.freeze({
   Kill: 'kill',
   Death: 'death',
 });
+
+function tooltip(mouseState, event) {
+  const { attacker, player, time } = event;
+
+  let props;
+  switch (mouseState) {
+    case MouseStates.Kill:
+      props = { pos: attacker.pos, eventType: 'Kill' };
+      break;
+    case MouseStates.Death:
+      props = { pos: player.pos, eventType: 'Death' };
+      break;
+    default:
+      return null;
+  }
+
+  return (
+    <EventTooltip
+      width={800}
+      time={time}
+      {...props}
+    >
+      {attacker && `Kill: ${attacker.name}`}
+      {`Death: ${player.name}`}
+    </EventTooltip>
+  );
+}
 
 class KillEvent extends Component {
   constructor(...args) {
@@ -22,7 +50,8 @@ class KillEvent extends Component {
   }
 
   render() {
-    const { event: { attacker, player }, filters } = this.props;
+    const { event, filters } = this.props;
+    const { attacker, player } = event;
     const { mouseOver } = this.state;
 
     // If the mouse is over either dot, render both
@@ -56,6 +85,7 @@ class KillEvent extends Component {
             onMouseLeave={nullSetter}
           />
         )}
+        {tooltip(mouseOver, event)}
       </g>
     );
   }

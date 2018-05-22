@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
+import { formatItem } from '../util';
 import Circle from './Circle';
+import EventTooltip from './EventTooltip';
 
 class CarePackageEvent extends Component {
   constructor(...args) {
@@ -12,17 +14,24 @@ class CarePackageEvent extends Component {
   }
 
   render() {
-    const { event: { pos } } = this.props;
+    const { event: { pos, items, time } } = this.props;
     const { mouseOver } = this.state;
 
     return (
-      <Circle
-        pos={pos}
-        r={30}
-        fill="green"
-        onMouseEnter={() => this.setState({ mouseOver: false })}
-        onMouseLeave={() => this.setState({ mouseOver: true })}
-      />
+      <g>
+        <Circle
+          pos={pos}
+          r={30}
+          fill="green"
+          onMouseEnter={() => this.setState({ mouseOver: true })}
+          onMouseLeave={() => this.setState({ mouseOver: false })}
+        />
+        {mouseOver && (
+          <EventTooltip pos={pos} eventType="Care Package" time={time}>
+            {items.map(formatItem)}
+          </EventTooltip>
+        )}
+      </g>
     );
   }
 }

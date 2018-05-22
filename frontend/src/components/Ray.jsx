@@ -40,8 +40,14 @@ const Ray = ({
 );
 
 Ray.propTypes = {
-  start: PropTypes.objectOf(PropTypes.number).isRequired,
-  end: PropTypes.objectOf(PropTypes.number).isRequired,
+  start: PropTypes.shape({
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
+  }).isRequired,
+  end: PropTypes.shape({
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
+  }).isRequired,
   color: PropTypes.string,
   size: PropTypes.number,
 };
