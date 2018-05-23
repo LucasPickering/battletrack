@@ -9,7 +9,6 @@ import {
   formatGameMode,
   formatPerspective,
   overviewLink,
-  sortKeyFunc,
 } from '../util';
 import ApiComponent from './ApiComponent';
 import RosterMatchSummary from './RosterMatchSummary';
@@ -28,7 +27,6 @@ const MatchHelper = props => {
       rosters,
     },
   } = props;
-  const sortedRosters = rosters.sort(sortKeyFunc(r => r.win_place)); // Winners first
 
   return (
     <div className="match">
@@ -40,7 +38,7 @@ const MatchHelper = props => {
       <Link to={overviewLink(matchId)}><h3>Overview</h3></Link>
 
       <Panel className="rosters">
-        {sortedRosters.map(r => <RosterMatchSummary key={r.id} shard={shard} data={r} />)}
+        {rosters.map(r => <RosterMatchSummary key={r.id} shard={shard} data={r} />)}
       </Panel>
     </div>
   );

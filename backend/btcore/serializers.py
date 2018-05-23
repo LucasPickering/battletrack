@@ -6,6 +6,83 @@ from rest_framework import serializers
 from . import models, util
 
 
+class OrderedManySerializer(serializers.ModelSerializer):
+    """
+    @brief      An extended version of ModelSerializer that supports the 'order_by' field when used
+                as a many-serializer. The 'order_by' field functions similarly to the 'source'
+                field. During serialization, the list of items will be serialized list usual, then
+                sorted by specified field. If the items themselves are sortable, then you can use
+                "order_by='*'", otherwise use "order_by='field1.field2'" to sort by field1.field2.
+                If a nested relationship is used by the nested value is missing on an item, it is
+                sorted with the value None. If the field name starts with '-', the ordering will be
+                reversed.
+    """
+
+    class OrderedListSerializer(serializers.ListSerializer):
+        ORDER_BY_SELF_CHAR = '*'
+        ORDER_BY_SEP_CHAR = '.'
+        ORDER_BY_REVERSE_CHAR = '-'
+
+        def __init__(self, *args, **kwargs):
+            order_by = kwargs.pop('order_by')
+
+            # Check if the field starts with the special character that indicates reversal
+            if order_by.startswith(self.ORDER_BY_REVERSE_CHAR):
+                self._order_by_reverse = True
+                order_by = order_by[len(self.ORDER_BY_REVERSE_CHAR):]
+            else:
+                self._order_by_reverse = False
+
+            self._order_by_fields = order_by.split(self.ORDER_BY_SEP_CHAR)
+            super().__init__(*args, **kwargs)
+
+        def key_func(self, item):
+            """
+            @brief      Key function for sorting the given item
+                        '*': sort by the item itself
+                        'field1': sort by item.field1
+                        'field1.field2': sort by item.field1.field2
+                        'field1.*' will also return item.field1 (but don't do this)
+                        If a field is missing at any level in the nesting, the value is sorted last
+                        (EVEN IF the sorting is reversed reverse).
+
+            @param      self  The object
+            @param      item  The item
+
+            @return     A tuple of (bool, sortable value) where the bool is false iff there was a
+                        KeyError while traversing the nested objects. In this case, the sortable
+                        value will be None, which isn't actually sortable, so the bool is used to
+                        make None sort last.
+            """
+            for attr in self._order_by_fields:
+                if item is None or attr == self.ORDER_BY_SELF_CHAR:
+                    break
+                item = item.get(attr)
+
+            """
+            We want the bool to always sort populated values before None (even with reversal)
+            item is None | reverse | Output
+            -------------------------------
+            False        | False   | False
+            False        | True    | True
+            True         | False   | True
+            True         | True    | False
+
+            The mighty truth table says to use XOR. thank u mr manolios
+            """
+            return ((item is None) ^ self._order_by_reverse, item)
+
+        def to_representation(self, instance):
+            data_list = super().to_representation(instance)
+            data_list.sort(key=self.key_func, reverse=self._order_by_reverse)
+            return data_list
+
+    @classmethod
+    def many_init(cls, *args, **kwargs):
+        kwargs['child'] = cls()
+        return cls.OrderedListSerializer(*args, **kwargs)
+
+
 class DevDeserializerMeta(serializers.SerializerMetaclass):
     """
     @brief      Metaclass that registers the class as a dev deserializer for the corresponding
@@ -102,7 +179,7 @@ class MatchPlayerSerializer(serializers.ModelSerializer):
         }
 
 
-class MatchRosterSerializer(serializers.ModelSerializer):
+class MatchRosterSerializer(OrderedManySerializer):
     """
     @brief      Contains info about a Roster for a certain Match
     """
@@ -124,7 +201,7 @@ class RosterMatchSerializer(serializers.ModelSerializer):
         fields = ('id', 'players')
 
 
-class PlayerMatchSerializer(serializers.ModelSerializer):
+class PlayerMatchSerializer(OrderedManySerializer):
     """
     @brief      Contains info about a Match for a certain Player
     """
@@ -139,7 +216,7 @@ class PlayerMatchSerializer(serializers.ModelSerializer):
 
 
 class MatchSerializer(DevDeserializer):
-    rosters = MatchRosterSerializer(many=True)
+    rosters = MatchRosterSerializer(many=True, order_by='win_place')
 
     class Meta:
         model = models.Match
@@ -215,7 +292,6 @@ class MatchSerializer(DevDeserializer):
     @transaction.atomic
     def create(self, validated_data):
         rosters = validated_data.pop('rosters')
-        print(rosters[0].keys())
 
         # Make two dicts: RosterID:List(PlayerMatch-dict), and PlayerID:PlayerMatchStats-dict
         roster_to_players = {roster['id']: roster.pop('players') for roster in rosters}
@@ -268,7 +344,7 @@ class MatchSerializer(DevDeserializer):
 
 
 class PlayerSerializer(DevDeserializer):
-    matches = PlayerMatchSerializer(many=True)
+    matches = PlayerMatchSerializer(many=True, order_by='-match.date')  # Latest matches first
 
     class Meta:
         model = models.Player
