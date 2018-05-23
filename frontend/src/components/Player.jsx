@@ -2,10 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { ListGroup } from 'react-bootstrap';
 
-import {
-  playerLink,
-  sortKeyFunc,
-} from '../util';
+import { playerLink } from '../util';
 import ApiComponent from './ApiComponent';
 import PlayerMatchSummary from './PlayerMatchSummary';
 import ShardSelect from './ShardSelect';
@@ -15,7 +12,6 @@ const PlayerMatches = ({ playerData }) => (
   <ListGroup className="matches">
     {playerData.matches
       .filter(m => m.match) // Filter out null matches
-      .sort(sortKeyFunc(m => m.match.date, true)) // Sort by date
       .map(m => (
         <PlayerMatchSummary
           key={m.match_id}
