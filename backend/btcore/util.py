@@ -16,7 +16,6 @@ SHARDS = [
     'pc-sa',
     'pc-sea',
 ]
-GAME_MODES = ['solo', 'duo', 'squad']
 PERSPECTIVES = ['fpp', 'tpp']
 MAPS = {
     'Erangel_Main': 'Erangel',

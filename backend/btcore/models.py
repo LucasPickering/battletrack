@@ -59,7 +59,7 @@ class Match(RelatedCacheModel):
 
     id = models.CharField(primary_key=True, max_length=util.MATCH_ID_LENGTH)
     shard = models.CharField(max_length=20, choices=util.choices(util.SHARDS))
-    mode = models.CharField(max_length=10, choices=util.choices(util.GAME_MODES))
+    mode = models.CharField(max_length=10)
     perspective = models.CharField(max_length=10, choices=util.choices(util.PERSPECTIVES))
     map_name = models.CharField(max_length=50, choices=util.choices(util.MAPS.values()))
     date = models.DateTimeField()
