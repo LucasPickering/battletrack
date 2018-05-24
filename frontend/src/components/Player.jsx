@@ -4,6 +4,7 @@ import { ListGroup } from 'react-bootstrap';
 
 import { playerLink } from '../util';
 import ApiComponent from './ApiComponent';
+import PlayerSearch from './PlayerSearch';
 import PlayerMatchSummary from './PlayerMatchSummary';
 import ShardSelect from './ShardSelect';
 import '../styles/Player.css';
@@ -27,17 +28,20 @@ PlayerMatches.propTypes = {
 };
 
 const Player = ({ shard, playerName, history }) => (
-  <div className="player">
-    <h2>{playerName}</h2>
-    <ShardSelect
-      value={shard}
-      onChange={e => history.push(playerLink(e.target.value, playerName))}
-    />
-    <ApiComponent
-      url={`/api/core/players/${shard}/${playerName}?popMatches`}
-      component={PlayerMatches}
-      dataProp="playerData"
-    />
+  <div>
+    <PlayerSearch />
+    <div className="player">
+      <h2>{playerName}</h2>
+      <ShardSelect
+        value={shard}
+        onChange={e => history.push(playerLink(e.target.value, playerName))}
+      />
+      <ApiComponent
+        url={`/api/core/players/${shard}/${playerName}?popMatches`}
+        component={PlayerMatches}
+        dataProp="playerData"
+      />
+    </div>
   </div>
 );
 

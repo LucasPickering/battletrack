@@ -18,6 +18,8 @@
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.1.4",
     "react-spinners": "^0.3.2",
+    "react-svg-pan-zoom": "^2.16.1",
+    "react-virtualized": "^9.19.1",
     "uniqid": "^4.1.1"
   },
   "scripts": {
