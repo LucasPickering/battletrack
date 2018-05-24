@@ -1,8 +1,9 @@
 import palette from 'google-palette';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Checkbox, Panel, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
+import { Panel, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { AutoSizer } from 'react-virtualized';
 import Slider from 'rc-slider';
 import uniqid from 'uniqid';
 import 'rc-slider/assets/index.css';
@@ -16,7 +17,6 @@ import {
 import ApiComponent from './ApiComponent';
 import RosterCheckList from './RosterCheckList';
 import GameMap from './GameMap';
-import Ray from './Ray';
 import KillEvent from './KillEvent';
 import CarePackageEvent from './CarePackageEvent';
 import Zone from './Zone';
@@ -115,7 +115,7 @@ class MatchOverviewHelper extends Component {
     );
   }
 
-  renderSvg() {
+  renderMap() {
     const {
       telemetry: {
         match: { map_name: mapName, rosters },
@@ -137,45 +137,53 @@ class MatchOverviewHelper extends Component {
     Object.freeze(playerColors);
 
     return (
-      <GameMap className="map" mapName={mapName}>
-        {this.displayFilterEnabled('Plane') &&
-          <Ray start={plane.start} end={plane.end} color="white" showTailTip />}
-        {this.displayFilterEnabled('Circles') &&
-          zones.map(zone => <Zone key={uniqid()} circle={zone} stroke="#ffffff" />)}
+      <div className="map">
+        <AutoSizer>
+          {size => (
+            <GameMap
+              map={{ name: mapName, size: 8000 }} // Map size should be pulled from the API
+              plane={this.displayFilterEnabled('Plane') && plane}
+              {...size}
+            >
+              {this.displayFilterEnabled('Circles') &&
+                zones.map(zone => <Zone key={uniqid()} circle={zone} stroke="#ffffff" />)}
 
-        {Object.entries(EVENT_TYPES).map(([type, v]) => {
-          const { component, filters: componentFilters } = v;
-          // Figure out which filter buttons relevant to this event are enabled
-          const enabledFilters = componentFilters.filter(this.displayFilterEnabled);
+              {Object.entries(EVENT_TYPES).map(([type, v]) => {
+                const { component, filters: componentFilters } = v;
+                // Figure out which filter buttons relevant to this event are enabled
+                const enabledFilters = componentFilters.filter(this.displayFilterEnabled);
 
-          // If any of the relevant filters are enabled, render all the objects
-          if (enabledFilters.length > 0) {
-            return events[type]
-              .filter(timeFilter) // Filter by time
-              .map(event => React.createElement(component, {
-                  key: uniqid(),
-                  event,
-                  playerColors,
-                  filters: enabledFilters,
-              }));
-          }
-          return null; // Nothing to render
-        })}
-      </GameMap>
+                // If any of the relevant filters are enabled, render all the objects
+                if (enabledFilters.length > 0) {
+                  return events[type]
+                    .filter(timeFilter) // Filter by time
+                    .map(event => React.createElement(component, {
+                        key: uniqid(),
+                        event,
+                        playerColors,
+                        filters: enabledFilters,
+                    }));
+                }
+                return null; // Nothing to render
+              })}
+            </GameMap>
+          )}
+        </AutoSizer>
+      </div>
     );
   }
 
   render() {
     const { matchId } = this.props;
     return (
-      <Panel className="overview">
+      <div className="overview">
         <Link className="match-link" to={matchLink(matchId)}><h3>Back to Match</h3></Link>
-        {this.renderTimeRange()}
         {this.renderFilterButtons()}
+        {this.renderTimeRange()}
         {this.renderPlayerList()}
         <br />
-        {this.renderSvg()}
-      </Panel>
+        {this.renderMap()}
+      </div>
     );
   }
 }
