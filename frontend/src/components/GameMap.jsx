@@ -21,6 +21,7 @@ class GameMap extends Component {
       <ReactSVGPanZoom
         ref={viewer => { this.viewer = viewer; }}
         miniaturePosition="none"
+        detectAutoPan={false}
         {...rest}
       >
         <svg width={size} height={size}>

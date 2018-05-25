@@ -31,6 +31,10 @@
   overflow-y: scroll;
 }
 
+.overview .player-list label {
+  font-weight: 500;
+}
+
 .overview .map {;
   grid-row: 3;
   grid-column: 2;
