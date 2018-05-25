@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import BtPropTypes from '../BtPropTypes';
+
 const Tooltip = props => {
   const {
     pos: { x, y },
@@ -19,14 +21,8 @@ const Tooltip = props => {
 };
 
 Tooltip.propTypes = {
-  pos: PropTypes.shape({
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired,
-  }).isRequired,
-  margin: PropTypes.shape({
-    x: PropTypes.number,
-    y: PropTypes.number,
-  }),
+  pos: BtPropTypes.pos.isRequired,
+  margin: BtPropTypes.pos,
   width: PropTypes.number,
   height: PropTypes.number,
   children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)]),

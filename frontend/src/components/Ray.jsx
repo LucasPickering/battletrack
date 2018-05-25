@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import BtPropTypes from '../BtPropTypes';
+
 const Ray = ({
   start,
   end,
@@ -47,14 +49,8 @@ const Ray = ({
 );
 
 Ray.propTypes = {
-  start: PropTypes.shape({
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired,
-  }).isRequired,
-  end: PropTypes.shape({
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired,
-  }).isRequired,
+  start: BtPropTypes.pos.isRequired,
+  end: BtPropTypes.pos.isRequired,
   color: PropTypes.string,
   strokeWidth: PropTypes.number,
   showTailTip: PropTypes.bool,

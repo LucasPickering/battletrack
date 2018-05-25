@@ -3,6 +3,7 @@ import React from 'react';
 import uniqid from 'uniqid';
 
 import { formatSeconds } from '../util';
+import BtPropTypes from '../BtPropTypes';
 import Tooltip from './Tooltip';
 
 const EventTooltip = props => {
@@ -41,7 +42,7 @@ const EventTooltip = props => {
 };
 
 EventTooltip.propTypes = {
-  pos: PropTypes.shape({ x: PropTypes.number, y: PropTypes.number }).isRequired,
+  pos: BtPropTypes.pos.isRequired,
   eventType: PropTypes.string.isRequired,
   time: PropTypes.number.isRequired,
   heights: PropTypes.shape({

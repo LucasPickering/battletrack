@@ -19,7 +19,6 @@ import RosterCheckList from './RosterCheckList';
 import GameMap from './GameMap';
 import KillEvent from './KillEvent';
 import CarePackageEvent from './CarePackageEvent';
-import Zone from './Zone';
 import '../styles/MatchOverview.css';
 
 const Range = Slider.createSliderWithTooltip(Slider.Range); // Janky AF
@@ -143,11 +142,9 @@ class MatchOverviewHelper extends Component {
             <GameMap
               map={{ name: mapName, size: 8000 }} // Map size should be pulled from the API
               plane={this.displayFilterEnabled('Plane') && plane}
+              whiteZones={this.displayFilterEnabled('Circles') && zones}
               {...size}
             >
-              {this.displayFilterEnabled('Circles') &&
-                zones.map(zone => <Zone key={uniqid()} circle={zone} stroke="#ffffff" />)}
-
               {Object.entries(EVENT_TYPES).map(([type, v]) => {
                 const { component, filters: componentFilters } = v;
                 // Figure out which filter buttons relevant to this event are enabled

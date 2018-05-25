@@ -1,15 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import BtPropTypes from '../BtPropTypes';
 import Circle from './Circle';
 
-const Zone = ({ circle: { pos, radius }, ...rest }) => <Circle pos={pos} r={radius} {...rest} />;
+const Zone = ({ circle, ...rest }) => <Circle {...circle} {...rest} />;
 
 Zone.propTypes = {
-  circle: PropTypes.shape({
-    r: PropTypes.number,
-    pos: PropTypes.shape({ x: PropTypes.number, y: PropTypes.number }),
-  }).isRequired,
+  circle: BtPropTypes.circle.isRequired,
   fill: PropTypes.string,
   strokeWidth: PropTypes.number,
 };
