@@ -1,18 +1,18 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const Circle = ({ pos: { x, y }, ...rest }) => <circle cx={x} cy={y} {...rest} />;
+import BtPropTypes from '../BtPropTypes';
+
+const Circle = ({ pos: { x, y }, radius, ...rest }) =>
+  <circle cx={x} cy={y} r={radius} {...rest} />;
 
 Circle.propTypes = {
-  pos: PropTypes.shape({
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired,
-  }).isRequired,
-  r: PropTypes.number,
+  pos: BtPropTypes.pos.isRequired,
+  radius: PropTypes.number,
 };
 
 Circle.defaultProps = {
-  r: 5,
+  radius: 5,
 };
 
 export default Circle;
