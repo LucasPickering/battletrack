@@ -19,13 +19,14 @@ class EventMark extends Component {
       pos,
       time,
       player,
+      scale,
     } = this.props;
     const { mouseOver } = this.state;
 
     return (
       <g
         fill={color}
-        transform={`translate(${pos.x},${pos.y})`}
+        transform={`translate(${pos.x},${pos.y}),scale(${scale})`}
         onMouseEnter={() => this.setState({ mouseOver: true })}
         onMouseLeave={() => this.setState({ mouseOver: false })}
       >
@@ -41,6 +42,7 @@ EventMark.propTypes = {
   pos: BtPropTypes.pos.isRequired,
   time: PropTypes.number.isRequired,
   player: PropTypes.objectOf(PropTypes.any),
+  scale: PropTypes.number.isRequired,
 };
 
 EventMark.defaultProps = {

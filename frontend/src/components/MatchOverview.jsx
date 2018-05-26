@@ -78,10 +78,6 @@ class MatchOverviewHelper extends Component {
     this.markFilterEnabled = this.markFilterEnabled.bind(this);
   }
 
-  getPlayerColor(player) {
-    return this.rosterColors[this.playerToRoster[player.id]];
-  }
-
   markFilterEnabled(markType) {
     return this.state.markFilters.includes(markType);
   }
@@ -146,7 +142,13 @@ class MatchOverviewHelper extends Component {
   }
 
   renderMap() {
-    const { telemetry } = this.props;
+    const {
+      telemetry: {
+        match: { map_name: mapName },
+        plane,
+        zones,
+      },
+    } = this.props;
     const { timeRange: [minTime, maxTime] } = this.state;
 
     // Filter marks by type/time/player and flatten them into one big list
@@ -162,11 +164,11 @@ class MatchOverviewHelper extends Component {
 
     return (
       <MarkedGameMap
-        telemetry={telemetry}
+        mapName={mapName}
         marks={marks}
         rosterPalette={this.rosterPalette}
-        showPlane={this.markFilterEnabled('plane')}
-        showWhiteZones={this.markFilterEnabled('zones')}
+        plane={this.markFilterEnabled('plane') ? plane : undefined}
+        whiteZones={this.markFilterEnabled('zones') ? zones : undefined}
       />
     );
   }
