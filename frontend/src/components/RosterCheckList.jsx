@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 
+import RosterPalette from '../RosterPalette';
 import '../styles/RosterCheckList.css';
 
 class RosterCheckList extends Component {
@@ -16,7 +17,7 @@ class RosterCheckList extends Component {
   render() {
     const {
       rosters,
-      rosterColors,
+      rosterPalette,
       enabledPlayers,
       onChange,
     } = this.props;
@@ -24,7 +25,7 @@ class RosterCheckList extends Component {
 
     // One node per roster, one sub-node per player
     const nodes = rosters.map(({ id, win_place: winPlace, players }) => {
-      const color = rosterColors[id];
+      const color = rosterPalette.getRosterColor(id);
       return ({
         value: id,
         label: `#${winPlace}`,
@@ -51,7 +52,7 @@ class RosterCheckList extends Component {
 
 RosterCheckList.propTypes = {
   rosters: PropTypes.arrayOf(PropTypes.object).isRequired,
-  rosterColors: PropTypes.objectOf(PropTypes.string).isRequired,
+  rosterPalette: PropTypes.instanceOf(RosterPalette).isRequired,
   enabledPlayers: PropTypes.arrayOf(PropTypes.string).isRequired,
   onChange: PropTypes.func,
 };
