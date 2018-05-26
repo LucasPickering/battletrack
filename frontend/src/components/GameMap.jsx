@@ -10,7 +10,7 @@ import Zone from './Zone';
 
 class GameMap extends Component {
   componentDidMount() {
-    this.viewer.fitToViewer(); // TODO: Make this work
+    this.viewer.fitToViewer();
   }
 
   render() {

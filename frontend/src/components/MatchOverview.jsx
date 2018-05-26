@@ -180,12 +180,14 @@ class MatchOverviewHelper extends Component {
     return (
       <div className="map">
         <AutoSizer>
-          {size => (
+          {/* The size check is necessary to prevent weird double-rendering bugs. Trust me. */}
+          {({ width, height }) => (width === 0 || height === 0 ? null : (
             <GameMap
               map={{ name: mapName, size: 8000 }} // Map size should be pulled from the API
               plane={this.markFilterEnabled('plane') ? plane : undefined}
               whiteZones={this.markFilterEnabled('zones') ? zones : undefined}
-              {...size}
+              width={width}
+              height={height}
             >
               {marks.map(({
                 id,
@@ -200,7 +202,7 @@ class MatchOverviewHelper extends Component {
                 ...rest,
               }))}
             </GameMap>
-          )}
+          ))}
         </AutoSizer>
       </div>
     );
@@ -214,7 +216,6 @@ class MatchOverviewHelper extends Component {
         {this.renderFilterButtons()}
         {this.renderTimeRange()}
         {this.renderPlayerList()}
-        <br />
         {this.renderMap()}
       </div>
     );
