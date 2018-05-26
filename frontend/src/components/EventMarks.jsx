@@ -37,7 +37,7 @@ class EventMarks extends Component {
 EventMarks.propTypes = {
   marks: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
-    icon: PropTypes.element.isRequired,
+    icon: PropTypes.objectOf(PropTypes.any).isRequired,
     pos: BtPropTypes.pos.isRequired,
     time: PropTypes.number.isRequired,
     player: PropTypes.objectOf(PropTypes.any),

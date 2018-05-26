@@ -31,7 +31,7 @@ export default Object.freeze({
     carePackage: {
       label: 'Care Packages',
       generator: ({ pos, ...rest }) => ({
-        ...defaultGen(rest, '\uf4cd', { fill: '#b70505', stroke: 'white', strokeWidth: 0.8 }),
+        ...defaultGen(rest, '\uf4cd', { fill: 'white' }),
         pos,
       }),
     },
