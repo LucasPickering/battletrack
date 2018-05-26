@@ -1,22 +1,29 @@
 import React from 'react';
+import uniqid from 'uniqid';
+
+function defaultGen(event, iconCode) {
+  return {
+    id: uniqid(),
+    icon: <text className="fa">{iconCode}</text>,
+    time: event.time,
+  };
+}
 
 export default Object.freeze({
   PlayerKill: {
     death: {
       label: 'Deaths',
-      generator: ({ player, time }) => ({
-        icon: <text className="fa">&#xf00d;</text>,
+      generator: ({ player, ...rest }) => ({
+        ...defaultGen(rest, '\uf00d'),
         pos: player.pos,
-        time,
         player,
       }),
     },
     kill: {
       label: 'Kills',
-      generator: ({ attacker, time }) => attacker && {
-        icon: <text className="fa">&#xf05b;</text>,
+      generator: ({ attacker, ...rest }) => attacker && {
+        ...defaultGen(rest, '\uf05b'),
         pos: attacker.pos,
-        time,
         player: attacker,
       },
     },
@@ -24,10 +31,9 @@ export default Object.freeze({
   CarePackageLand: {
     carePackage: {
       label: 'Care Packages',
-      generator: ({ pos, time }) => ({
-        icon: <text className="fa">&#xf4cd;</text>,
+      generator: ({ pos, ...rest }) => ({
+        ...defaultGen(rest, '\uf4cd'),
         pos,
-        time,
       }),
     },
   },
