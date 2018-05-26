@@ -8,7 +8,6 @@ import GameMap from './GameMap';
 import EventMarks from './EventMarks';
 import Ray from './Ray';
 import Zones from './Zones';
-import '../styles/MatchOverview.css';
 
 class MarkedGameMap extends Component {
   constructor(props, ...args) {
@@ -45,12 +44,12 @@ class MarkedGameMap extends Component {
     const markScale = scale * markScaleFactor;
 
     return (
-      <div className="map">
+      <div className="marked-game-map" style={{ display: 'flex' }}>
         <AutoSizer>
           {/* The size check is necessary to prevent weird double-rendering bugs. Trust me. */}
           {({ width, height }) => (width === 0 || height === 0 ? null : (
             <GameMap
-              map={{ name: mapName, size: this.mapSize }} // Map size should be pulled from the API
+              map={{ name: mapName, size: this.mapSize }}
               width={width}
               height={height}
               onZoom={zoomObj => this.setState({
@@ -60,7 +59,8 @@ class MarkedGameMap extends Component {
               scaleFactorMin={this.denormalizeZoom(0.95, width, height)}
               {...rest}
             >
-              {plane && <Ray {...plane} color="white" strokeWidth={lineScale * 1.5} showTailTip /> }
+              {plane
+                && <Ray {...plane} color="white" strokeWidth={lineScale * 1.5} showTailTip />}
               <Zones circles={whiteZones} stroke="#ffffff" strokeWidth={lineScale} />
               <EventMarks marks={marks} scale={markScale} rosterPalette={rosterPalette} />
             </GameMap>
