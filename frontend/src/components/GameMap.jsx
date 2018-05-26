@@ -7,6 +7,7 @@ import { mapImage } from '../util';
 import BtPropTypes from '../BtPropTypes';
 import Ray from './Ray';
 import Zone from './Zone';
+import '../styles/GameMap.css';
 
 class GameMap extends Component {
   componentDidMount() {
@@ -24,6 +25,7 @@ class GameMap extends Component {
     } = this.props;
     return (
       <ReactSVGPanZoom
+        className="game-map"
         ref={viewer => { this.viewer = viewer; }}
         miniaturePosition="none"
         detectAutoPan={false}
