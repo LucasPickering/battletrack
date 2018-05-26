@@ -91,7 +91,7 @@ class MatchOverviewHelper extends Component {
   }
 
   getPlayerColor(player) {
-    return player ? this.rosterColors[this.playerToRoster[player.id]] : null;
+    return this.rosterColors[this.playerToRoster[player.id]];
   }
 
   markFilterEnabled(markType) {
@@ -184,13 +184,13 @@ class MatchOverviewHelper extends Component {
           {size => (
             <GameMap
               map={{ name: mapName, size: 8000 }} // Map size should be pulled from the API
-              plane={this.markFilterEnabled('plane') ? plane : null}
-              whiteZones={this.markFilterEnabled('zones') ? zones : []}
+              plane={this.markFilterEnabled('plane') ? plane : undefined}
+              whiteZones={this.markFilterEnabled('zones') ? zones : undefined}
               {...size}
             >
               {marks.map(({ player, time, ...rest }) => React.createElement(EventMark, {
                 key: uniqid(),
-                color: this.getPlayerColor(player),
+                color: player ? this.getPlayerColor(player) : undefined,
                 time,
                 player,
                 ...rest,

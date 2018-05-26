@@ -6,7 +6,6 @@
   "dependencies": {
     "axios": "^0.18.0",
     "fast-json-stable-stringify": "^2.0.0",
-    "font-awesome": "^4.7.0",
     "google-palette": "^1.1.0",
     "json-schema-traverse": "^0.4.0",
     "moment-timezone": "^0.5.14",

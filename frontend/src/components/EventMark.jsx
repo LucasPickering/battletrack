@@ -2,10 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import BtPropTypes from '../BtPropTypes';
-import Circle from './Circle';
 import EventTooltip from './EventTooltip';
-
-const DOT_SIZE = 10;
 
 class EventMark extends Component {
   constructor(...args) {
@@ -32,20 +29,14 @@ class EventMark extends Component {
         onMouseEnter={() => this.setState({ mouseOver: true })}
         onMouseLeave={() => this.setState({ mouseOver: false })}
       >
-        {icon || (
-          <Circle
-            pos={{ x: 0, y: 0 }}
-            r={DOT_SIZE}
-            fill={color || 'white'}
-          />
-        )}
+        {icon}
       </g>
     );
   }
 }
 
 EventMark.propTypes = {
-  icon: PropTypes.element,
+  icon: PropTypes.element.isRequired,
   color: PropTypes.string,
   pos: BtPropTypes.pos.isRequired,
   time: PropTypes.number.isRequired,
@@ -53,8 +44,7 @@ EventMark.propTypes = {
 };
 
 EventMark.defaultProps = {
-  icon: null,
-  color: null,
+  color: 'white',
   player: null,
 };
 

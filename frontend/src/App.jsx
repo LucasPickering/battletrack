@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import 'font-awesome/css/font-awesome.css';
 
 import { routeComponent } from './util';
 import Match from './components/Match';

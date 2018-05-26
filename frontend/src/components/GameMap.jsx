@@ -7,7 +7,6 @@ import { mapImage } from '../util';
 import BtPropTypes from '../BtPropTypes';
 import Ray from './Ray';
 import Zone from './Zone';
-import '../styles/GameMap.css';
 
 class GameMap extends Component {
   componentDidMount() {
