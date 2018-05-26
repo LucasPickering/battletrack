@@ -6,29 +6,30 @@ export default Object.freeze({
   PlayerKill: {
     death: {
       label: 'Deaths',
-      generator: ({ player, ...rest }) => ({
+      generator: ({ player, time }) => ({
         icon: <text className="icon">&#xf00d;</text>,
         pos: player.pos,
+        time,
         player,
-        ...rest,
       }),
     },
     kill: {
       label: 'Kills',
-      generator: ({ attacker, ...rest }) => attacker && {
+      generator: ({ attacker, time }) => attacker && {
         icon: <text className="icon">&#xf05b;</text>,
         pos: attacker.pos,
+        time,
         player: attacker,
-        ...rest,
       },
     },
   },
   CarePackageLand: {
     carePackage: {
       label: 'Care Packages',
-      generator: event => ({
+      generator: ({ pos, time }) => ({
         icon: <CarePackageMark />,
-        ...event,
+        pos,
+        time,
       }),
     },
   },

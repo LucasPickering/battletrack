@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SCALE = 40;
+const SCALE = 20;
 const STRAP_OFFSET = 0.3;
 
 const CarePackageMark = () => (
