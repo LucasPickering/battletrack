@@ -1,23 +1,21 @@
-import palette from 'google-palette';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Panel, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { AutoSizer } from 'react-virtualized';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
+import EventMappers from '../EventMappers';
+import RosterPalette from '../RosterPalette';
 import {
   formatSeconds,
   matchLink,
   inRange,
   range,
 } from '../util';
-import EventMappers from '../EventMappers';
 import ApiComponent from './ApiComponent';
 import RosterCheckList from './RosterCheckList';
-import GameMap from './GameMap';
-import EventMark from './EventMark';
+import MarkedGameMap from './MarkedGameMap';
 import '../styles/MatchOverview.css';
 
 const Range = Slider.createSliderWithTooltip(Slider.Range); // Janky AF
@@ -38,23 +36,7 @@ class MatchOverviewHelper extends Component {
 
     const { telemetry: { match: { duration, rosters }, events } } = props;
 
-    // Build an object of playerID:rosterID
-    this.playerToRoster = rosters.reduce(
-      (acc, { id, players }) => {
-        players.forEach(player => { acc[player.player_id] = id; });
-        return acc;
-      },
-      {},
-    );
-    Object.freeze(this.playerToRoster);
-
-    // Generate a color palette, with one color per roster
-    this.rosterColors = {};
-    palette('rainbow', rosters.length, 0, 0.7, 1.0) // Set saturation/value manually
-      .map(c => `#${c}`).forEach((color, index) => {
-        this.rosterColors[rosters[index].id] = color;
-      });
-    Object.freeze(this.rosterColors);
+    this.rosterPalette = new RosterPalette(rosters); // This creates a color for each roster
 
     // Convert events to marks. Each event can become one or more mark. Events look like:
     // {
@@ -83,7 +65,14 @@ class MatchOverviewHelper extends Component {
     this.state = {
       timeRange: [0, duration], // Time range to display events in
       markFilters: Object.keys(DISPLAY_FILTERS), // Mark types to display
-      enabledPlayers: Object.keys(this.playerToRoster), // All players enabled by default
+      // Extract every player ID from the list of rosters into a big flat list
+      enabledPlayers: rosters.reduce(
+        (acc, roster) => {
+          roster.players.forEach(player => acc.push(player.player_id));
+          return acc;
+        },
+        [],
+      ),
     };
 
     this.markFilterEnabled = this.markFilterEnabled.bind(this);
@@ -148,7 +137,7 @@ class MatchOverviewHelper extends Component {
       <Panel className="player-list">
         <RosterCheckList
           rosters={rosters}
-          rosterColors={this.rosterColors}
+          rosterPalette={this.rosterPalette}
           enabledPlayers={enabledPlayers}
           onChange={val => this.setState({ enabledPlayers: val })}
         />
@@ -157,13 +146,7 @@ class MatchOverviewHelper extends Component {
   }
 
   renderMap() {
-    const {
-      telemetry: {
-        match: { map_name: mapName },
-        plane,
-        zones,
-      },
-    } = this.props;
+    const { telemetry } = this.props;
     const { timeRange: [minTime, maxTime] } = this.state;
 
     // Filter marks by type/time/player and flatten them into one big list
@@ -178,33 +161,13 @@ class MatchOverviewHelper extends Component {
       );
 
     return (
-      <div className="map">
-        <AutoSizer>
-          {/* The size check is necessary to prevent weird double-rendering bugs. Trust me. */}
-          {({ width, height }) => (width === 0 || height === 0 ? null : (
-            <GameMap
-              map={{ name: mapName, size: 8000 }} // Map size should be pulled from the API
-              plane={this.markFilterEnabled('plane') ? plane : undefined}
-              whiteZones={this.markFilterEnabled('zones') ? zones : undefined}
-              width={width}
-              height={height}
-            >
-              {marks.map(({
-                id,
-                player,
-                time,
-                ...rest
-              }) => React.createElement(EventMark, {
-                key: id,
-                color: player ? this.getPlayerColor(player) : undefined,
-                time,
-                player,
-                ...rest,
-              }))}
-            </GameMap>
-          ))}
-        </AutoSizer>
-      </div>
+      <MarkedGameMap
+        telemetry={telemetry}
+        marks={marks}
+        rosterPalette={this.rosterPalette}
+        showPlane={this.markFilterEnabled('plane')}
+        showWhiteZones={this.markFilterEnabled('zones')}
+      />
     );
   }
 
@@ -214,9 +177,9 @@ class MatchOverviewHelper extends Component {
       <div className="overview">
         <Link className="match-link" to={matchLink(matchId)}><h3>Back to Match</h3></Link>
         {this.renderFilterButtons()}
+        {this.renderMap()}
         {this.renderTimeRange()}
         {this.renderPlayerList()}
-        {this.renderMap()}
       </div>
     );
   }
