@@ -6,5 +6,5 @@ function get(endpoint) {
   return axios.get(endpoint);
 }
 
-const exported = { get };
+const exported = Object.freeze({ get });
 export default exported;

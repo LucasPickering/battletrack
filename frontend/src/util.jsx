@@ -59,18 +59,6 @@ export function playerLink(shard, playerName) {
   return `/players/${shard}/${playerName}`;
 }
 
-export function sortKeyFunc(keyFunc, invert = false) {
-  return (e1, e2) => {
-    const [k1, k2] = [e1, e2].map(keyFunc); // Apply the key extractor to each element
-    if (k1 < k2) {
-      return invert ? 1 : -1;
-    } else if (k2 < k1) {
-      return invert ? -1 : 1;
-    }
-    return 0;
-  };
-}
-
 export function inRange(x, min, max) {
   return min <= x && x <= max;
 }

@@ -14,23 +14,35 @@ class RosterCheckList extends Component {
   }
 
   render() {
-    const { rosters, enabledPlayers, onChange } = this.props;
+    const {
+      rosters,
+      rosterColors,
+      enabledPlayers,
+      onChange,
+    } = this.props;
     const { expanded } = this.state;
-    const nodes = rosters.map(({ id, win_place: winPlace, players }) => ({
-      value: id,
-      label: `#${winPlace}`,
-      children: players.map(({ player_id: playerId, player_name: playerName }) => ({
-        value: playerId,
-        label: playerName,
-      })),
-    }));
+
+    // One node per roster, one sub-node per player
+    const nodes = rosters.map(({ id, win_place: winPlace, players }) => {
+      const color = rosterColors[id];
+      return ({
+        value: id,
+        label: `#${winPlace}`,
+        icon: <i className="fa fa-users" style={{ color }} />,
+        children: players.map(({ player_id: playerId, player_name: playerName }) => ({
+          value: playerId,
+          label: playerName,
+          icon: <i className="fa fa-user" style={{ color }} />,
+        })),
+      });
+    });
+
     return (
       <CheckboxTree
         nodes={nodes}
         checked={enabledPlayers}
         expanded={expanded}
-        showNodeIcon={false}
-        onCheck={checked => onChange(new Set(checked))}
+        onCheck={checked => onChange(checked)}
         onExpand={exp => this.setState({ expanded: exp })}
       />
     );
@@ -39,7 +51,8 @@ class RosterCheckList extends Component {
 
 RosterCheckList.propTypes = {
   rosters: PropTypes.arrayOf(PropTypes.object).isRequired,
-  enabledPlayers: PropTypes.instanceOf(Set).isRequired,
+  rosterColors: PropTypes.objectOf(PropTypes.string).isRequired,
+  enabledPlayers: PropTypes.arrayOf(PropTypes.string).isRequired,
   onChange: PropTypes.func,
 };
 
