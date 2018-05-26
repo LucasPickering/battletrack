@@ -1,13 +1,11 @@
 import React from 'react';
 
-import CarePackageMark from './components/CarePackageMark';
-
 export default Object.freeze({
   PlayerKill: {
     death: {
       label: 'Deaths',
       generator: ({ player, time }) => ({
-        icon: <text className="icon">&#xf00d;</text>,
+        icon: <text className="fa">&#xf00d;</text>,
         pos: player.pos,
         time,
         player,
@@ -16,7 +14,7 @@ export default Object.freeze({
     kill: {
       label: 'Kills',
       generator: ({ attacker, time }) => attacker && {
-        icon: <text className="icon">&#xf05b;</text>,
+        icon: <text className="fa">&#xf05b;</text>,
         pos: attacker.pos,
         time,
         player: attacker,
@@ -27,7 +25,7 @@ export default Object.freeze({
     carePackage: {
       label: 'Care Packages',
       generator: ({ pos, time }) => ({
-        icon: <CarePackageMark />,
+        icon: <text className="fa">&#xf4cd;</text>,
         pos,
         time,
       }),

@@ -1,3 +1,24 @@
+.react-checkbox-tree .rct-icon {
+  font-family: Font Awesome\ 5 Free;
+  font-weight: 900;
+}
+
+.react-checkbox-tree .rct-icon-uncheck::before {
+  font-weight: 400;
+  content: "\f0c8";
+}
+
+.react-checkbox-tree .rct-icon-half-check::before {
+  font-weight: 400;
+  content: "\f14a";
+  opacity: 0.5;
+}
+
+.react-checkbox-tree .rct-icon-check::before {
+  font-weight: 400;
+  content: "\f14a";
+}
+
 .roster-check-list .roster {
   width: 100%;
   display: grid;
