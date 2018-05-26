@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AutoSizer } from 'react-virtualized';
-import uniqid from 'uniqid';
 
 import BtPropTypes from '../util/BtPropTypes';
 import RosterPalette from '../util/RosterPalette';
 import GameMap from './GameMap';
-import EventMark from './EventMark';
+import EventMarks from './EventMarks';
 import Ray from './Ray';
-import Zone from './Zone';
+import Zones from './Zones';
 import '../styles/MatchOverview.css';
 
 class MarkedGameMap extends Component {
@@ -16,7 +15,7 @@ class MarkedGameMap extends Component {
     super(props, ...args);
     this.mapSize = 8000; // TODO: Replace this with data passed from the API
     this.state = {
-      zoom: 0,
+      zoom: null,
     };
   }
 
@@ -35,11 +34,15 @@ class MarkedGameMap extends Component {
       rosterPalette,
       plane,
       whiteZones,
+      lineScaleFactor,
       markScaleFactor,
       ...rest
     } = this.props;
     const { zoom } = this.state;
-    const markScale = zoom > 0 ? (markScaleFactor / zoom) : 1;
+
+    const scale = zoom ? (1 / zoom) : 0;
+    const lineScale = scale * lineScaleFactor;
+    const markScale = scale * markScaleFactor;
 
     return (
       <div className="map">
@@ -57,23 +60,9 @@ class MarkedGameMap extends Component {
               scaleFactorMin={this.denormalizeZoom(0.95, width, height)}
               {...rest}
             >
-              {plane && <Ray {...plane} color="white" showTailTip /> }
-              {whiteZones.map(zone => (
-                <Zone key={uniqid()} circle={zone} stroke="#ffffff" strokeWidth={markScale * 2} />
-              ))}
-              {marks.map(({
-                id,
-                player,
-                time,
-                ...markRest
-              }) => React.createElement(EventMark, {
-                key: id,
-                color: player ? rosterPalette.getPlayerColor(player.id) : undefined,
-                time,
-                player,
-                scale: markScale,
-                ...markRest,
-              }))}
+              {plane && <Ray {...plane} color="white" strokeWidth={lineScale * 1.5} showTailTip /> }
+              <Zones circles={whiteZones} stroke="#ffffff" strokeWidth={lineScale} />
+              <EventMarks marks={marks} scale={markScale} rosterPalette={rosterPalette} />
             </GameMap>
           ))}
         </AutoSizer>
@@ -88,13 +77,15 @@ MarkedGameMap.propTypes = {
   rosterPalette: PropTypes.instanceOf(RosterPalette).isRequired,
   plane: BtPropTypes.ray,
   whiteZones: PropTypes.arrayOf(BtPropTypes.circle),
+  lineScaleFactor: PropTypes.number,
   markScaleFactor: PropTypes.number,
 };
 
 MarkedGameMap.defaultProps = {
   plane: null,
   whiteZones: [],
-  markScaleFactor: 7,
+  lineScaleFactor: 10,
+  markScaleFactor: 10,
 };
 
 export default MarkedGameMap;
