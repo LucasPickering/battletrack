@@ -51,9 +51,10 @@ class MatchOverviewHelper extends Component {
 
     // Generate a color palette, with one color per roster
     this.rosterColors = {};
-    palette('tol-rainbow', rosters.length).map(c => `#${c}`).forEach((color, index) => {
-      this.rosterColors[rosters[index].id] = color;
-    });
+    palette('rainbow', rosters.length, 0, 0.7, 1.0) // Set saturation/value manually
+      .map(c => `#${c}`).forEach((color, index) => {
+        this.rosterColors[rosters[index].id] = color;
+      });
     Object.freeze(this.rosterColors);
 
     this.state = {
