@@ -5,7 +5,6 @@ import { Panel, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { AutoSizer } from 'react-virtualized';
 import Slider from 'rc-slider';
-import uniqid from 'uniqid';
 import 'rc-slider/assets/index.css';
 
 import {
@@ -188,8 +187,13 @@ class MatchOverviewHelper extends Component {
               whiteZones={this.markFilterEnabled('zones') ? zones : undefined}
               {...size}
             >
-              {marks.map(({ player, time, ...rest }) => React.createElement(EventMark, {
-                key: uniqid(),
+              {marks.map(({
+                id,
+                player,
+                time,
+                ...rest
+              }) => React.createElement(EventMark, {
+                key: id,
                 color: player ? this.getPlayerColor(player) : undefined,
                 time,
                 player,
