@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import { ReactSVGPanZoom } from 'react-svg-pan-zoom';
 import uniqid from 'uniqid';
 
-import { mapImage } from '../util';
-import BtPropTypes from '../BtPropTypes';
+import { mapImage } from '../util/funcs';
+import BtPropTypes from '../util/BtPropTypes';
 import Ray from './Ray';
 import Zone from './Zone';
 

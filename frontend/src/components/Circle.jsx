@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import BtPropTypes from '../BtPropTypes';
+import BtPropTypes from '../util/BtPropTypes';
 
 const Circle = ({ pos: { x, y }, radius, ...rest }) =>
   <circle cx={x} cy={y} r={radius} {...rest} />;

@@ -9,7 +9,7 @@ import {
   formatGameMode,
   formatPerspective,
   overviewLink,
-} from '../util';
+} from '../util/funcs';
 import ApiComponent from './ApiComponent';
 import PlayerSearch from './PlayerSearch';
 import RosterMatchSummary from './RosterMatchSummary';

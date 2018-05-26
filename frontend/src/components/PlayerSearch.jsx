@@ -8,7 +8,7 @@ import {
 } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 
-import { playerLink } from '../util';
+import { playerLink } from '../util/funcs';
 import '../styles/PlayerSearch.css';
 
 class PlayerSearch extends Component {

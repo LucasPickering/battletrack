@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AutoSizer } from 'react-virtualized';
 
-import RosterPalette from '../RosterPalette';
+import RosterPalette from '../util/RosterPalette';
 import GameMap from './GameMap';
 import EventMark from './EventMark';
 import '../styles/MatchOverview.css';

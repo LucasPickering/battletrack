@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { FormControl } from 'react-bootstrap';
 
-import api from '../api';
-import { formatShard } from '../util';
+import api from '../util/api';
+import { formatShard } from '../util/funcs';
 
 class ShardSelect extends Component {
   constructor(...args) {

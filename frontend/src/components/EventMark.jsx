@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import BtPropTypes from '../BtPropTypes';
+import BtPropTypes from '../util/BtPropTypes';
 import EventTooltip from './EventTooltip';
 
 class EventMark extends Component {

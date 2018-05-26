@@ -2,7 +2,7 @@ import moment from 'moment-timezone';
 import React from 'react';
 import { Table } from 'react-bootstrap';
 
-import Erangel from './images/maps/Erangel.jpg';
+import Erangel from '../images/maps/Erangel.jpg';
 
 const MAP_IMAGES = {
   Erangel,

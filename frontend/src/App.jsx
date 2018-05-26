@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-import { routeComponent } from './util';
+import { routeComponent } from './util/funcs';
 import Match from './components/Match';
 import MatchOverview from './components/MatchOverview';
 import Player from './components/Player';
