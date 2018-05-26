@@ -37,7 +37,7 @@ class MatchOverviewHelper extends Component {
   constructor(props, ...args) {
     super(props, ...args);
 
-    const { telemetry: { match: { duration, rosters } } } = props;
+    const { telemetry: { match: { duration, rosters }, events } } = props;
 
     // Build an object of playerID:rosterID
     this.playerToRoster = rosters.reduce(
@@ -57,6 +57,30 @@ class MatchOverviewHelper extends Component {
       });
     Object.freeze(this.rosterColors);
 
+    // Convert events to marks. Each event can become one or more mark. Events look like:
+    // {
+    //   EventType1: [e1, e2, ...],
+    //   ...
+    // }
+    // Marks will be an object of MarkType:list, containing all marks that might be displayed.
+    // {
+    //   MarkType1: [m1, m2, ...],
+    //   ...
+    // }
+    // Filtering based on time/type/player is based on state so that will be done during render.
+    this.marks = Object.entries(EventMappers).reduce((acc, [eventType, mapper]) => {
+      const eventsForType = events[eventType];
+      // This event type has 1+ mark types. Add a list entry in the acc for each mark type.
+      Object.entries(mapper)
+        .forEach(([markType, markTypeObj]) => {
+          acc[markType] = eventsForType
+            .map(markTypeObj.generator) // Convert the list of events into a list of marks
+            .filter(mark => mark); // Filter out null marks
+        });
+      return acc;
+    }, {});
+    Object.freeze(this.marks);
+
     this.state = {
       timeRange: [0, duration], // Time range to display events in
       markFilters: Object.keys(DISPLAY_FILTERS), // Mark types to display
@@ -72,6 +96,10 @@ class MatchOverviewHelper extends Component {
 
   markFilterEnabled(markType) {
     return this.state.markFilters.includes(markType);
+  }
+
+  playerEnabled(playerId) {
+    return this.state.enabledPlayers.includes(playerId);
   }
 
   renderTimeRange() {
@@ -90,7 +118,7 @@ class MatchOverviewHelper extends Component {
         count={1}
         max={duration}
         defaultValue={timeRange}
-        onAfterChange={newRange => this.setState({ timeRange: newRange })}
+        onChange={newRange => this.setState({ timeRange: newRange })}
         allowCross={false}
         marks={marks}
         tipFormatter={formatSeconds}
@@ -135,24 +163,20 @@ class MatchOverviewHelper extends Component {
         match: { map_name: mapName },
         plane,
         zones,
-        events,
       },
     } = this.props;
-    const { timeRange: [minTime, maxTime], enabledPlayers } = this.state;
-    const timeFilter = e => inRange(e.time, minTime, maxTime); // Used to filter events by time
+    const { timeRange: [minTime, maxTime] } = this.state;
 
-    // Generate a big ol' list of every event-based mark that should be shown on the map
-    const marks = Object.entries(EventMappers).reduce((acc, [eventType, mapper]) => {
-      const filteredEvents = events[eventType].filter(timeFilter); // Filter events by time
-      const markLists = Object.entries(mapper)
-        .filter(([markType]) => this.markFilterEnabled(markType))
-        .map(([, markObj]) => filteredEvents
-          .map(markObj.generator) // Convert the list of events into a list of marks
-          .filter(event => event) // Filter out null events
-          // Filter by player. Some events have no player, so allow those through.
-          .filter(({ player }) => !player || enabledPlayers.includes(player.id)));
-      return acc.concat(...markLists); // Add each sublist to the acc
-    }, []);
+    // Filter marks by type/time/player and flatten them into one big list
+    const marks = Object.entries(this.marks)
+      .filter(([markType]) => this.markFilterEnabled(markType))
+      .reduce(
+        // Filter list of marks, then add remaining ones to the master list
+        (acc, [, markList]) => acc.concat(markList
+          .filter(({ time }) => inRange(time, minTime, maxTime)) // Filter by time
+          .filter(({ player }) => !player || this.playerEnabled(player.id))), // Filter by player
+        [], // Initial acc
+      );
 
     return (
       <div className="map">
@@ -164,9 +188,10 @@ class MatchOverviewHelper extends Component {
               whiteZones={this.markFilterEnabled('zones') ? zones : []}
               {...size}
             >
-              {marks.map(({ player, ...rest }) => React.createElement(EventMark, {
+              {marks.map(({ player, time, ...rest }) => React.createElement(EventMark, {
                 key: uniqid(),
                 color: this.getPlayerColor(player),
+                time,
                 player,
                 ...rest,
               }))}
