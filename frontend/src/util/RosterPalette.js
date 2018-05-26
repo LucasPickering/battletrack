@@ -14,7 +14,7 @@ class RosterPalette {
 
     // Generate a color palette, with one color per roster
     this.rosterColors = {};
-    palette('rainbow', rosters.length, 0, 0.7, 1.0) // Set saturation/value manually
+    palette('rainbow', rosters.length, 0, 0.8, 0.7) // Set saturation/value manually
       .map(c => `#${c}`).forEach((color, index) => {
         this.rosterColors[rosters[index].id] = color;
       });
