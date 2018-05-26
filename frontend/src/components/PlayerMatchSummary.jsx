@@ -10,7 +10,7 @@ import {
   formatPerspective,
   matchLink,
   playerLink,
-} from '../util';
+} from '../util/funcs';
 import Stat from './Stat';
 import '../styles/PlayerMatchSummary.css';
 

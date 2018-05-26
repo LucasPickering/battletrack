@@ -5,14 +5,14 @@ import { Link } from 'react-router-dom';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
-import EventMappers from '../EventMappers';
-import RosterPalette from '../RosterPalette';
+import EventMappers from '../util/EventMappers';
+import RosterPalette from '../util/RosterPalette';
 import {
   formatSeconds,
   matchLink,
   inRange,
   range,
-} from '../util';
+} from '../util/funcs';
 import ApiComponent from './ApiComponent';
 import RosterCheckList from './RosterCheckList';
 import MarkedGameMap from './MarkedGameMap';
@@ -177,9 +177,9 @@ class MatchOverviewHelper extends Component {
       <div className="overview">
         <Link className="match-link" to={matchLink(matchId)}><h3>Back to Match</h3></Link>
         {this.renderFilterButtons()}
-        {this.renderMap()}
         {this.renderTimeRange()}
         {this.renderPlayerList()}
+        {this.renderMap()}
       </div>
     );
   }

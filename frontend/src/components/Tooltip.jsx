@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import BtPropTypes from '../BtPropTypes';
+import BtPropTypes from '../util/BtPropTypes';
 
 const Tooltip = props => {
   const {

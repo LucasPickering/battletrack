@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { ListGroup } from 'react-bootstrap';
 
-import { playerLink } from '../util';
+import { playerLink } from '../util/funcs';
 import ApiComponent from './ApiComponent';
 import PlayerSearch from './PlayerSearch';
 import PlayerMatchSummary from './PlayerMatchSummary';

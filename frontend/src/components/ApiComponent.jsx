@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { BarLoader } from 'react-spinners';
 
-import api from '../api';
+import api from '../util/api';
 
 class ApiComponent extends Component {
   constructor(props, context) {

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-import { formatSeconds, playerLink } from '../util';
+import { formatSeconds, playerLink } from '../util/funcs';
 import '../styles/RosterMatchSummary.css';
 
 class RosterMatchSummary extends Component {

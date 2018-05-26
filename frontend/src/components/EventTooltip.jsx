@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import uniqid from 'uniqid';
 
-import { formatSeconds } from '../util';
-import BtPropTypes from '../BtPropTypes';
+import { formatSeconds } from '../util/funcs';
+import BtPropTypes from '../util/BtPropTypes';
 import Tooltip from './Tooltip';
 
 const EventTooltip = props => {
