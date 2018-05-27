@@ -20,17 +20,25 @@ class EventMarks extends Component {
         pos: { x, y },
         player,
       } = mark;
+
+      // Select colors by player ID, if possible
+      const colors = player ? {
+        fill: rosterPalette.getRosterColorForPlayer(player.id),
+        stroke: rosterPalette.getPlayerColor(player.id),
+      } : {};
+
       return (
         <text
           key={id}
           className="fa"
-          fill={player ? rosterPalette.getPlayerColor(player.id) : undefined}
           transform={`translate(${x},${y}),scale(${scale})`}
           textAnchor="middle"
           dominantBaseline="central"
           cursor="default"
           onMouseEnter={() => onMarkSelect(mark)}
           onMouseLeave={() => onMarkSelect(null)}
+          strokeWidth={0.75}
+          {...colors}
           {...iconProps}
         >
           {iconCode}

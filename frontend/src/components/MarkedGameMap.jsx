@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { AutoSizer } from 'react-virtualized';
+import uniqid from 'uniqid';
 
 import BtPropTypes from '../util/BtPropTypes';
 import Localization from '../util/Localization';
@@ -81,7 +82,7 @@ class MarkedGameMap extends Component {
             title={Localization.marks[selectedMark.type].single}
             time={selectedMark.time}
           >
-            {selectedMark.tooltip.map(line => <p>{line}</p>)}
+            {selectedMark.tooltip.map(line => <p key={uniqid()}>{line}</p>)}
           </MarkTooltip>
         }
       </div>
