@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
-import EventMappers from '../util/EventMappers';
+import { MarkTypes, EventTypes, convertEvent } from '../util/EventMappers';
 import RosterPalette from '../util/RosterPalette';
 import {
   formatSeconds,
@@ -23,9 +23,9 @@ const Range = Slider.createSliderWithTooltip(Slider.Range); // Janky AF
 const DISPLAY_FILTERS = Object.freeze({
   plane: 'Plane',
   zones: 'Play Zones',
-  // Pull every mark type from the event mappers and add a button for it
-  ...Object.values(EventMappers).reduce((acc, marks) => {
-    Object.entries(marks).forEach(([type, { label }]) => { acc[type] = label; });
+  // Convert each mark type into a field in the object
+  ...Object.entries(MarkTypes).reduce((acc, [type, { labels: { plural } }]) => {
+    acc[type] = plural;
     return acc;
   }, {}),
 });
@@ -48,16 +48,14 @@ class MatchOverviewHelper extends Component {
     //   MarkType1: [m1, m2, ...],
     //   ...
     // }
-    // Filtering based on time/type/player is based on state so that will be done during render.
-    this.marks = Object.entries(EventMappers).reduce((acc, [eventType, mapper]) => {
+    // Filtering on time/type/player is based on state so that will be done during render.
+    this.marks = Object.entries(EventTypes).reduce((acc, [eventType, markTypes]) => {
       const eventsForType = events[eventType];
-      // This event type has 1+ mark types. Add a list entry in the acc for each mark type.
-      Object.entries(mapper)
-        .forEach(([markType, markTypeObj]) => {
-          acc[markType] = eventsForType
-            .map(markTypeObj.generator) // Convert the list of events into a list of marks
-            .filter(mark => mark); // Filter out null marks
-        });
+      markTypes.forEach(markType => {
+        acc[markType] = eventsForType
+          .map(event => convertEvent(markType, event)) // Convert the event to a mark
+          .filter(mark => mark); // Filter out null marks
+      });
       return acc;
     }, {});
     Object.freeze(this.marks);
@@ -194,7 +192,7 @@ MatchOverviewHelper.propTypes = {
 
 const MatchOverview = ({ matchId }) => (
   <ApiComponent
-    url={`/api/telemetry/${matchId}?events=${Object.keys(EventMappers).join()}`}
+    url={`/api/telemetry/${matchId}?events=${Object.keys(EventTypes).join()}`}
     component={MatchOverviewHelper}
     dataProp="telemetry"
     matchId={matchId}
