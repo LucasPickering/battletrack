@@ -1,9 +1,14 @@
 import uniqid from 'uniqid';
 
-function defaultGen(event, iconCode, iconProps = {}) {
+const ICONS = Object.freeze({
+  Kill: '\uf05b',
+  Death: '\uf54c',
+  CarePackage: '\uf4cd',
+});
+
+function defaultGen(event) {
   return {
     id: uniqid(),
-    icon: { code: iconCode, ...iconProps },
     time: event.time,
   };
 }
@@ -12,27 +17,43 @@ export default Object.freeze({
   PlayerKill: {
     kill: {
       label: 'Kills',
-      generator: ({ attacker, ...rest }) => attacker && {
-        ...defaultGen(rest, '\uf05b'),
+      generator: ({ attacker, player, ...rest }) => attacker && {
+        ...defaultGen(rest),
         pos: attacker.pos,
         player: attacker,
+        icon: { code: ICONS.Kill },
+        tooltip: {
+          title: 'Kill',
+          body: [`${ICONS.Kill} ${attacker.name}`, `${ICONS.Death} ${player.name}`],
+        },
       },
     },
     death: {
       label: 'Deaths',
-      generator: ({ player, ...rest }) => ({
-        ...defaultGen(rest, '\uf54c'),
+      generator: ({ attacker, player, ...rest }) => ({
+        ...defaultGen(rest),
         pos: player.pos,
+        icon: { code: ICONS.Death },
         player,
+        tooltip: {
+          title: 'Death',
+          body: (attacker ? [`${ICONS.Kill} ${attacker.name}`] : [])
+            .concat([`${ICONS.Death} ${player.name}`]),
+        },
       }),
     },
   },
   CarePackageLand: {
     carePackage: {
       label: 'Care Packages',
-      generator: ({ pos, ...rest }) => ({
-        ...defaultGen(rest, '\uf4cd', { fill: 'white' }),
+      generator: ({ pos, items, ...rest }) => ({
+        ...defaultGen(rest),
         pos,
+        icon: { code: ICONS.CarePackage, fill: 'white' },
+        tooltip: {
+          title: 'Care Package',
+          body: items.map(item => item.name),
+        },
       }),
     },
   },

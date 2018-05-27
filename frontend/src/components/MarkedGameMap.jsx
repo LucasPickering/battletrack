@@ -6,8 +6,10 @@ import BtPropTypes from '../util/BtPropTypes';
 import RosterPalette from '../util/RosterPalette';
 import GameMap from './GameMap';
 import EventMarks from './EventMarks';
+import MarkTooltip from './MarkTooltip';
 import Ray from './Ray';
 import Zones from './Zones';
+import '../styles/MarkedGameMap.css';
 
 class MarkedGameMap extends Component {
   constructor(props, ...args) {
@@ -15,6 +17,7 @@ class MarkedGameMap extends Component {
     this.mapSize = 8000; // TODO: Replace this with data passed from the API
     this.state = {
       zoom: null,
+      selectedMark: null,
     };
   }
 
@@ -37,7 +40,7 @@ class MarkedGameMap extends Component {
       markScaleFactor,
       ...rest
     } = this.props;
-    const { zoom } = this.state;
+    const { zoom, selectedMark } = this.state;
 
     const scale = zoom ? (1 / zoom) : 0;
     const lineScale = scale * lineScaleFactor;
@@ -62,10 +65,24 @@ class MarkedGameMap extends Component {
               {plane
                 && <Ray {...plane} color="white" strokeWidth={lineScale * 1.5} showTailTip />}
               <Zones circles={whiteZones} stroke="#ffffff" strokeWidth={lineScale} />
-              <EventMarks marks={marks} scale={markScale} rosterPalette={rosterPalette} />
+              <EventMarks
+                marks={marks}
+                scale={markScale}
+                rosterPalette={rosterPalette}
+                onMarkSelect={mark => this.setState({ selectedMark: mark })}
+              />
             </GameMap>
           ))}
         </AutoSizer>
+        {selectedMark &&
+          <MarkTooltip
+            style={{ position: 'absolute' }}
+            title={selectedMark.tooltip.title}
+            time={selectedMark.time}
+          >
+            {selectedMark.tooltip.body.map(line => <p>{line}</p>)}
+          </MarkTooltip>
+        }
       </div>
     );
   }
