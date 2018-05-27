@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { AutoSizer } from 'react-virtualized';
 
 import BtPropTypes from '../util/BtPropTypes';
+import Localization from '../util/Localization';
 import RosterPalette from '../util/RosterPalette';
 import GameMap from './GameMap';
 import EventMarks from './EventMarks';
@@ -77,7 +78,7 @@ class MarkedGameMap extends Component {
         {selectedMark &&
           <MarkTooltip
             style={{ position: 'absolute' }}
-            title={selectedMark.labels.single}
+            title={Localization.marks[selectedMark.type].single}
             time={selectedMark.time}
           >
             {selectedMark.tooltip.map(line => <p>{line}</p>)}
