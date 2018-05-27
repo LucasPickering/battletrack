@@ -33,7 +33,7 @@ class RosterCheckList extends Component {
         children: players.map(({ player_id: playerId, player_name: playerName }) => ({
           value: playerId,
           label: playerName,
-          icon: <i className="fa fa-user" style={{ color }} />,
+          icon: <i className="fa fa-user" style={{ color: rosterPalette.getPlayerColor(playerId) }} />,
         })),
       });
     });
