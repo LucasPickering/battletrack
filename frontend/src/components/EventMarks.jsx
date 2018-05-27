@@ -21,15 +21,20 @@ class EventMarks extends Component {
         player,
       } = mark;
       return (
-        <g
+        <text
           key={id}
+          className="fa"
           fill={player ? rosterPalette.getPlayerColor(player.id) : undefined}
           transform={`translate(${x},${y}),scale(${scale})`}
+          textAnchor="middle"
+          dominantBaseline="central"
+          cursor="default"
           onMouseEnter={() => onMarkSelect(mark)}
           onMouseLeave={() => onMarkSelect(null)}
+          {...iconProps}
         >
-          <text className="fa" {...iconProps}>{iconCode}</text>
-        </g>
+          {iconCode}
+        </text>
       );
     });
   }

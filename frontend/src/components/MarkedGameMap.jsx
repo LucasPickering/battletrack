@@ -77,10 +77,10 @@ class MarkedGameMap extends Component {
         {selectedMark &&
           <MarkTooltip
             style={{ position: 'absolute' }}
-            title={selectedMark.tooltip.title}
+            title={selectedMark.labels.single}
             time={selectedMark.time}
           >
-            {selectedMark.tooltip.body.map(line => <p>{line}</p>)}
+            {selectedMark.tooltip.map(line => <p>{line}</p>)}
           </MarkTooltip>
         }
       </div>

@@ -6,55 +6,57 @@ const ICONS = Object.freeze({
   CarePackage: '\uf4cd',
 });
 
-function defaultGen(event) {
-  return {
-    id: uniqid(),
-    time: event.time,
-  };
+function deathTooltip(attacker, player) {
+  // Attacker element is only included if attacker is non-null
+  return (attacker ? [`${ICONS.Kill} ${attacker.name}`] : [])
+    .concat([`${ICONS.Death} ${player.name}`]);
 }
 
-export default Object.freeze({
-  PlayerKill: {
-    kill: {
-      label: 'Kills',
-      generator: ({ attacker, player, ...rest }) => attacker && {
-        ...defaultGen(rest),
-        pos: attacker.pos,
-        player: attacker,
-        icon: { code: ICONS.Kill },
-        tooltip: {
-          title: 'Kill',
-          body: [`${ICONS.Kill} ${attacker.name}`, `${ICONS.Death} ${player.name}`],
-        },
-      },
-    },
-    death: {
-      label: 'Deaths',
-      generator: ({ attacker, player, ...rest }) => ({
-        ...defaultGen(rest),
-        pos: player.pos,
-        icon: { code: ICONS.Death },
-        player,
-        tooltip: {
-          title: 'Death',
-          body: (attacker ? [`${ICONS.Kill} ${attacker.name}`] : [])
-            .concat([`${ICONS.Death} ${player.name}`]),
-        },
-      }),
+export const MarkTypes = Object.freeze({
+  Kill: {
+    labels: { single: 'Kill', plural: 'Kills' },
+    icon: { code: ICONS.Kill },
+    convert: ({ attacker, player }) => attacker && {
+      pos: attacker.pos,
+      player: attacker,
+      tooltip: deathTooltip(attacker, player),
     },
   },
-  CarePackageLand: {
-    carePackage: {
-      label: 'Care Packages',
-      generator: ({ pos, items, ...rest }) => ({
-        ...defaultGen(rest),
-        pos,
-        icon: { code: ICONS.CarePackage, fill: 'white' },
-        tooltip: {
-          title: 'Care Package',
-          body: items.map(item => item.name),
-        },
-      }),
-    },
+  Death: {
+    labels: { single: 'Death', plural: 'Deaths' },
+    icon: { code: ICONS.Death },
+    convert: ({ attacker, player }) => ({
+      pos: player.pos,
+      player,
+      tooltip: deathTooltip(attacker, player),
+    }),
+  },
+  CarePackage: {
+    labels: { single: 'CarePackage', plural: 'Care Packages' },
+    icon: { code: ICONS.CarePackage, fill: 'white' },
+    convert: ({ pos, items }) => ({
+      pos,
+      tooltip: items.map(item => `${item.stack_count}x ${item.name}`),
+    }),
   },
 });
+
+export const EventTypes = Object.freeze({
+  PlayerKill: ['Kill', 'Death'],
+  CarePackageLand: ['CarePackage'],
+});
+
+export function convertEvent(markType, event) {
+  const { convert, ...staticFields } = MarkTypes[markType];
+  const dynamicFields = convert(event); // Calculate dynamic mark fields based on the event
+
+  // Combine static and dynamic fields into one object. If the dynamic object is null, then just
+  // return null.
+  return dynamicFields ? {
+    type: markType,
+    id: uniqid(),
+    ...staticFields,
+    time: event.time,
+    ...dynamicFields,
+  } : null;
+}
