@@ -1,5 +1,7 @@
 import uniqid from 'uniqid';
 
+import Localization from './Localization';
+
 const ICONS = Object.freeze({
   Kill: '\uf05b',
   Death: '\uf54c',
@@ -14,7 +16,6 @@ function deathTooltip(attacker, player) {
 
 export const MarkTypes = Object.freeze({
   Kill: {
-    labels: { single: 'Kill', plural: 'Kills' },
     icon: { code: ICONS.Kill },
     convert: ({ attacker, player }) => attacker && {
       pos: attacker.pos,
@@ -23,7 +24,6 @@ export const MarkTypes = Object.freeze({
     },
   },
   Death: {
-    labels: { single: 'Death', plural: 'Deaths' },
     icon: { code: ICONS.Death },
     convert: ({ attacker, player }) => ({
       pos: player.pos,
@@ -32,11 +32,10 @@ export const MarkTypes = Object.freeze({
     }),
   },
   CarePackage: {
-    labels: { single: 'CarePackage', plural: 'Care Packages' },
     icon: { code: ICONS.CarePackage, fill: 'white' },
     convert: ({ pos, items }) => ({
       pos,
-      tooltip: items.map(item => `${item.stack_count}x ${item.name}`),
+      tooltip: items.map(item => `${item.stack_count}x ${Localization.items[item.name]}`),
     }),
   },
 });

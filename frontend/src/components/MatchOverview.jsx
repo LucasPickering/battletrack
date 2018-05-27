@@ -6,6 +6,7 @@ import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
 import { MarkTypes, EventTypes, convertEvent } from '../util/EventMappers';
+import Localization from '../util/Localization';
 import RosterPalette from '../util/RosterPalette';
 import {
   formatSeconds,
@@ -24,8 +25,8 @@ const DISPLAY_FILTERS = Object.freeze({
   plane: 'Plane',
   zones: 'Play Zones',
   // Convert each mark type into a field in the object
-  ...Object.entries(MarkTypes).reduce((acc, [type, { labels: { plural } }]) => {
-    acc[type] = plural;
+  ...Object.keys(MarkTypes).reduce((acc, type) => {
+    acc[type] = Localization.marks[type].plural;
     return acc;
   }, {}),
 });
