@@ -1,24 +1,13 @@
 import argparse
 import django
 import numpy as np
-import os
-import pandas as pd
 import pickle
-import sys
 from collections import defaultdict
-sys.path.append('')  # Add cwd to path so we can import battletrack and its apps
 
-# Configure Django settings
-import battletrack.settings
-os.environ.setdefault(
-    "DJANGO_SETTINGS_MODULE",
-    "battletrack.settings"
-)
-django.setup()
+from . import django  # Set up django
 
 from btcore.models import Match
 from telemetry.models import Telemetry
-import telemetry.serializers
 
 
 def pull_data(outfile):
