@@ -84,8 +84,6 @@ class MatchOverviewHelper extends React.PureComponent {
         [],
       ),
     };
-
-    this.markFilterEnabled = this.markFilterEnabled.bind(this);
   }
 
   markFilterEnabled(markType) {
@@ -96,87 +94,66 @@ class MatchOverviewHelper extends React.PureComponent {
     return this.state.enabledPlayers.includes(playerId);
   }
 
-  renderFilterButtons() {
-    const { markFilters } = this.state;
-    return (
-      <ToggleButtonGroup
-        className="filter-buttons"
-        type="checkbox"
-        value={markFilters}
-        onChange={val => this.setState({ markFilters: val })}
-      >
-        {Object.entries(DISPLAY_FILTERS).map(([key, label]) => (
-          <ToggleButton key={key} value={key}>{label}</ToggleButton>
-        ))}
-      </ToggleButtonGroup>
-    );
-  }
-
-  renderPlayerList() {
-    const { telemetry: { match: { rosters } } } = this.props;
-    const { enabledPlayers } = this.state;
-    return (
-      <Panel className="player-list">
-        <RosterCheckList
-          rosters={rosters}
-          rosterPalette={this.rosterPalette}
-          enabledPlayers={enabledPlayers}
-          onChange={val => this.setState({ enabledPlayers: val })}
-        />
-      </Panel>
-    );
-  }
-
-  renderMap() {
+  render() {
     const {
+      matchId,
       telemetry: {
-        match: { map_name: mapName },
+        match: { map_name: mapName, rosters },
         plane,
         zones,
       },
     } = this.props;
-    const { timeRange } = this.state;
+    const { timeRange, enabledPlayers, markFilters } = this.state;
     const [minTime, maxTime] = timeRange;
 
     // Filter marks by type/time/player and flatten them into one big list
-    const marks = Object.entries(this.marks)
-      .filter(([markType]) => this.markFilterEnabled(markType))
-      .reduce(
-        // Filter list of marks, then add remaining ones to the master list
-        (acc, [, markList]) => acc.concat(markList
-          .filter(({ time }) => inRange(time, minTime, maxTime)) // Filter by time
-          .filter(({ player }) => !player || this.playerEnabled(player.id))), // Filter by player
-        [], // Initial acc
-      );
+    const marks = [].concat(...Object.entries(this.marks)
+      .filter(([markType]) => this.markFilterEnabled(markType)) // Filter by type
+      // Filter each mark list by time/player
+      .map(([, markList]) => markList
+        .filter(({ time }) => inRange(time, minTime, maxTime)) // Filter by time
+        .filter(({ player }) => !player || this.playerEnabled(player.id)))); // Filter by player
 
-    return (
-      <MarkedGameMap
-        mapName={mapName}
-        marks={marks}
-        rosterPalette={this.rosterPalette}
-        plane={this.markFilterEnabled('plane') ? plane : undefined}
-        whiteZones={this.markFilterEnabled('zones') ? zones : undefined}
-      >
-        <Range
-          count={1}
-          max={this.maxTime}
-          value={timeRange}
-          onChange={newRange => this.setState({ timeRange: newRange })}
-          marks={this.timeMarks}
-          tipFormatter={formatSeconds}
-        />
-      </MarkedGameMap>
-    );
-  }
-
-  render() {
-    const { matchId } = this.props;
     return (
       <div className="overview">
         <Link className="match-link" to={matchLink(matchId)}><h3>Back to Match</h3></Link>
-        {this.renderFilterButtons()}
-        {this.renderPlayerList()}
-        {this.renderMap()}
+
+        <ToggleButtonGroup
+          className="filter-buttons"
+          type="checkbox"
+          value={markFilters}
+          onChange={val => this.setState({ markFilters: val })}
+        >
+          {Object.entries(DISPLAY_FILTERS).map(([key, label]) => (
+            <ToggleButton key={key} value={key}>{label}</ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+
+        <Panel className="player-list">
+          <RosterCheckList
+            rosters={rosters}
+            rosterPalette={this.rosterPalette}
+            enabledPlayers={enabledPlayers}
+            onChange={val => this.setState({ enabledPlayers: val })}
+          />
+        </Panel>
+
+        <MarkedGameMap
+          mapName={mapName}
+          marks={marks}
+          rosterPalette={this.rosterPalette}
+          plane={this.markFilterEnabled('plane') ? plane : undefined}
+          whiteZones={this.markFilterEnabled('zones') ? zones : undefined}
+        >
+          <Range
+            count={1}
+            max={this.maxTime}
+            value={timeRange}
+            onChange={newRange => this.setState({ timeRange: newRange })}
+            marks={this.timeMarks}
+            tipFormatter={formatSeconds}
+          />
+        </MarkedGameMap>
       </div>
     );
   }
