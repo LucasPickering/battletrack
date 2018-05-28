@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 
 import RosterPalette from '../util/RosterPalette';
 import '../styles/RosterCheckList.css';
 
-class RosterCheckList extends Component {
+class RosterCheckList extends React.PureComponent {
   constructor(props, ...args) {
     super(props, ...args);
     this.state = {

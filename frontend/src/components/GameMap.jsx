@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { ReactSVGPanZoom } from 'react-svg-pan-zoom';
 
 import { mapImage } from '../util/funcs';
 
-class GameMap extends Component {
+class GameMap extends React.PureComponent {
   componentDidMount() {
     this.viewer.fitToViewer();
   }

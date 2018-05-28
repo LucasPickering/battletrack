@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ import {
 import Stat from './Stat';
 import '../styles/PlayerMatchSummary.css';
 
-class PlayerMatchSummary extends Component {
+class PlayerMatchSummary extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
     this.renderPlayerName = this.renderPlayerName.bind(this); // Jeff would be proud

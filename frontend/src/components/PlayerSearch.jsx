@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import {
   Button,
   FormControl,
@@ -11,7 +11,7 @@ import { withRouter } from 'react-router-dom';
 import { playerLink } from '../util/funcs';
 import '../styles/PlayerSearch.css';
 
-class PlayerSearch extends Component {
+class PlayerSearch extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {

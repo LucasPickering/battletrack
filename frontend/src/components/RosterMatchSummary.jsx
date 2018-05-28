@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 import { formatSeconds, playerLink } from '../util/funcs';
 import '../styles/RosterMatchSummary.css';
 
-class RosterMatchSummary extends Component {
+class RosterMatchSummary extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
     this.renderPlayerSummary = this.renderPlayerSummary.bind(this);
