@@ -11,7 +11,6 @@ import EventMarks from './EventMarks';
 import MarkTooltip from './MarkTooltip';
 import Ray from './Ray';
 import Zones from './Zones';
-import '../styles/MarkedGameMap.css';
 
 class MarkedGameMap extends Component {
   constructor(props, ...args) {
@@ -40,6 +39,7 @@ class MarkedGameMap extends Component {
       whiteZones,
       lineScaleFactor,
       markScaleFactor,
+      children,
       ...rest
     } = this.props;
     const { zoom, selectedMark } = this.state;
@@ -49,7 +49,7 @@ class MarkedGameMap extends Component {
     const markScale = scale * markScaleFactor;
 
     return (
-      <div className="marked-game-map" style={{ display: 'flex' }}>
+      <div className="marked-game-map">
         <AutoSizer>
           {/* The size check is necessary to prevent weird double-rendering bugs. Trust me. */}
           {({ width, height }) => (width === 0 || height === 0 ? null : (
@@ -78,13 +78,14 @@ class MarkedGameMap extends Component {
         </AutoSizer>
         {selectedMark &&
           <MarkTooltip
-            style={{ position: 'absolute' }}
+            style={{ position: 'absolute', top: 40 }}
             title={Localization.marks[selectedMark.type].single}
             time={selectedMark.time}
           >
             {selectedMark.tooltip.map(line => <p key={uniqid()}>{line}</p>)}
           </MarkTooltip>
         }
+        {children}
       </div>
     );
   }
@@ -98,6 +99,7 @@ MarkedGameMap.propTypes = {
   whiteZones: PropTypes.arrayOf(BtPropTypes.circle),
   lineScaleFactor: PropTypes.number,
   markScaleFactor: PropTypes.number,
+  children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)]),
 };
 
 MarkedGameMap.defaultProps = {
@@ -105,6 +107,7 @@ MarkedGameMap.defaultProps = {
   whiteZones: [],
   lineScaleFactor: 10,
   markScaleFactor: 10,
+  children: null,
 };
 
 export default MarkedGameMap;

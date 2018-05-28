@@ -61,8 +61,19 @@ class MatchOverviewHelper extends Component {
     }, {});
     Object.freeze(this.marks);
 
+    // Sometimes the final event(s) of a match can take place after the duration, e.g. the duration
+    // is 1906 but the final kill occurs at 1906.1. Add one to make sure we capture every event.
+    this.maxTime = duration + 1;
+
+    // Build an object of marks to put on the time slider
+    this.timeMarks = {};
+    range(0, this.maxTime, 5 * 60).forEach(i => {
+      this.timeMarks[i] = formatSeconds(i, 'm[m]');
+    });
+    this.timeMarks[this.maxTime] = formatSeconds(this.maxTime, 'm[m]'); // Add the final mark
+
     this.state = {
-      timeRange: [0, duration], // Time range to display events in
+      timeRange: [0, this.maxTime], // Time range to display events in
       markFilters: Object.keys(DISPLAY_FILTERS), // Mark types to display
       // Extract every player ID from the list of rosters into a big flat list
       enabledPlayers: rosters.reduce(
@@ -83,30 +94,6 @@ class MatchOverviewHelper extends Component {
 
   playerEnabled(playerId) {
     return this.state.enabledPlayers.includes(playerId);
-  }
-
-  renderTimeRange() {
-    const { telemetry: { match: { duration } } } = this.props;
-    const { timeRange } = this.state;
-
-    // Build an object of marks to put on the slider
-    const marks = {};
-    range(0, duration, 300).forEach(i => {
-      marks[i] = formatSeconds(i, 'm[m]');
-    });
-    marks[duration] = formatSeconds(duration, 'm[m]'); // Add the final mark
-
-    return (
-      <Range
-        count={1}
-        max={duration}
-        defaultValue={timeRange}
-        onChange={newRange => this.setState({ timeRange: newRange })}
-        allowCross={false}
-        marks={marks}
-        tipFormatter={formatSeconds}
-      />
-    );
   }
 
   renderFilterButtons() {
@@ -148,7 +135,8 @@ class MatchOverviewHelper extends Component {
         zones,
       },
     } = this.props;
-    const { timeRange: [minTime, maxTime] } = this.state;
+    const { timeRange } = this.state;
+    const [minTime, maxTime] = timeRange;
 
     // Filter marks by type/time/player and flatten them into one big list
     const marks = Object.entries(this.marks)
@@ -168,7 +156,16 @@ class MatchOverviewHelper extends Component {
         rosterPalette={this.rosterPalette}
         plane={this.markFilterEnabled('plane') ? plane : undefined}
         whiteZones={this.markFilterEnabled('zones') ? zones : undefined}
-      />
+      >
+        <Range
+          count={1}
+          max={this.maxTime}
+          value={timeRange}
+          onChange={newRange => this.setState({ timeRange: newRange })}
+          marks={this.timeMarks}
+          tipFormatter={formatSeconds}
+        />
+      </MarkedGameMap>
     );
   }
 
@@ -178,7 +175,6 @@ class MatchOverviewHelper extends Component {
       <div className="overview">
         <Link className="match-link" to={matchLink(matchId)}><h3>Back to Match</h3></Link>
         {this.renderFilterButtons()}
-        {this.renderTimeRange()}
         {this.renderPlayerList()}
         {this.renderMap()}
       </div>
