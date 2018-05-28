@@ -18,15 +18,15 @@ export default new LocalizedStrings({
       Item_Back_C_01_Lv3_C: 'Backpack (Level 3)',
       Item_Back_C_02_Lv3_C: 'Backpack (Level 3)',
       // --Helmets
-      Item_Head_E_01_Lv1_C: 'Motorcycle Helmet (Level 1)',
-      Item_Head_E_02_Lv1_C: 'Motorcycle Helmet (Level 1)',
-      Item_Head_F_01_Lv2_C: 'Military Helmet (Level 2)',
-      Item_Head_F_02_Lv2_C: 'Military Helmet (Level 2)',
-      Item_Head_G_01_Lv3_C: 'Military Helmet (Level 3)',
+      Item_Head_E_01_Lv1_C: 'Helmet (Level 1)',
+      Item_Head_E_02_Lv1_C: 'Helmet (Level 1)',
+      Item_Head_F_01_Lv2_C: 'Helmet (Level 2)',
+      Item_Head_F_02_Lv2_C: 'Helmet (Level 2)',
+      Item_Head_G_01_Lv3_C: 'Helmet (Level 3)',
       // --Vests
-      Item_Armor_E_01_Lv1_C: 'Police Vest (Level 1)',
-      Item_Armor_D_01_Lv2_C: 'Police Vest (Level 2)',
-      Item_Armor_C_01_Lv3_C: 'Military Vest (Level 3)',
+      Item_Armor_E_01_Lv1_C: 'Vest (Level 1)',
+      Item_Armor_D_01_Lv2_C: 'Vest (Level 2)',
+      Item_Armor_C_01_Lv3_C: 'Vest (Level 3)',
 
       // Weapons
       // --Melee
@@ -39,9 +39,13 @@ export default new LocalizedStrings({
       // --Pistols
       Item_Weapon_M9_C: 'P92',
       Item_Weapon_G18_C: 'P18C',
+      Item_Weapon_Rhino_C: 'R45',
       Item_Weapon_M1911_C: 'P1911',
+      Item_Weapon_NagantM1895_C: 'R1895',
       // --Shotgun
+      Item_Weapon_Sawnoff_C: 'Sawed-Off',
       Item_Weapon_Berreta686_C: 'S686',
+      Item_Weapon_Winchester_C: 'S1897',
       Item_Weapon_Saiga12_C: 'S12K',
       // --SMGs
       Item_Weapon_UZI_C: 'Micro Uzi',
@@ -63,13 +67,11 @@ export default new LocalizedStrings({
       Item_Weapon_FNFal_C: 'SLR',
       Item_Weapon_Mk14_C: 'Mk14',
       // --SRs
+      Item_Weapon_Win1894_C: 'Win94',
       Item_Weapon_VSS_C: 'VSS',
       Item_Weapon_Kar98k_C: 'Kar98k',
       Item_Weapon_M24_C: 'M24',
       Item_Weapon_AWM_C: 'AWM',
-      Item_Weapon_Winchester_C: 'Winchester Model 1894',
-      // --IDK
-      Item_Weapon_NagantM1895_C: 'Nagant FIXME',
 
       // Attachments
       // --Optics
@@ -80,8 +82,9 @@ export default new LocalizedStrings({
       Item_Attach_Weapon_Upper_ACOG_01_C: '4x Scope',
       Item_Attach_Weapon_Upper_Scope6x_C: '6x Scope',
       Item_Attach_Weapon_Upper_CQBSS_C: '8x Scope',
+      Item_Attach_Weapon_Upper_PM2_01_C: '15x Scope',
       // --Barrel
-      Item_Attach_Weapon_Muzzle_Choke_C: 'Choke', // IDK
+      Item_Attach_Weapon_Muzzle_Choke_C: 'Choke',
       Item_Attach_Weapon_Muzzle_Duckbill_C: 'Duckbill Choke',
       Item_Attach_Weapon_Muzzle_Suppressor_Small_C: 'Suppressor (Pistol)',
       Item_Attach_Weapon_Muzzle_FlashHider_Medium_C: 'Flash Hider (SMG)',
@@ -100,17 +103,18 @@ export default new LocalizedStrings({
       Item_Attach_Weapon_Lower_AngledForeGrip_C: 'Angled Foregrip',
       Item_Attach_Weapon_Lower_Foregrip_C: 'Vertical Foregrip',
       // --Magazine
-      Item_Attach_Weapon_Magazine_QuickDraw_Small_C: 'Quickdraw Magazine (Pistol)',
-      Item_Attach_Weapon_Magazine_Extended_Small_C: 'Extended Magazine (Pistol)',
-      Item_Attach_Weapon_Magazine_ExtendedQuickDraw_Small_C: 'Extended Quickdraw Magazine (Pistol)',
-      Item_Attach_Weapon_Magazine_QuickDraw_Medium_C: 'Quickdraw Magazine (SMG)',
-      Item_Attach_Weapon_Magazine_Extended_Medium_C: 'Extended Magazine (SMG)',
-      Item_Attach_Weapon_Magazine_ExtendedQuickDraw_Medium_C: 'Extended Quickdraw Magazine (SMG)',
-      Item_Attach_Weapon_Magazine_Extended_Large_C: 'Extended Magazine (AR)',
-      Item_Attach_Weapon_Magazine_ExtendedQuickDraw_Large_C: 'Extended Quickdraw Magazine (AR)',
-      Item_Attach_Weapon_Magazine_QuickDraw_Large_C: 'Quickdraw Magazine (AR)',
-      Item_Attach_Weapon_Magazine_Extended_SniperRifle_C: 'Extended Magazine (SR)',
-      Item_Attach_Weapon_Magazine_ExtendedQuickDraw_SniperRifle_C: 'Extended Quickdraw Magazine (SR)',
+      Item_Attach_Weapon_Magazine_QuickDraw_Small_C: 'Quickdraw Mag. (Pistol)',
+      Item_Attach_Weapon_Magazine_Extended_Small_C: 'Ext. Mag. (Pistol)',
+      Item_Attach_Weapon_Magazine_ExtendedQuickDraw_Small_C: 'Ext. Quickdraw Mag. (Pistol)',
+      Item_Attach_Weapon_Magazine_QuickDraw_Medium_C: 'Quickdraw Mag. (SMG)',
+      Item_Attach_Weapon_Magazine_Extended_Medium_C: 'Ext. Mag. (SMG)',
+      Item_Attach_Weapon_Magazine_ExtendedQuickDraw_Medium_C: 'Ext. Quickdraw Mag. (SMG)',
+      Item_Attach_Weapon_Magazine_QuickDraw_Large_C: 'Quickdraw Mag. (AR)',
+      Item_Attach_Weapon_Magazine_Extended_Large_C: 'Ext. Mag. (AR)',
+      Item_Attach_Weapon_Magazine_ExtendedQuickDraw_Large_C: 'Ext. Quickdraw Mag. (AR)',
+      Item_Attach_Weapon_Magazine_QuickDraw_SniperRifle_C: 'Quickdraw Mag. (SR)',
+      Item_Attach_Weapon_Magazine_Extended_SniperRifle_C: 'Ext. Mag. (SR)',
+      Item_Attach_Weapon_Magazine_ExtendedQuickDraw_SniperRifle_C: 'Ext. Quickdraw Mag. (SR)',
       // --Stock
       Item_Attach_Weapon_Lower_QuickDraw_Large_Crossbow_C: 'Quiver',
       Item_Attach_Weapon_Stock_UZI_C: 'Micro Uzi Stock',
@@ -144,6 +148,7 @@ export default new LocalizedStrings({
 
       // Misc
       Item_Ghillie_01_C: 'Ghillie Suit',
+      Item_Ghillie_02_C: 'Ghillie Suit',
       Item_JerryCan_C: 'Gas Can',
     },
     vehicles: {
