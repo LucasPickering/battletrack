@@ -19,20 +19,6 @@
   margin: 0;
 }
 
-.overview .rc-slider {
-  width: calc(100% - 70px);
-  margin-top: 10px;
-  margin-left: 15px;
-}
-
-.overview .rc-slider .rc-slider-mark-text {
-  color: #ddd;
-  text-shadow: black 1px 1px;
-  /* Janky stuff to make the slider text line up but not overflow */
-  width: auto !important;
-  margin-left: -10px !important;;
-}
-
 .overview .filter-buttons {
   grid-row: 1;
   grid-column: 2;
@@ -49,7 +35,21 @@
   font-weight: 400;
 }
 
-.overview .marked-game-map {;
+.overview .rc-slider {
+  width: calc(100% - 70px);
+  margin-top: 10px;
+  margin-left: 15px;
+}
+
+.overview .rc-slider .rc-slider-mark-text {
+  color: #ddd;
+  text-shadow: black 1px 1px;
+  /* Janky stuff to make the slider text line up but not overflow */
+  width: auto !important;
+  margin-left: -10px !important;
+}
+
+.overview .marked-game-map {
   grid-row: 2;
   grid-column: 2;
 }
