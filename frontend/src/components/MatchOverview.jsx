@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { Panel, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Slider from 'rc-slider';
@@ -31,7 +31,7 @@ const DISPLAY_FILTERS = Object.freeze({
   }, {}),
 });
 
-class MatchOverviewHelper extends Component {
+class MatchOverviewHelper extends React.PureComponent {
   constructor(props, ...args) {
     super(props, ...args);
 

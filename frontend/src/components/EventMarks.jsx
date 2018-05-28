@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 
 import BtPropTypes from '../util/BtPropTypes';
 import RosterPalette from '../util/RosterPalette';
 
-class EventMarks extends Component {
+class EventMarks extends React.PureComponent {
   render() {
     const {
       marks,

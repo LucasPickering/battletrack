@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { AutoSizer } from 'react-virtualized';
 import uniqid from 'uniqid';
 
@@ -12,7 +12,7 @@ import MarkTooltip from './MarkTooltip';
 import Ray from './Ray';
 import Zones from './Zones';
 
-class MarkedGameMap extends Component {
+class MarkedGameMap extends React.PureComponent {
   constructor(props, ...args) {
     super(props, ...args);
     this.mapSize = 8000; // TODO: Replace this with data passed from the API

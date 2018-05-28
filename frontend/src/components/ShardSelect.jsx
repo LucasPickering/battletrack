@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { FormControl } from 'react-bootstrap';
 
 import api from '../util/api';
 import { formatShard } from '../util/funcs';
 
-class ShardSelect extends Component {
+class ShardSelect extends React.PureComponent {
   constructor(...args) {
     super(...args);
     this.state = {

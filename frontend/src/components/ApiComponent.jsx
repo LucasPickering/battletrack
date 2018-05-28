@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import { BarLoader } from 'react-spinners';
 
 import api from '../util/api';
 
-class ApiComponent extends Component {
+class ApiComponent extends React.PureComponent {
   constructor(props, context) {
     super(props, context);
     this.state = {
