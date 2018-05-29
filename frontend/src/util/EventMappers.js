@@ -5,6 +5,7 @@ import Localization from './Localization';
 const ICONS = Object.freeze({
   Kill: '\uf05b',
   Death: '\uf54c',
+  Position: '\uf192',
   CarePackage: '\uf4cd',
 });
 
@@ -15,6 +16,14 @@ function deathTooltip(attacker, player) {
 }
 
 export const MarkTypes = Object.freeze({
+  // PlayerPosition: {
+  //   icon: { code: ICONS.Position, fontSize: 4, fontWeight: 400 },
+  //   convert: ({ player }) => ({
+  //     pos: player.pos,
+  //     player,
+  //     tooltip: [player.name],
+  //   }),
+  // },
   Kill: {
     icon: { code: ICONS.Kill },
     convert: ({ attacker, player }) => attacker && {
@@ -41,6 +50,7 @@ export const MarkTypes = Object.freeze({
 });
 
 export const EventTypes = Object.freeze({
+  // PlayerPosition: ['PlayerPosition'],
   PlayerKill: ['Kill', 'Death'],
   CarePackageLand: ['CarePackage'],
 });
