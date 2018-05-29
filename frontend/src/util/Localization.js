@@ -5,6 +5,7 @@ export default new LocalizedStrings({
     marks: {
       Kill: { single: 'Kill', plural: 'Kills' },
       Death: { single: 'Death', plural: 'Deaths' },
+      PlayerPosition: { single: 'Position', plural: 'Positions' },
       CarePackage: { single: 'Care Package', plural: 'Care Packages' },
     },
     items: {
