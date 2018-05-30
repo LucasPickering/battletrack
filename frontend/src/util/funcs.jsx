@@ -1,6 +1,5 @@
 import moment from 'moment-timezone';
 import React from 'react';
-import { Table } from 'react-bootstrap';
 
 import Erangel from '../images/maps/Erangel.jpg';
 
@@ -33,18 +32,25 @@ export function formatItem(item) {
   return `${stackCount}x ${name}`;
 }
 
-export function mapImage(mapName) {
-  return MAP_IMAGES[mapName];
+export function objectMap(obj, func) {
+  return Object.entries(obj).reduce((acc, [key, val]) => {
+    acc[key] = func(key, val);
+    return acc;
+  }, {});
 }
 
-export function makeTable(rows) {
-  return (
-    <Table>
-      <tbody>
-        {rows.map(([title, data]) => <tr key={title}><th>{title}</th><td>{data}</td></tr>)}
-      </tbody>
-    </Table>
-  );
+export function objectFilter(obj, pred) {
+  return Object.entries(obj)
+    .reduce((acc, [key, val]) => {
+      if (pred(key, val)) {
+        acc[key] = val;
+      }
+      return acc;
+    }, {});
+}
+
+export function mapImage(mapName) {
+  return MAP_IMAGES[mapName];
 }
 
 export function matchLink(matchId) {
