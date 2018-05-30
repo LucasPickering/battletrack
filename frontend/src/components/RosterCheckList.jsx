@@ -39,13 +39,15 @@ class RosterCheckList extends React.PureComponent {
     });
 
     return (
-      <CheckboxTree
-        nodes={nodes}
-        checked={enabledPlayers}
-        expanded={expanded}
-        onCheck={checked => onChange(checked)}
-        onExpand={exp => this.setState({ expanded: exp })}
-      />
+      <div className="roster-check-list">
+        <CheckboxTree
+          nodes={nodes}
+          checked={enabledPlayers}
+          expanded={expanded}
+          onCheck={checked => onChange(checked)}
+          onExpand={exp => this.setState({ expanded: exp })}
+        />
+      </div>
     );
   }
 }

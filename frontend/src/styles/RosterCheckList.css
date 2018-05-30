@@ -1,42 +1,29 @@
-.react-checkbox-tree .rct-icon {
+.roster-check-list {
+  background-color: var(--bg-color-1);
+  color: var(--accent-color-1);
+}
+
+.roster-check-list label {
+  font-weight: 400;
+}
+
+.roster-check-list .rct-icon {
   font-family: Font Awesome\ 5 Free;
   font-weight: 900;
 }
 
-.react-checkbox-tree .rct-icon-uncheck::before {
+.roster-check-list .rct-icon-uncheck::before {
   font-weight: 400;
   content: "\f0c8";
 }
 
-.react-checkbox-tree .rct-icon-half-check::before {
+.roster-check-list .rct-icon-half-check::before {
   font-weight: 400;
   content: "\f14a";
   opacity: 0.5;
 }
 
-.react-checkbox-tree .rct-icon-check::before {
+.roster-check-list .rct-icon-check::before {
   font-weight: 400;
   content: "\f14a";
-}
-
-.roster-check-list .roster {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 20px 40px auto;
-  border-bottom: 1px solid #bbbbbb;
-}
-
-.roster-check-list .roster p {
-  margin-top: 10px;
-}
-
-.roster-check-list .roster .roster-players {
-  width: 100%;
-  padding: 0;
-  list-style: none;
-}
-
-.roster-check-list .roster .roster-players li {
-  display: flex;
-  height: 30px;
 }

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Panel, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
+import { ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
@@ -129,14 +129,12 @@ class MatchOverviewHelper extends React.PureComponent {
           ))}
         </ToggleButtonGroup>
 
-        <Panel className="player-list">
-          <RosterCheckList
-            rosters={rosters}
-            rosterPalette={this.rosterPalette}
-            enabledPlayers={enabledPlayers}
-            onChange={val => this.setState({ enabledPlayers: val })}
-          />
-        </Panel>
+        <RosterCheckList
+          rosters={rosters}
+          rosterPalette={this.rosterPalette}
+          enabledPlayers={enabledPlayers}
+          onChange={val => this.setState({ enabledPlayers: val })}
+        />
 
         <MarkedGameMap
           mapName={mapName}
