@@ -15,6 +15,8 @@ import Localization from '../util/Localization';
 import RosterPalette from '../util/RosterPalette';
 import {
   formatSeconds,
+  objectMap,
+  objectFilter,
   matchLink,
   inRange,
   range,
@@ -27,16 +29,9 @@ import '../styles/MatchOverview.css';
 const Range = Slider.createSliderWithTooltip(Slider.Range); // Janky AF
 
 const DISPLAY_FILTERS = Object.freeze({
-  ...Object.entries(RegularMarkTypes)
-    .reduce((acc, [markType, markObj]) => {
-      acc[markType] = markObj.label;
-      return acc;
-    }, {}),
-  // Convert each event mark type into a field in the object
-  ...Object.keys(EventMarkTypes).reduce((acc, type) => {
-    acc[type] = Localization.marks[type].plural;
-    return acc;
-  }, {}),
+  // Convert each mark type into a field in the object
+  ...objectMap(RegularMarkTypes, (_, markObj) => markObj.label),
+  ...objectMap(EventMarkTypes, markType => Localization.marks[markType].plural),
 });
 
 class MatchOverviewHelper extends React.PureComponent {
@@ -92,6 +87,8 @@ class MatchOverviewHelper extends React.PureComponent {
         [],
       ),
     };
+
+    this.markFilterEnabled = this.markFilterEnabled.bind(this);
   }
 
   markFilterEnabled(markType) {
@@ -115,13 +112,7 @@ class MatchOverviewHelper extends React.PureComponent {
     const [minTime, maxTime] = timeRange;
 
     // Build an object of regular marks to display, but filter out ones that are disabled
-    const regularMarks = Object.entries({ plane, whiteZones })
-      .reduce((acc, [markType, markData]) => {
-        if (this.markFilterEnabled(markType)) {
-          acc[markType] = markData;
-        }
-        return acc;
-      }, {});
+    const regularMarks = objectFilter({ plane, whiteZones }, this.markFilterEnabled);
 
     // Filter marks by type/time/player and flatten them into one big list
     const eventMarks = [].concat(...Object.entries(this.eventMarks)
