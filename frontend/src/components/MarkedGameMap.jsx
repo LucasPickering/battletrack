@@ -81,9 +81,8 @@ class MarkedGameMap extends React.PureComponent {
             style={{ position: 'absolute', top: 40 }}
             title={Localization.marks[selectedMark.type].single}
             time={selectedMark.time}
-          >
-            {selectedMark.tooltip.map(line => <p key={uniqid()}>{line}</p>)}
-          </MarkTooltip>
+            text={selectedMark.tooltip}
+          />
         }
         {children}
       </div>

@@ -1,3 +1,12 @@
 .App {
-    margin-top: 20px;
+  margin-top: 20px;
+}
+
+#root {
+  --bg-color-1: #45494f;
+  --bg-color-2: #8c8c8c;
+
+  --accent-color-1: #c49e15;
+
+  background-color: var(--bg-color-1);
 }
