@@ -2,7 +2,11 @@ import LocalizedStrings from 'react-localization';
 
 export default new LocalizedStrings({
   en: {
-    marks: {
+    specialMarks: {
+      plane: 'Plane',
+      whiteZones: 'Play Zones',
+    },
+    eventMarks: {
       Kill: { single: 'Kill', plural: 'Kills' },
       Death: { single: 'Death', plural: 'Deaths' },
       PlayerPosition: { single: 'Position', plural: 'Positions' },

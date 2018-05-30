@@ -1,0 +1,45 @@
+.filter-list {
+  background-color: var(--bg-color-1);
+  color: var(--accent-color-1);
+}
+
+.filter-list label {
+  font-weight: 400;
+  /* CSS is siiiiiick */
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none;
+}
+
+.filter-list label:hover,
+.filter-list label:active {
+  background-color: var(--highlight-color-1);
+  border-radius: 2px;
+}
+
+.filter-list .rct-icon {
+  font-family: Font Awesome\ 5 Free;
+  font-weight: 900;
+}
+
+.filter-list .rct-icon-uncheck::before {
+  font-weight: 400;
+  content: "\f0c8";
+}
+
+.filter-list .rct-icon-half-check::before {
+  font-weight: 400;
+  content: "\f14a";
+  opacity: 0.5;
+}
+
+.filter-list .rct-icon-check::before {
+  font-weight: 400;
+  content: "\f14a";
+}
+
+.filter-list .rct-node-icon {
+  color: var(--accent-color-1);
+}

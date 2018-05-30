@@ -10,23 +10,28 @@ const ICONS = Object.freeze({
   Death: '\uf54c',
   Position: '\uf192',
   CarePackage: '\uf4cd',
+  Plane: '\uf072',
+  Circle: '\uf111',
 });
 
-function deathTooltip(attacker, player) {
+function deathTooltip(event) {
+  const { attacker, player, damage_causer: damageCauser } = event;
   // Attacker element is only included if attacker is non-null
   return (attacker ? [`${ICONS.Kill} ${attacker.name}`] : [])
-    .concat([`${ICONS.Death} ${player.name}`]);
+    .concat([`${ICONS.Death} ${player.name}`, `\uf35a ${damageCauser}`]);
 }
 
-export const RegularMarkTypes = Object.freeze({
+export const SpecialMarkTypes = Object.freeze({
   plane: {
     label: 'Plane',
+    icon: { code: ICONS.Plane },
     render: (plane, { lineScale, ...rest }) => (
       <Ray {...plane} color="white" showTailTip strokeWidth={lineScale * 1.5} {...rest} />
     ),
   },
   whiteZones: {
     label: 'Play Zones',
+    icon: { code: ICONS.Circle, style: { fontWeight: 400 } },
     render: (zones, { lineScale, ...rest }) => (
       <Zones circles={zones} stroke="#ffffff" strokeWidth={lineScale} {...rest} />
     ),
@@ -44,19 +49,25 @@ export const EventMarkTypes = Object.freeze({
   // },
   Kill: {
     icon: { code: ICONS.Kill },
-    convert: ({ attacker, player }) => attacker && {
-      pos: attacker.pos,
-      player: attacker,
-      tooltip: deathTooltip(attacker, player),
+    convert: event => {
+      const { attacker } = event;
+      return attacker && {
+        pos: attacker.pos,
+        player: attacker,
+        tooltip: deathTooltip(event),
+      };
     },
   },
   Death: {
     icon: { code: ICONS.Death },
-    convert: ({ attacker, player }) => ({
-      pos: player.pos,
-      player,
-      tooltip: deathTooltip(attacker, player),
-    }),
+    convert: event => {
+      const { player } = event;
+      return {
+        pos: player.pos,
+        player,
+        tooltip: deathTooltip(event),
+      };
+    },
   },
   CarePackage: {
     icon: { code: ICONS.CarePackage, fill: 'white' },
