@@ -4,7 +4,7 @@ import { AutoSizer } from 'react-virtualized';
 import uniqid from 'uniqid';
 
 import Localization from '../util/Localization';
-import { RegularMarkTypes } from '../util/MarkMappers';
+import { SpecialMarkTypes } from '../util/MarkMappers';
 import RosterPalette from '../util/RosterPalette';
 import GameMap from './GameMap';
 import EventMarks from './EventMarks';
@@ -31,7 +31,7 @@ class MarkedGameMap extends React.PureComponent {
   render() {
     const {
       mapName,
-      regularMarks,
+      specialMarks,
       eventMarks,
       rosterPalette,
       lineScaleFactor,
@@ -42,7 +42,7 @@ class MarkedGameMap extends React.PureComponent {
     const { zoom, selectedMark } = this.state;
 
     const scale = zoom ? (1 / zoom) : 0;
-    const regularMarkProps = { lineScale: scale * lineScaleFactor };
+    const specialMarkProps = { lineScale: scale * lineScaleFactor };
 
     return (
       <div className="marked-game-map">
@@ -60,10 +60,10 @@ class MarkedGameMap extends React.PureComponent {
               scaleFactorMin={this.denormalizeZoom(0.95, width, height)}
               {...rest}
             >
-              {Object.entries(regularMarks)
-                .map(([markType, markData]) => RegularMarkTypes[markType].render(markData, {
+              {Object.entries(specialMarks)
+                .map(([markType, markData]) => SpecialMarkTypes[markType].render(markData, {
                   key: uniqid(),
-                  ...regularMarkProps,
+                  ...specialMarkProps,
                 }))}
               <EventMarks
                 marks={eventMarks}
@@ -77,7 +77,7 @@ class MarkedGameMap extends React.PureComponent {
         {selectedMark &&
           <MarkTooltip
             style={{ position: 'absolute', top: 40 }}
-            title={Localization.marks[selectedMark.type].single}
+            title={Localization.eventMarks[selectedMark.type].single}
             time={selectedMark.time}
             text={selectedMark.tooltip}
           />
@@ -90,7 +90,7 @@ class MarkedGameMap extends React.PureComponent {
 
 MarkedGameMap.propTypes = {
   mapName: PropTypes.string.isRequired,
-  regularMarks: PropTypes.objectOf(PropTypes.any).isRequired,
+  specialMarks: PropTypes.objectOf(PropTypes.any).isRequired,
   eventMarks: PropTypes.arrayOf(PropTypes.object).isRequired,
   rosterPalette: PropTypes.instanceOf(RosterPalette).isRequired,
   lineScaleFactor: PropTypes.number,

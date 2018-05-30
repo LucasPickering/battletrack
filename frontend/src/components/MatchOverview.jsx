@@ -1,38 +1,29 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
 import {
-  RegularMarkTypes,
+  SpecialMarkTypes,
   EventMarkTypes,
   EventTypes,
   convertEvent,
 } from '../util/MarkMappers';
-import Localization from '../util/Localization';
 import RosterPalette from '../util/RosterPalette';
 import {
   formatSeconds,
-  objectMap,
   objectFilter,
   matchLink,
   inRange,
   range,
 } from '../util/funcs';
 import ApiComponent from './ApiComponent';
-import RosterCheckList from './RosterCheckList';
+import FilterCheckList from './FilterCheckList';
 import MarkedGameMap from './MarkedGameMap';
 import '../styles/MatchOverview.css';
 
 const Range = Slider.createSliderWithTooltip(Slider.Range); // Janky AF
-
-const DISPLAY_FILTERS = Object.freeze({
-  // Convert each mark type into a field in the object
-  ...objectMap(RegularMarkTypes, (_, markObj) => markObj.label),
-  ...objectMap(EventMarkTypes, markType => Localization.marks[markType].plural),
-});
 
 class MatchOverviewHelper extends React.PureComponent {
   constructor(props, ...args) {
@@ -77,26 +68,19 @@ class MatchOverviewHelper extends React.PureComponent {
 
     this.state = {
       timeRange: [0, this.maxTime], // Time range to display events in
-      markFilters: Object.keys(DISPLAY_FILTERS), // Mark types to display
-      // Extract every player ID from the list of rosters into a big flat list
-      enabledPlayers: rosters.reduce(
-        (acc, roster) => {
-          roster.players.forEach(player => acc.push(player.player_id));
-          return acc;
-        },
-        [],
+      // Put every special mark type, event mark type, and player ID in one list
+      enabledFilters: [].concat(
+        Object.keys(SpecialMarkTypes),
+        Object.keys(EventMarkTypes),
+        ...rosters.map(roster => roster.players.map(player => player.player_id)),
       ),
     };
 
-    this.markFilterEnabled = this.markFilterEnabled.bind(this);
+    this.filterEnabled = this.filterEnabled.bind(this);
   }
 
-  markFilterEnabled(markType) {
-    return this.state.markFilters.includes(markType);
-  }
-
-  playerEnabled(playerId) {
-    return this.state.enabledPlayers.includes(playerId);
+  filterEnabled(key) {
+    return this.state.enabledFilters.includes(key);
   }
 
   render() {
@@ -108,45 +92,34 @@ class MatchOverviewHelper extends React.PureComponent {
         zones: whiteZones,
       },
     } = this.props;
-    const { timeRange, enabledPlayers, markFilters } = this.state;
+    const { timeRange, enabledFilters } = this.state;
     const [minTime, maxTime] = timeRange;
 
-    // Build an object of regular marks to display, but filter out ones that are disabled
-    const regularMarks = objectFilter({ plane, whiteZones }, this.markFilterEnabled);
+    // Build an object of special marks to display, but filter out ones that are disabled
+    const specialMarks = objectFilter({ plane, whiteZones }, this.filterEnabled);
 
     // Filter marks by type/time/player and flatten them into one big list
     const eventMarks = [].concat(...Object.entries(this.eventMarks)
-      .filter(([markType]) => this.markFilterEnabled(markType)) // Filter by type
+      .filter(([markType]) => this.filterEnabled(markType)) // Filter by type
       // Filter each mark list by time/player
       .map(([, markList]) => markList
         .filter(({ time }) => inRange(time, minTime, maxTime)) // Filter by time
-        .filter(({ player }) => !player || this.playerEnabled(player.id)))); // Filter by player
+        .filter(({ player }) => !player || this.filterEnabled(player.id)))); // Filter by player
 
     return (
       <div className="overview">
         <Link className="match-link" to={matchLink(matchId)}><h3>Back to Match</h3></Link>
 
-        <ToggleButtonGroup
-          className="filter-buttons"
-          type="checkbox"
-          value={markFilters}
-          onChange={val => this.setState({ markFilters: val })}
-        >
-          {Object.entries(DISPLAY_FILTERS).map(([key, label]) => (
-            <ToggleButton key={key} value={key}>{label}</ToggleButton>
-          ))}
-        </ToggleButtonGroup>
-
-        <RosterCheckList
+        <FilterCheckList
           rosters={rosters}
           rosterPalette={this.rosterPalette}
-          enabledPlayers={enabledPlayers}
-          onChange={val => this.setState({ enabledPlayers: val })}
+          enabledPlayers={enabledFilters}
+          onChange={val => this.setState({ enabledFilters: val })}
         />
 
         <MarkedGameMap
           mapName={mapName}
-          regularMarks={regularMarks}
+          specialMarks={specialMarks}
           eventMarks={eventMarks}
           rosterPalette={this.rosterPalette}
         >
