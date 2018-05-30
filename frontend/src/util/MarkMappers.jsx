@@ -1,6 +1,9 @@
+import React from 'react';
 import uniqid from 'uniqid';
 
 import Localization from './Localization';
+import Ray from '../components/Ray';
+import Zones from '../components/Zones';
 
 const ICONS = Object.freeze({
   Kill: '\uf05b',
@@ -15,7 +18,22 @@ function deathTooltip(attacker, player) {
     .concat([`${ICONS.Death} ${player.name}`]);
 }
 
-export const MarkTypes = Object.freeze({
+export const RegularMarkTypes = Object.freeze({
+  plane: {
+    label: 'Plane',
+    render: (plane, { lineScale, ...rest }) => (
+      <Ray {...plane} color="white" showTailTip strokeWidth={lineScale * 1.5} {...rest} />
+    ),
+  },
+  whiteZones: {
+    label: 'Play Zones',
+    render: (zones, { lineScale, ...rest }) => (
+      <Zones circles={zones} stroke="#ffffff" strokeWidth={lineScale} {...rest} />
+    ),
+  },
+});
+
+export const EventMarkTypes = Object.freeze({
   // PlayerPosition: {
   //   icon: { code: ICONS.Position, fontSize: 4, fontWeight: 400 },
   //   convert: ({ player }) => ({
@@ -56,7 +74,7 @@ export const EventTypes = Object.freeze({
 });
 
 export function convertEvent(markType, event) {
-  const { convert, ...staticFields } = MarkTypes[markType];
+  const { convert, ...staticFields } = EventMarkTypes[markType];
   const dynamicFields = convert(event); // Calculate dynamic mark fields based on the event
 
   // Combine static and dynamic fields into one object. If the dynamic object is null, then just

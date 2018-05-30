@@ -5,7 +5,12 @@ import { Link } from 'react-router-dom';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
-import { MarkTypes, EventTypes, convertEvent } from '../util/EventMappers';
+import {
+  RegularMarkTypes,
+  EventMarkTypes,
+  EventTypes,
+  convertEvent,
+} from '../util/MarkMappers';
 import Localization from '../util/Localization';
 import RosterPalette from '../util/RosterPalette';
 import {
@@ -22,10 +27,13 @@ import '../styles/MatchOverview.css';
 const Range = Slider.createSliderWithTooltip(Slider.Range); // Janky AF
 
 const DISPLAY_FILTERS = Object.freeze({
-  plane: 'Plane',
-  zones: 'Play Zones',
-  // Convert each mark type into a field in the object
-  ...Object.keys(MarkTypes).reduce((acc, type) => {
+  ...Object.entries(RegularMarkTypes)
+    .reduce((acc, [markType, markObj]) => {
+      acc[markType] = markObj.label;
+      return acc;
+    }, {}),
+  // Convert each event mark type into a field in the object
+  ...Object.keys(EventMarkTypes).reduce((acc, type) => {
     acc[type] = Localization.marks[type].plural;
     return acc;
   }, {}),
@@ -50,7 +58,7 @@ class MatchOverviewHelper extends React.PureComponent {
     //   ...
     // }
     // Filtering on time/type/player is based on state so that will be done during render.
-    this.marks = Object.entries(EventTypes).reduce((acc, [eventType, markTypes]) => {
+    this.eventMarks = Object.entries(EventTypes).reduce((acc, [eventType, markTypes]) => {
       const eventsForType = events[eventType];
       markTypes.forEach(markType => {
         acc[markType] = eventsForType
@@ -59,7 +67,7 @@ class MatchOverviewHelper extends React.PureComponent {
       });
       return acc;
     }, {});
-    Object.freeze(this.marks);
+    Object.freeze(this.eventMarks);
 
     // Sometimes the final event(s) of a match can take place after the duration, e.g. the duration
     // is 1906 but the final kill occurs at 1906.1. Add one to make sure we capture every event.
@@ -100,14 +108,23 @@ class MatchOverviewHelper extends React.PureComponent {
       telemetry: {
         match: { map_name: mapName, rosters },
         plane,
-        zones,
+        zones: whiteZones,
       },
     } = this.props;
     const { timeRange, enabledPlayers, markFilters } = this.state;
     const [minTime, maxTime] = timeRange;
 
+    // Build an object of regular marks to display, but filter out ones that are disabled
+    const regularMarks = Object.entries({ plane, whiteZones })
+      .reduce((acc, [markType, markData]) => {
+        if (this.markFilterEnabled(markType)) {
+          acc[markType] = markData;
+        }
+        return acc;
+      }, {});
+
     // Filter marks by type/time/player and flatten them into one big list
-    const marks = [].concat(...Object.entries(this.marks)
+    const eventMarks = [].concat(...Object.entries(this.eventMarks)
       .filter(([markType]) => this.markFilterEnabled(markType)) // Filter by type
       // Filter each mark list by time/player
       .map(([, markList]) => markList
@@ -138,10 +155,9 @@ class MatchOverviewHelper extends React.PureComponent {
 
         <MarkedGameMap
           mapName={mapName}
-          marks={marks}
+          regularMarks={regularMarks}
+          eventMarks={eventMarks}
           rosterPalette={this.rosterPalette}
-          plane={this.markFilterEnabled('plane') ? plane : undefined}
-          whiteZones={this.markFilterEnabled('zones') ? zones : undefined}
         >
           <Range
             count={1}

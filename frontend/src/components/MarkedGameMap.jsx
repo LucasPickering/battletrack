@@ -3,14 +3,12 @@ import React from 'react';
 import { AutoSizer } from 'react-virtualized';
 import uniqid from 'uniqid';
 
-import BtPropTypes from '../util/BtPropTypes';
 import Localization from '../util/Localization';
+import { RegularMarkTypes } from '../util/MarkMappers';
 import RosterPalette from '../util/RosterPalette';
 import GameMap from './GameMap';
 import EventMarks from './EventMarks';
 import MarkTooltip from './MarkTooltip';
-import Ray from './Ray';
-import Zones from './Zones';
 
 class MarkedGameMap extends React.PureComponent {
   constructor(props, ...args) {
@@ -33,10 +31,9 @@ class MarkedGameMap extends React.PureComponent {
   render() {
     const {
       mapName,
-      marks,
+      regularMarks,
+      eventMarks,
       rosterPalette,
-      plane,
-      whiteZones,
       lineScaleFactor,
       markScaleFactor,
       children,
@@ -45,8 +42,7 @@ class MarkedGameMap extends React.PureComponent {
     const { zoom, selectedMark } = this.state;
 
     const scale = zoom ? (1 / zoom) : 0;
-    const lineScale = scale * lineScaleFactor;
-    const markScale = scale * markScaleFactor;
+    const regularMarkProps = { lineScale: scale * lineScaleFactor };
 
     return (
       <div className="marked-game-map">
@@ -64,12 +60,14 @@ class MarkedGameMap extends React.PureComponent {
               scaleFactorMin={this.denormalizeZoom(0.95, width, height)}
               {...rest}
             >
-              {plane
-                && <Ray {...plane} color="white" strokeWidth={lineScale * 1.5} showTailTip />}
-              <Zones circles={whiteZones} stroke="#ffffff" strokeWidth={lineScale} />
+              {Object.entries(regularMarks)
+                .map(([markType, markData]) => RegularMarkTypes[markType].render(markData, {
+                  key: uniqid(),
+                  ...regularMarkProps,
+                }))}
               <EventMarks
-                marks={marks}
-                scale={markScale}
+                marks={eventMarks}
+                scale={scale * markScaleFactor}
                 rosterPalette={rosterPalette}
                 onMarkSelect={mark => this.setState({ selectedMark: mark })}
               />
@@ -92,18 +90,15 @@ class MarkedGameMap extends React.PureComponent {
 
 MarkedGameMap.propTypes = {
   mapName: PropTypes.string.isRequired,
-  marks: PropTypes.arrayOf(PropTypes.object).isRequired,
+  regularMarks: PropTypes.objectOf(PropTypes.any).isRequired,
+  eventMarks: PropTypes.arrayOf(PropTypes.object).isRequired,
   rosterPalette: PropTypes.instanceOf(RosterPalette).isRequired,
-  plane: BtPropTypes.ray,
-  whiteZones: PropTypes.arrayOf(BtPropTypes.circle),
   lineScaleFactor: PropTypes.number,
   markScaleFactor: PropTypes.number,
   children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)]),
 };
 
 MarkedGameMap.defaultProps = {
-  plane: null,
-  whiteZones: [],
   lineScaleFactor: 10,
   markScaleFactor: 10,
   children: null,
