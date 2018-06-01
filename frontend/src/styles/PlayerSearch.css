@@ -1,5 +1,18 @@
 .player-search {
-    margin-left: auto;
-    margin-right: auto;
-    width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 400px;
+}
+
+.player-search .shard-select-addon {
+  border: 0;
+  padding: 0;
+}
+
+.player-search .shard-select,
+.player-search .shard-select:focus,
+.player-search .shard-select:hover,
+.player-search .shard-select:active {
+  border-left: 0;
+  border-radius: 0;
 }

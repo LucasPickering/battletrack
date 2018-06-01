@@ -1,37 +1,35 @@
+import PropTypes from 'prop-types';
 import React from 'react';
-import { FormControl } from 'react-bootstrap';
+import { DropdownButton, MenuItem } from 'react-bootstrap';
 
-import api from '../util/api';
 import { formatShard } from '../util/funcs';
+import ApiComponent from './ApiComponent';
 
-class ShardSelect extends React.PureComponent {
-  constructor(...args) {
-    super(...args);
-    this.state = {
-      shards: [],
-    };
-  }
+const ShardSelectHelper = ({ shards, activeShard, ...rest }) => (
+  <DropdownButton
+    className="shard-select"
+    title={formatShard(activeShard)}
+    id="shards-dropdown"
+    {...rest}
+  >
+    {shards.map(shard => (
+      <MenuItem key={shard} eventKey={shard}>{formatShard(shard)}</MenuItem>
+    ))}
+  </DropdownButton>
+);
 
-  componentDidMount() {
-    api.get('/api/core/shards')
-      .then(response => this.setState({ shards: response.data }))
-      .catch(console.error);
-  }
+ShardSelectHelper.propTypes = {
+  shards: PropTypes.arrayOf(PropTypes.string).isRequired,
+  activeShard: PropTypes.string.isRequired,
+};
 
-  render() {
-    const { shards } = this.state;
-    return (
-      <FormControl
-        className="shardSelect"
-        componentClass="select"
-        {...this.props}
-      >
-        {shards.map(shard => (
-          <option key={shard} value={shard}>{formatShard(shard)}</option>
-        ))}
-      </FormControl>
-    );
-  }
-}
+const ShardSelect = props => (
+  <ApiComponent
+    url="/api/core/shards"
+    component={ShardSelectHelper}
+    dataProp="shards"
+    {...props}
+  />
+);
 
 export default ShardSelect;
