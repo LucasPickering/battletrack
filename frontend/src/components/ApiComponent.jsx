@@ -76,8 +76,8 @@ ApiComponent.propTypes = {
 };
 
 ApiComponent.defaultProps = {
-  loader: BarLoader,
   dataProp: 'data',
+  loader: BarLoader,
 };
 
 export default ApiComponent;

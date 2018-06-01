@@ -10,17 +10,25 @@
 .overview .match-link {
   grid-row: 1;
   grid-column: 1;
-  margin-top: 8px;
-  margin-left: 8px;
+  background-color: var(--bg-color-1);
+  color: var(--accent-color-1);
+  text-align: center;
+  padding-top: 8px;
+  border-bottom: 1px var(--border-color-1) solid;
 }
 
-.overview .match-link h3 {
+.overview .match-link:hover {
+  background-color: var(--bg-color-2);
+}
+
+.overview .match-link .text {
   margin: 0;
 }
 
 .overview .filter-list {
   grid-row: 2;
   grid-column: 1;
+  padding-top: 3px;
   height: 100%;
   overflow-y: scroll;
 }

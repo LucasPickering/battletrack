@@ -108,7 +108,9 @@ class MatchOverviewHelper extends React.PureComponent {
 
     return (
       <div className="overview">
-        <Link className="match-link" to={matchLink(matchId)}><h3>Back to Match</h3></Link>
+        <Link className="match-link" to={matchLink(matchId)}>
+          <h3 className="fa text">&#xf060; Back To Match</h3>
+        </Link>
 
         <FilterCheckList
           rosters={rosters}

@@ -29,12 +29,12 @@ PlayerMatches.propTypes = {
 
 const Player = ({ shard, playerName, history }) => (
   <div>
-    <PlayerSearch />
+    <PlayerSearch defaultShard={shard} />
     <div className="player">
       <h2>{playerName}</h2>
       <ShardSelect
-        value={shard}
-        onChange={e => history.push(playerLink(e.target.value, playerName))}
+        activeShard={shard}
+        onSelect={newShard => history.push(playerLink(newShard, playerName))}
       />
       <ApiComponent
         url={`/api/core/players/${shard}/${playerName}?popMatches`}

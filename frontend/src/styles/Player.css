@@ -7,8 +7,12 @@
   grid-template-columns: auto 120px;
 }
 
-.player h2, .shardSelect {
+.player h2 {
   margin: 0;
+}
+
+.player .shard-select {
+  float: right;
 }
 
 .player .form-control {

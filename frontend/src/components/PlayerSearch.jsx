@@ -9,23 +9,28 @@ import {
 import { withRouter } from 'react-router-dom';
 
 import { playerLink } from '../util/funcs';
+import ShardSelect from './ShardSelect';
 import '../styles/PlayerSearch.css';
 
 class PlayerSearch extends React.PureComponent {
-  constructor(props, context) {
-    super(props, context);
+  constructor(props, ...args) {
+    super(props, ...args);
     this.state = {
       searchName: '',
+      shard: props.defaultShard,
     };
 
     this.search = this.search.bind(this);
   }
 
   search() {
-    this.props.history.push(playerLink('pc-na', this.state.searchName));
+    const { searchName, shard } = this.state;
+    this.props.history.push(playerLink(shard, searchName));
   }
 
   render() {
+    const { shard } = this.state;
+
     return (
       <FormGroup className="player-search">
         <InputGroup>
@@ -39,6 +44,12 @@ class PlayerSearch extends React.PureComponent {
               }
             }}
           />
+          <InputGroup.Addon className="shard-select-addon">
+            <ShardSelect
+              activeShard={shard}
+              onSelect={newShard => this.setState({ shard: newShard })}
+            />
+          </InputGroup.Addon>
           <InputGroup.Button>
             <Button onClick={this.search}>Search</Button>
           </InputGroup.Button>
@@ -49,7 +60,12 @@ class PlayerSearch extends React.PureComponent {
 }
 
 PlayerSearch.propTypes = {
+  defaultShard: PropTypes.string,
   history: PropTypes.objectOf(PropTypes.any).isRequired,
+};
+
+PlayerSearch.defaultProps = {
+  defaultShard: 'pc-na', // Obviously the best
 };
 
 export default withRouter(PlayerSearch);
