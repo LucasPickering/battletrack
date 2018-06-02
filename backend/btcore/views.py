@@ -30,17 +30,18 @@ class PlayerView(views.APIView):
     def get(self, request, shard, **kwargs):
         # kwargs will have either name or ID - this handles either case
         # Only fetch PlayerMatches from the specified shard
-        player = self.queryset.filter(matches__shard=shard).distinct().get(shard=shard, **kwargs)
+        player = self.queryset.get(shard=shard, **kwargs)
 
         # If requested, populate all missing match matches for the player
         if request.GET.get('popMatches', False) is not False:
-            match_ids = [pm.match_id for pm in player.matches.all()]
+            match_ids = [pm.match_id for pm in player.matches.filter(shard=shard)]
             Match.objects.multi_preload('id', match_ids)
+            # player.cache_related('matches', *new_matches)
 
             # Refresh the object, but don't hit the API this time
             player = self.queryset.get(shard=shard, hit_api=False, **kwargs)
 
-        serializer = self.serializer_class(player)
+        serializer = self.serializer_class(player, context={'shard': shard})
         return Response(serializer.data)
 
 
