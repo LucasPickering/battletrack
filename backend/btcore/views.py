@@ -34,7 +34,7 @@ class PlayerView(views.APIView):
 
         # If requested, populate all missing match matches for the player
         if request.GET.get('popMatches', False) is not False:
-            match_ids = [pm.match_id for pm in player.matches.filter(shard=shard)]
+            match_ids = [pm.match_id for pm in player.matches.all() if pm.shard == shard]
             Match.objects.multi_preload('id', match_ids)
             # player.cache_related('matches', *new_matches)
 

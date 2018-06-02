@@ -106,7 +106,6 @@ class EnhancedModelSerializer(serializers.ModelSerializer):
                             if all(self._filter_key_func(field, e) == self.context[field]
                                    for field in self._context_filters)]
 
-            print([pm.shard for pm in instance])
             data_list = super().to_representation(instance)
             if self._order_by_fields:
                 data_list.sort(key=self._sort_key_func, reverse=self._order_by_reverse)
@@ -203,6 +202,7 @@ class MatchPlayerSerializer(serializers.ModelSerializer):
     """
     @brief      Serialization/deserialization for a Player in a certain Match
     """
+    player_id = serializers.CharField()
     stats = PlayerMatchStatsSerializer()
 
     class Meta:
@@ -405,20 +405,17 @@ class PlayerSerializer(DevDeserializer):
         }
 
     def _update_or_create_matches(self, player, matches):
-        pid, name = player.id, player.name
-
         # Find the PlayerMatches that are already in the DB
-        existing = PlayerMatch.objects.filter(player_id=pid)
-
-        # Link the Player object to PlayerMatches that don't have it yet
-        existing.filter(player_ref=None).update(player_ref=player)
+        existing = PlayerMatch.objects.filter(player=player)
 
         # Create all the PlayerMatches that are missing
         existing_match_ids = set(pm.match_id for pm in existing)
-        PlayerMatch.objects.bulk_create(
-            PlayerMatch(player_id=pid, player_name=name, player_ref=player, **match)
+        created = PlayerMatch.objects.bulk_create(
+            PlayerMatch(player=player, player_name=player.name, **match)
             for match in matches if match['match_id'] not in existing_match_ids
         )
+        print(created)
+        player.cache_related('matches', *created)
 
     @transaction.atomic
     def update(self, player, validated_data):
