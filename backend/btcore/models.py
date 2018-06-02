@@ -46,9 +46,11 @@ class RelatedCacheModel(models.Model):
             self._prefetched_objects_cache = {}
         try:
             field_cache = self._prefetched_objects_cache[field]
+
             # If it isn't a list already, convert it to one
             if not isinstance(field_cache, list):
                 field_cache = self._prefetched_objects_cache[field] = list(field_cache)
+
             self._prefetched_objects_cache[field] += values
         except KeyError:
             self._prefetched_objects_cache[field] = list(values)

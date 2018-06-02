@@ -1,42 +1,69 @@
 from collections import defaultdict
 
-from django.db import transaction
+from django.db import models, transaction
 from rest_framework import serializers
 
-from . import models, util
+from . import util
+from .models import Match, Player, RosterMatch, PlayerMatch, PlayerMatchStats
 
 
-class OrderedManySerializer(serializers.ModelSerializer):
+class EnhancedModelSerializer(serializers.ModelSerializer):
     """
-    @brief      An extended version of ModelSerializer that supports the 'order_by' field when used
-                as a many-serializer. The 'order_by' field functions similarly to the 'source'
-                field. During serialization, the list of items will be serialized list usual, then
-                sorted by specified field. If the items themselves are sortable, then you can use
+    @brief      An extended version of ModelSerializer that supports the 'context_filters' and
+                'order_by' fields when used as a many-serializer.
+
+                The 'context_filters' field takes a list of fields by which to filter before
+                serialization. The syntax of these field names is the same as QuerySet.filter. The
+                values used for filtering are pulled from the context during serialization.
+                For example:
+
+                EnhancedModelSerializer(..., context_filters=['stats__win_place'])
+
+                self.context = {'stats__win_place': 1}
+
+                instance.filter(stats__win_place=1)
+
+                The 'order_by' field functions similarly to the 'source' field. During
+                serialization, the list of items will be serialized list usual, then sorted by
+                specified field. If the items themselves are sortable, then you can use
                 "order_by='*'", otherwise use "order_by='field1.field2'" to sort by field1.field2.
                 If a nested relationship is used by the nested value is missing on an item, it is
                 sorted with the value None. If the field name starts with '-', the ordering will be
                 reversed.
     """
 
-    class OrderedListSerializer(serializers.ListSerializer):
-        ORDER_BY_SELF_CHAR = '*'
-        ORDER_BY_SEP_CHAR = '.'
+    class EnhancedListSerializer(serializers.ListSerializer):
+        SELF_CHAR = '*'
+        SEP_CHAR = '.'
         ORDER_BY_REVERSE_CHAR = '-'
 
         def __init__(self, *args, **kwargs):
-            order_by = kwargs.pop('order_by')
+            self._context_filters = kwargs.pop('context_filters', None)
 
-            # Check if the field starts with the special character that indicates reversal
-            if order_by.startswith(self.ORDER_BY_REVERSE_CHAR):
-                self._order_by_reverse = True
-                order_by = order_by[len(self.ORDER_BY_REVERSE_CHAR):]
+            order_by = kwargs.pop('order_by', None)
+            if order_by:
+                # Check if the field starts with the special character that indicates reversal
+                if order_by.startswith(self.ORDER_BY_REVERSE_CHAR):
+                    self._order_by_reverse = True
+                    order_by = order_by[len(self.ORDER_BY_REVERSE_CHAR):]
+                else:
+                    self._order_by_reverse = False
+
+                self._order_by_fields = self._split(order_by)
             else:
-                self._order_by_reverse = False
+                self._order_by_fields = None
 
-            self._order_by_fields = order_by.split(self.ORDER_BY_SEP_CHAR)
             super().__init__(*args, **kwargs)
 
-        def key_func(self, item):
+        def _split(self, field):
+            return field.split(self.SEP_CHAR)
+
+        def _filter_key_func(self, field, item):
+            for attr in self._split(field):
+                item = getattr(item, attr)
+            return item
+
+        def _sort_key_func(self, item):
             """
             @brief      Key function for sorting the given item
                         '*': sort by the item itself
@@ -44,7 +71,7 @@ class OrderedManySerializer(serializers.ModelSerializer):
                         'field1.field2': sort by item.field1.field2
                         'field1.*' will also return item.field1 (but don't do this)
                         If a field is missing at any level in the nesting, the value is sorted last
-                        (EVEN IF the sorting is reversed reverse).
+                        (EVEN IF the sorting is reversed).
 
             @param      self  The object
             @param      item  The item
@@ -55,7 +82,7 @@ class OrderedManySerializer(serializers.ModelSerializer):
                         make None sort last.
             """
             for attr in self._order_by_fields:
-                if item is None or attr == self.ORDER_BY_SELF_CHAR:
+                if item is None or attr == self.SELF_CHAR:
                     break
                 item = item.get(attr)
 
@@ -73,14 +100,22 @@ class OrderedManySerializer(serializers.ModelSerializer):
             return ((item is None) ^ self._order_by_reverse, item)
 
         def to_representation(self, instance):
+            if self._context_filters:
+                instance = instance.all() if isinstance(instance, models.Manager) else instance
+                instance = [e for e in instance
+                            if all(self._filter_key_func(field, e) == self.context[field]
+                                   for field in self._context_filters)]
+
+            print([pm.shard for pm in instance])
             data_list = super().to_representation(instance)
-            data_list.sort(key=self.key_func, reverse=self._order_by_reverse)
+            if self._order_by_fields:
+                data_list.sort(key=self._sort_key_func, reverse=self._order_by_reverse)
             return data_list
 
     @classmethod
     def many_init(cls, *args, **kwargs):
         kwargs['child'] = cls()
-        return cls.OrderedListSerializer(*args, **kwargs)
+        return cls.EnhancedListSerializer(*args, **kwargs)
 
 
 class DevDeserializerMeta(serializers.SerializerMetaclass):
@@ -114,13 +149,13 @@ class DevDeserializer(serializers.ModelSerializer, metaclass=DevDeserializerMeta
 
 class MatchSummarySerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Match
+        model = Match
         fields = ('mode', 'perspective', 'map_name', 'date', 'duration')
 
 
 class PlayerSummarySerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.PlayerMatch
+        model = PlayerMatch
         fields = ('player_id', 'player_name')
 
 
@@ -153,7 +188,7 @@ class PlayerMatchStatsSerializer(DevDeserializer):
     ]
 
     class Meta:
-        model = models.PlayerMatchStats
+        model = PlayerMatchStats
         exclude = ('player_match',)
 
     @classmethod
@@ -171,7 +206,7 @@ class MatchPlayerSerializer(serializers.ModelSerializer):
     stats = PlayerMatchStatsSerializer()
 
     class Meta:
-        model = models.PlayerMatch
+        model = PlayerMatch
         fields = ('roster', 'player_id', 'player_name', 'shard', 'stats')
         extra_kwargs = {
             'roster': {'write_only': True},
@@ -179,14 +214,14 @@ class MatchPlayerSerializer(serializers.ModelSerializer):
         }
 
 
-class MatchRosterSerializer(OrderedManySerializer):
+class MatchRosterSerializer(EnhancedModelSerializer):
     """
     @brief      Contains info about a Roster for a certain Match
     """
     players = MatchPlayerSerializer(many=True)
 
     class Meta:
-        model = models.RosterMatch
+        model = RosterMatch
         fields = ('id', 'win_place', 'players')
 
 
@@ -197,11 +232,11 @@ class RosterMatchSerializer(serializers.ModelSerializer):
     players = PlayerSummarySerializer(many=True)
 
     class Meta:
-        model = models.RosterMatch
+        model = RosterMatch
         fields = ('id', 'players')
 
 
-class PlayerMatchSerializer(OrderedManySerializer):
+class PlayerMatchSerializer(EnhancedModelSerializer):
     """
     @brief      Contains info about a Match for a certain Player
     """
@@ -211,7 +246,7 @@ class PlayerMatchSerializer(OrderedManySerializer):
     stats = PlayerMatchStatsSerializer(read_only=True)
 
     class Meta:
-        model = models.PlayerMatch
+        model = PlayerMatch
         fields = ('match', 'roster', 'match_id', 'shard', 'stats')
 
 
@@ -219,7 +254,7 @@ class MatchSerializer(DevDeserializer):
     rosters = MatchRosterSerializer(many=True, order_by='win_place')
 
     class Meta:
-        model = models.Match
+        model = Match
         fields = ('id', 'shard', 'mode', 'perspective', 'map_name', 'date', 'duration',
                   'telemetry_url', 'rosters')
         extra_kwargs = {
@@ -299,11 +334,11 @@ class MatchSerializer(DevDeserializer):
                            for players in roster_to_players.values() for player in players}
 
         # Create the Match
-        match = models.Match.objects.create(**validated_data)
+        match = Match.objects.create(**validated_data)
 
         # Create each RosterMatch
-        roster_matches = models.RosterMatch.objects.bulk_create(
-            models.RosterMatch(match=match, **roster) for roster in rosters,
+        roster_matches = RosterMatch.objects.bulk_create(
+            RosterMatch(match=match, **roster) for roster in rosters,
         )
         match.cache_related('rosters', *roster_matches)  # Cache each RosterMatch on the Match
 
@@ -312,7 +347,7 @@ class MatchSerializer(DevDeserializer):
                             for rm in roster_matches for player in roster_to_players[rm.id]}
 
         # Figure out which PlayerMatches are already in the DB and need their roster/stats linked
-        existing_pms = list(models.PlayerMatch.objects.filter(match_id=match.id, roster=None))
+        existing_pms = list(PlayerMatch.objects.filter(match_id=match.id, roster=None))
 
         # Set the roster on each pre-existing PlayerMatch
         for player in existing_pms:
@@ -321,9 +356,8 @@ class MatchSerializer(DevDeserializer):
 
         # Create all the missing PlayerMatches
         existing_set = set(pm.player_id for pm in existing_pms)  # Existing player IDs
-        created_pms = models.PlayerMatch.objects.bulk_create(
-            models.PlayerMatch(roster=player_to_roster[player['player_id']], match_id=match.id,
-                               **player)
+        created_pms = PlayerMatch.objects.bulk_create(
+            PlayerMatch(roster=player_to_roster[player['player_id']], match_id=match.id, **player)
             for players in roster_to_players.values() for player in players  # Nested list
             if player['player_id'] not in existing_set
         )
@@ -335,8 +369,8 @@ class MatchSerializer(DevDeserializer):
 
         # Create all Stats objects. We have to re-query for all the PlayerMatch objects in order
         # to get copies with the primary keys
-        models.PlayerMatchStats.objects.bulk_create(
-            models.PlayerMatchStats(player_match=pm, **player_to_stats[pm.player_id])
+        PlayerMatchStats.objects.bulk_create(
+            PlayerMatchStats(player_match=pm, **player_to_stats[pm.player_id])
             for pm in all_pms
         )
 
@@ -344,10 +378,11 @@ class MatchSerializer(DevDeserializer):
 
 
 class PlayerSerializer(DevDeserializer):
-    matches = PlayerMatchSerializer(many=True, order_by='-match.date')  # Latest matches first
+    # Latest matches first
+    matches = PlayerMatchSerializer(many=True, context_filters=['shard'], order_by='-match.date')
 
     class Meta:
-        model = models.Player
+        model = Player
         fields = '__all__'
 
     @classmethod
@@ -373,15 +408,15 @@ class PlayerSerializer(DevDeserializer):
         pid, name = player.id, player.name
 
         # Find the PlayerMatches that are already in the DB
-        existing = models.PlayerMatch.objects.filter(player_id=pid)
+        existing = PlayerMatch.objects.filter(player_id=pid)
 
         # Link the Player object to PlayerMatches that don't have it yet
         existing.filter(player_ref=None).update(player_ref=player)
 
         # Create all the PlayerMatches that are missing
         existing_match_ids = set(pm.match_id for pm in existing)
-        models.PlayerMatch.objects.bulk_create(
-            models.PlayerMatch(player_id=pid, player_name=name, player_ref=player, **match)
+        PlayerMatch.objects.bulk_create(
+            PlayerMatch(player_id=pid, player_name=name, player_ref=player, **match)
             for match in matches if match['match_id'] not in existing_match_ids
         )
 
@@ -395,7 +430,7 @@ class PlayerSerializer(DevDeserializer):
         matches = validated_data.pop('matches')
 
         # Create the Player, then update PlayerMatches
-        player = models.Player.objects.create(**validated_data)
+        player = Player.objects.create(**validated_data)
         self._update_or_create_matches(player, matches)
 
         return player

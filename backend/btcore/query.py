@@ -87,7 +87,7 @@ class DevAPIQuerySet(models.QuerySet):
         # Deserialize the data and save it
         serializer = self.model.serializer.from_dev_data(data, many=True)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        return serializer.save()
 
 
 class MatchQuerySet(DevAPIQuerySet):
@@ -114,5 +114,5 @@ class PlayerQuerySet(DevAPIQuerySet):
         # Pull latest data from API, will add Player if missing, or if Player is already in DB,
         # will just add latest PlayerMatches
         if hit_api:
-            self._get_from_api(*args, shard=shard, **kwargs)
+            return self._get_from_api(*args, shard=shard, **kwargs)
         return self._get_from_db(*args, **kwargs)
