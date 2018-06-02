@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 
 from . import util
@@ -86,23 +85,14 @@ class PlayerMatch(RelatedCacheModel):
     # Null if match/player isn't in the DB yet
     roster = models.ForeignKey(RosterMatch, on_delete=models.SET_NULL, null=True,
                                related_name='players')
-    player_ref = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True,
-                                   related_name='matches')
+    player = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, db_constraint=False,
+                               related_name='matches')
 
     # Store these additional fields, because they can be gotten from match OR player data
     match_id = models.CharField(max_length=36)
-    player_id = models.CharField(max_length=util.PLAYER_ID_LENGTH)
+    # player_id = models.CharField(max_length=util.PLAYER_ID_LENGTH)
     player_name = models.CharField(max_length=30)
     shard = models.CharField(max_length=20, choices=util.choices(util.SHARDS))
-
-    class Meta:
-        unique_together = ('player_id', 'match_id')
-
-    def clean(self):
-        super().clean()
-        # Make sure at least one of player/roster is set
-        if self.player_ref is None and self.roster is None:
-            raise ValidationError("No player or roster set")
 
 
 # This object will only be create when a PlayerMatch is populated from the Match side
