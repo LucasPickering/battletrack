@@ -40,6 +40,7 @@ const Player = ({ shard, playerName, history }) => (
         url={`/api/core/players/${shard}/${playerName}?popMatches`}
         component={PlayerMatches}
         dataProp="playerData"
+        loaderText="Loading matches..."
       />
     </div>
   </div>

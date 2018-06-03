@@ -31,13 +31,13 @@ class ApiComponent extends React.PureComponent {
 
   loadData(url) {
     this.setState({ loading: true, data: null, error: null }); // Reset state
-    // api.get(url)
-    //   .then(response => {
-    //     this.setState({ loading: false, data: response.data });
-    //   })
-    //   .catch(err => {
-    //     this.setState({ loading: false, error: err });
-    //   });
+    api.get(url)
+      .then(response => {
+        this.setState({ loading: false, data: response.data });
+      })
+      .catch(err => {
+        this.setState({ loading: false, error: err });
+      });
   }
 
   render() {
@@ -54,7 +54,11 @@ class ApiComponent extends React.PureComponent {
     if (loader && loading) {
       return (
         <div className="loader">
-          {React.createElement(loader, { loading: true, ...loaderProps })}
+          {React.createElement(loader, {
+            color: 'var(--highlight-color-2)',
+            loading,
+            ...loaderProps,
+          })}
           <p className="loader-text">{loaderText}</p>
         </div>
       );

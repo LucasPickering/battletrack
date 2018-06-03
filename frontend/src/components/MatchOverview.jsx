@@ -150,6 +150,7 @@ const MatchOverview = ({ matchId }) => (
     component={MatchOverviewHelper}
     dataProp="telemetry"
     matchId={matchId}
+    loaderText="Loading match data..."
   />
 );
 
