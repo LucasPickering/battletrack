@@ -40,7 +40,10 @@ class RelatedCacheModel(models.Model):
     class Meta:
         abstract = True
 
-    def cache_related(self, field, *values):
+    def cache_related_single(self, field, value):
+        self._state.fields_cache[field] = value
+
+    def cache_related_multi(self, field, *values):
         if not hasattr(self, '_prefetched_objects_cache'):
             self._prefetched_objects_cache = {}
         try:

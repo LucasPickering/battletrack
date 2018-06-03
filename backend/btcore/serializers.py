@@ -13,15 +13,14 @@ class EnhancedModelSerializer(serializers.ModelSerializer):
                 'order_by' fields when used as a many-serializer.
 
                 The 'context_filters' field takes a list of fields by which to filter before
-                serialization. The syntax of these field names is the same as QuerySet.filter. The
-                values used for filtering are pulled from the context during serialization.
-                For example:
+                serialization. The values used for filtering are pulled from the context during
+                serialization. For example:
 
-                EnhancedModelSerializer(..., context_filters=['stats__win_place'])
+                EnhancedModelSerializer(..., context_filters=['stats.win_place'])
 
-                self.context = {'stats__win_place': 1}
+                self.context = {'stats.win_place': 1}
 
-                instance.filter(stats__win_place=1)
+                instance.filter(stats.win_place=1)
 
                 The 'order_by' field functions similarly to the 'source' field. During
                 serialization, the list of items will be serialized list usual, then sorted by
@@ -144,6 +143,10 @@ class DevDeserializer(serializers.ModelSerializer, metaclass=DevDeserializerMeta
         else:
             data = cls.convert_dev_data(dev_data)
         return cls(*args, data=data, many=many, **kwargs)
+
+    def run_validation(self, data, *args, **kwargs):
+        # Validation usually runs a bunch of queries and this is a stupid workaround
+        return data
 
 
 class MatchSummarySerializer(serializers.ModelSerializer):
@@ -340,7 +343,7 @@ class MatchSerializer(DevDeserializer):
         roster_matches = RosterMatch.objects.bulk_create(
             RosterMatch(match=match, **roster) for roster in rosters,
         )
-        match.cache_related('rosters', *roster_matches)  # Cache each RosterMatch on the Match
+        match.cache_related_multi('rosters', *roster_matches)  # Cache each RosterMatch on the Match
 
         # Using our dict of RosterID:List(PlayerMatch-dict), build a dict of PlayerID:RosterMatch
         player_to_roster = {player['player_id']: rm
@@ -365,7 +368,7 @@ class MatchSerializer(DevDeserializer):
 
         # Cache each PlayerMatch on its associated RosterMatch object
         for pm in all_pms:
-            player_to_roster[pm.player_id].cache_related('players', pm)
+            player_to_roster[pm.player_id].cache_related_multi('players', pm)
 
         # Create all Stats objects. We have to re-query for all the PlayerMatch objects in order
         # to get copies with the primary keys
@@ -406,7 +409,7 @@ class PlayerSerializer(DevDeserializer):
 
     def _update_or_create_matches(self, player, matches):
         # Find the PlayerMatches that are already in the DB
-        existing = PlayerMatch.objects.filter(player=player)
+        existing = player.matches.all()
 
         # Create all the PlayerMatches that are missing
         existing_match_ids = set(pm.match_id for pm in existing)
@@ -414,8 +417,13 @@ class PlayerSerializer(DevDeserializer):
             PlayerMatch(player=player, player_name=player.name, **match)
             for match in matches if match['match_id'] not in existing_match_ids
         )
-        print(created)
-        player.cache_related('matches', *created)
+
+        # We know these new PlayerMatches have no stats, so cache None on them so that DRF doesn't
+        # try to the hit the DB again
+        for pm in created:
+            pm.cache_related_single('stats', None)
+
+        player.cache_related_multi('matches', *created)
 
     @transaction.atomic
     def update(self, player, validated_data):

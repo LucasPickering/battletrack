@@ -179,7 +179,7 @@ class TelemetrySerializer(DevDeserializer):
         zones = self._calc_zones(events_by_type['GameStatePeriodic'])
 
         # Create models
-        telemetry = models.Telemetry.objects.create(match=match, plane=plane, zones=zones)
+        telemetry = models.Telemetry.objects.create(match_id=match, plane=plane, zones=zones)
 
         # Regroup events by model (multiple types can map to one model, so we want to reduce that)
         events_by_model = defaultdict(list)
