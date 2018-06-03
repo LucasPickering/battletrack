@@ -4,18 +4,6 @@ import time
 
 from django.conf import settings
 
-SHARDS = [
-    'pc-na',
-    'pc-eu',
-    'pc-as',
-    'pc-kakao',
-    'pc-krjp',
-    'pc-jp',
-    'pc-oc',
-    'pc-ru',
-    'pc-sa',
-    'pc-sea',
-]
 PERSPECTIVES = ['fpp', 'tpp']
 MAPS = {
     'Erangel_Main': 'Erangel',

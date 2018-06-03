@@ -62,7 +62,7 @@ class Match(RelatedCacheModel):
     objects = MatchQuerySet.as_manager()
 
     id = models.CharField(primary_key=True, max_length=util.MATCH_ID_LENGTH)
-    shard = models.CharField(max_length=20, choices=util.choices(util.SHARDS))
+    shard = models.CharField(max_length=20)
     mode = models.CharField(max_length=10)
     perspective = models.CharField(max_length=10, choices=util.choices(util.PERSPECTIVES))
     map_name = models.CharField(max_length=50, choices=util.choices(util.MAPS.values()))
@@ -95,7 +95,7 @@ class PlayerMatch(RelatedCacheModel):
     match_id = models.CharField(max_length=36)
     # player_id = models.CharField(max_length=util.PLAYER_ID_LENGTH)
     player_name = models.CharField(max_length=30)
-    shard = models.CharField(max_length=20, choices=util.choices(util.SHARDS))
+    shard = models.CharField(max_length=20)
 
 
 # This object will only be create when a PlayerMatch is populated from the Match side

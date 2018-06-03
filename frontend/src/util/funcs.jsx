@@ -7,6 +7,19 @@ const MAP_IMAGES = {
   Erangel,
 };
 
+export const SHARDS = Object.freeze([
+  'pc-na',
+  'pc-eu',
+  'pc-as',
+  'pc-kakao',
+  'pc-krjp',
+  'pc-jp',
+  'pc-oc',
+  'pc-ru',
+  'pc-sa',
+  'pc-sea',
+]);
+
 export function formatDate(date, format) {
   return moment(date).format(format);
 }
