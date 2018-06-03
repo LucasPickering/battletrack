@@ -36,7 +36,6 @@ class PlayerView(views.APIView):
         if request.GET.get('popMatches', False) is not False:
             match_ids = [pm.match_id for pm in player.matches.all() if pm.shard == shard]
             Match.objects.multi_preload('id', match_ids)
-            # player.cache_related('matches', *new_matches)
 
             # Refresh the object, but don't hit the API this time
             player = self.queryset.get(shard=shard, hit_api=False, **kwargs)
