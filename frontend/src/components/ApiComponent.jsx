@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { BarLoader } from 'react-spinners';
+import { ClipLoader } from 'react-spinners';
 
 import api from '../util/api';
+import '../styles/ApiComponent.css';
 
 class ApiComponent extends React.PureComponent {
   constructor(props, context) {
@@ -30,26 +31,33 @@ class ApiComponent extends React.PureComponent {
 
   loadData(url) {
     this.setState({ loading: true, data: null, error: null }); // Reset state
-    api.get(url)
-      .then(response => {
-        this.setState({ loading: false, data: response.data });
-      })
-      .catch(err => {
-        this.setState({ loading: false, error: err });
-      });
+    // api.get(url)
+    //   .then(response => {
+    //     this.setState({ loading: false, data: response.data });
+    //   })
+    //   .catch(err => {
+    //     this.setState({ loading: false, error: err });
+    //   });
   }
 
   render() {
     const {
-      loader,
       component,
       dataProp,
+      loader,
+      loaderText,
+      loaderProps,
       ...rest
     } = this.props;
     const { loading, data, error } = this.state;
 
-    if (loading) {
-      return React.createElement(loader, { loading });
+    if (loader && loading) {
+      return (
+        <div className="loader">
+          {React.createElement(loader, { loading: true, ...loaderProps })}
+          <p className="loader-text">{loaderText}</p>
+        </div>
+      );
     }
 
     if (data) {
@@ -73,11 +81,15 @@ ApiComponent.propTypes = {
   component: PropTypes.func.isRequired,
   dataProp: PropTypes.string,
   loader: PropTypes.func, // Should be a Loader class
+  loaderText: PropTypes.string,
+  loaderProps: PropTypes.objectOf(PropTypes.any),
 };
 
 ApiComponent.defaultProps = {
   dataProp: 'data',
-  loader: BarLoader,
+  loader: ClipLoader,
+  loaderText: 'Loading...',
+  loaderProps: { size: 100 },
 };
 
 export default ApiComponent;

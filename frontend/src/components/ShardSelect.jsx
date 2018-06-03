@@ -2,34 +2,23 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { DropdownButton, MenuItem } from 'react-bootstrap';
 
-import { formatShard } from '../util/funcs';
-import ApiComponent from './ApiComponent';
+import { SHARDS, formatShard } from '../util/funcs';
 
-const ShardSelectHelper = ({ shards, activeShard, ...rest }) => (
+const ShardSelect = ({ activeShard, ...rest }) => (
   <DropdownButton
     className="shard-select"
     title={formatShard(activeShard)}
     id="shards-dropdown"
     {...rest}
   >
-    {shards.map(shard => (
+    {SHARDS.map(shard => (
       <MenuItem key={shard} eventKey={shard}>{formatShard(shard)}</MenuItem>
     ))}
   </DropdownButton>
 );
 
-ShardSelectHelper.propTypes = {
-  shards: PropTypes.arrayOf(PropTypes.string).isRequired,
+ShardSelect.propTypes = {
   activeShard: PropTypes.string.isRequired,
 };
-
-const ShardSelect = props => (
-  <ApiComponent
-    url="/api/core/shards"
-    component={ShardSelectHelper}
-    dataProp="shards"
-    {...props}
-  />
-);
 
 export default ShardSelect;

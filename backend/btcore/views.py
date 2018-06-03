@@ -42,8 +42,3 @@ class PlayerView(views.APIView):
 
         serializer = self.serializer_class(player, context={'shard': shard})
         return Response(serializer.data)
-
-
-@api_view(['GET'])
-def shards(request):
-    return Response(util.SHARDS)

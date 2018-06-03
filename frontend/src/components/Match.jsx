@@ -58,6 +58,7 @@ const Match = ({ matchId }) => (
       component={MatchHelper}
       dataProp="matchData"
       matchId={matchId}
+      loaderText="Loading match..."
     />
   </div>
 );
