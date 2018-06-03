@@ -11,6 +11,7 @@
   --accent-color-1: #c49e15;
 
   --highlight-color-1: #777777;
+  --highlight-color-2: #909090;
 
   background-color: var(--bg-color-1);
 }
