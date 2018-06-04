@@ -3,6 +3,7 @@ import React from 'react';
 import { ReactSVGPanZoom } from 'react-svg-pan-zoom';
 
 import { mapImage } from '../util/funcs';
+import BtPropTypes from '../util/BtPropTypes';
 
 class GameMap extends React.PureComponent {
   componentDidMount() {
@@ -33,10 +34,7 @@ class GameMap extends React.PureComponent {
 }
 
 GameMap.propTypes = {
-  map: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    size: PropTypes.number.isRequired,
-  }).isRequired,
+  map: BtPropTypes.map.isRequired,
   children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.any)]),
 };
 

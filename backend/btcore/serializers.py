@@ -254,14 +254,22 @@ class PlayerMatchSerializer(EnhancedModelSerializer):
 
 
 class MatchSerializer(DevDeserializer):
+    map = serializers.SerializerMethodField()
     rosters = MatchRosterSerializer(many=True, order_by='win_place')
 
     class Meta:
         model = Match
-        fields = ('id', 'shard', 'mode', 'perspective', 'map_name', 'date', 'duration',
+        fields = ('id', 'shard', 'mode', 'perspective', 'map', 'date', 'duration',
                   'telemetry_url', 'rosters')
         extra_kwargs = {
             'telemetry_url': {'write_only': True},
+        }
+
+    def get_map(self, match):
+        map_name = match.map_name
+        return {
+            'name': map_name,
+            'size': util.MAP_SIZES[map_name],
         }
 
     @classmethod
