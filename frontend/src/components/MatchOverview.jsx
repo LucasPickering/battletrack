@@ -87,7 +87,7 @@ class MatchOverviewHelper extends React.PureComponent {
     const {
       matchId,
       telemetry: {
-        match: { map_name: mapName, rosters },
+        match: { map, rosters },
         plane,
         zones: whiteZones,
       },
@@ -120,7 +120,7 @@ class MatchOverviewHelper extends React.PureComponent {
         />
 
         <MarkedGameMap
-          mapName={mapName}
+          map={map}
           specialMarks={specialMarks}
           eventMarks={eventMarks}
           rosterPalette={this.rosterPalette}

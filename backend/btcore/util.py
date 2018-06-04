@@ -9,6 +9,10 @@ MAPS = {
     'Erangel_Main': 'Erangel',
     'Desert_Main': 'Miramar',
 }
+MAP_SIZES = {
+    'Erangel': 8000,
+    'Miramar': 8000,
+}
 
 MATCH_ID_LENGTH = 36
 PLAYER_ID_LENGTH = 40

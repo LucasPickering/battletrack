@@ -22,7 +22,7 @@ const MatchHelper = props => {
       shard,
       mode,
       perspective,
-      map_name: mapName,
+      map: { name: mapName },
       date,
       duration,
       rosters,

@@ -30,7 +30,6 @@ class MarkedGameMap extends React.PureComponent {
 
   render() {
     const {
-      mapName,
       specialMarks,
       eventMarks,
       rosterPalette,
@@ -50,7 +49,6 @@ class MarkedGameMap extends React.PureComponent {
           {/* The size check is necessary to prevent weird double-rendering bugs. Trust me. */}
           {({ width, height }) => (width === 0 || height === 0 ? null : (
             <GameMap
-              map={{ name: mapName, size: this.mapSize }}
               width={width}
               height={height}
               onZoom={zoomObj => this.setState({
@@ -89,7 +87,6 @@ class MarkedGameMap extends React.PureComponent {
 }
 
 MarkedGameMap.propTypes = {
-  mapName: PropTypes.string.isRequired,
   specialMarks: PropTypes.objectOf(PropTypes.any).isRequired,
   eventMarks: PropTypes.arrayOf(PropTypes.object).isRequired,
   rosterPalette: PropTypes.instanceOf(RosterPalette).isRequired,
