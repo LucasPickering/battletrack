@@ -29,7 +29,12 @@ class MatchOverviewHelper extends React.PureComponent {
   constructor(props, ...args) {
     super(props, ...args);
 
-    const { telemetry: { match: { duration, rosters }, events } } = props;
+    const {
+      telemetry: {
+        match: { duration, rosters },
+        events,
+      },
+    } = props;
 
     this.rosterPalette = new RosterPalette(rosters); // This creates a color for each roster
 
@@ -124,6 +129,7 @@ class MatchOverviewHelper extends React.PureComponent {
           specialMarks={specialMarks}
           eventMarks={eventMarks}
           rosterPalette={this.rosterPalette}
+          showGrid
         >
           <Range
             count={1}
