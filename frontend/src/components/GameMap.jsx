@@ -17,8 +17,8 @@ const GridLine = ({
 }) => (
   <path
     d={vertical ? `M${d},0 V${mapSize} Z` : `M0,${d} H${mapSize} Z`}
-    stroke="#666"
-    strokeWidth={major ? 5 : 2}
+    stroke={major ? '#444' : '#999'}
+    strokeWidth={major ? 6 : 1}
     {...rest}
   />
 );
