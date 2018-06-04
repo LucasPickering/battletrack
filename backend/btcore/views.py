@@ -1,8 +1,7 @@
 from rest_framework import views
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from . import serializers, util
+from . import serializers
 from .models import Match, Player
 from telemetry.models import Telemetry
 
