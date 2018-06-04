@@ -20,7 +20,7 @@ export const SHARDS = Object.freeze([
   'pc-sea',
 ]);
 
-export function formatDate(date, format) {
+export function formatDate(date, format = 'MMMM D, YYYY, HH:mm') {
   return moment(date).format(format);
 }
 

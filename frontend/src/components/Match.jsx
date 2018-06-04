@@ -31,12 +31,18 @@ const MatchHelper = props => {
 
   return (
     <div className="match">
-      <h2>{formatGameMode(mode)} {formatPerspective(perspective)}</h2>
-      <h2>{mapName}</h2>
-      <h3>{formatDate(date, 'MMMM D, YYYY - HH:mm:ss')}</h3>
-      <h3>{formatSeconds(duration)}</h3>
+      <div className="match-info">
+        <h2>{formatGameMode(mode)} {formatPerspective(perspective)}</h2>
+        <h2 style={{ textAlign: 'right' }}>{mapName}</h2>
+        <h3>{formatDate(date)}</h3>
+        <h3 style={{ textAlign: 'right' }}>{formatSeconds(duration)}</h3>
+      </div>
 
-      <Link to={overviewLink(matchId)}><h3>Overview</h3></Link>
+      <div className="links">
+        <Link to={overviewLink(matchId)}>
+          <button>Overview</button>
+        </Link>
+      </div>
 
       <Panel className="rosters">
         {rosters.map(r => <RosterMatchSummary key={r.id} shard={shard} data={r} />)}
@@ -51,7 +57,7 @@ MatchHelper.propTypes = {
 };
 
 const Match = ({ matchId }) => (
-  <div>
+  <div className="match-container">
     <PlayerSearch />
     <ApiComponent
       url={`/api/core/matches/${matchId}`}

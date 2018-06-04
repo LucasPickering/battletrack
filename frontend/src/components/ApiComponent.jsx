@@ -1,8 +1,8 @@
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { ClipLoader } from 'react-spinners';
 
-import api from '../util/api';
 import '../styles/ApiComponent.css';
 
 class ApiComponent extends React.PureComponent {
@@ -31,7 +31,7 @@ class ApiComponent extends React.PureComponent {
 
   loadData(url) {
     this.setState({ loading: true, data: null, error: null }); // Reset state
-    api.get(url)
+    axios.get(url)
       .then(response => {
         this.setState({ loading: false, data: response.data });
       })
@@ -70,9 +70,8 @@ class ApiComponent extends React.PureComponent {
     }
 
     if (error) {
-      // An error occurred, render it (TODO)
-      console.error(error);
-      return null;
+      // An error occurred, render it
+      return <p className="api-error">{error.message}</p>;
     }
 
     // Nothing yet, this is probably the first render

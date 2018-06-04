@@ -4,14 +4,28 @@
 
 #root {
   --bg-color-1: #45494f;
-  --bg-color-2: #8c8c8c;
+  --bg-color-2: #666; /* Spooky */
+  --bg-color-3: #707070;
+  --bg-color-4: #8c8c8c;
 
   --border-color-1: #333333;
 
   --accent-color-1: #c49e15;
+  --accent-color-2: #b28f11;
+  --accent-color-3: #9e7e0e;
 
   --highlight-color-1: #777777;
   --highlight-color-2: #909090;
 
+  --error-color-1: #cc0a0a;
+
   background-color: var(--bg-color-1);
+}
+
+a, p, h1, h2, h3, h4, li, .panel-title {
+  color: var(--accent-color-1);
+}
+
+a:hover {
+  color: var(--accent-color-3);
 }

@@ -10,7 +10,7 @@ import './styles/App.css';
 
 const App = () => (
   <Router>
-    <Switch className="App">
+    <Switch>
       <Route exact path="/" component={null} />
       <Route exact path="/matches/:matchId" render={routeComponent(Match)} />
       <Route exact path="/matches/:matchId/overview" render={routeComponent(MatchOverview)} />
