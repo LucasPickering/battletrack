@@ -2,23 +2,39 @@
   margin-left: auto;
   margin-right: auto;
   width: 500px;
-  display: grid;
-  grid-template-rows: 40px auto;
-  grid-template-columns: auto 120px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .player h2 {
   margin: 0;
 }
 
-.player .shard-select {
-  float: right;
+.player .header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
 }
 
-.player .form-control {
-  width: auto;
+.player .header .shard-select {
+  background-color: var(--bg-color-2);
+  color: var(--accent-color-1);
+  border: none;
 }
+
+.player .header .shard-select:hover,
+.player .header .shard-select:focus,
+.player .header .shard-select:active {
+  background-color: var(--bg-color-3);
+  color: var(--accent-color-1);
+}
+
 
 .player .matches {
-  grid-column: 1 / 3;
+  flex: 1 1 250px;
+  overflow-y: scroll;
+  background-color: var(--border-color-1);
+  border: 3px solid var(--border-color-1);
+  border-radius: 4px;
 }

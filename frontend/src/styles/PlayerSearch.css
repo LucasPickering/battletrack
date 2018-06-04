@@ -1,6 +1,6 @@
 .player-search {
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
+  padding: 20px 0px;
   width: 400px;
 }
 

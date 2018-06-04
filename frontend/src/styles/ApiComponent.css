@@ -8,5 +8,10 @@
 
 .loader .loader-text {
   text-align: center;
-  color: var(--accent-color-1);
+}
+
+.api-error {
+  font-size: 20px;
+  color: var(--error-color-1);
+  text-align: center;
 }

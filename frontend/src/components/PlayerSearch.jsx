@@ -29,7 +29,7 @@ class PlayerSearch extends React.PureComponent {
   }
 
   render() {
-    const { shard } = this.state;
+    const { searchName, shard } = this.state;
 
     return (
       <FormGroup className="player-search">
@@ -51,7 +51,7 @@ class PlayerSearch extends React.PureComponent {
             />
           </InputGroup.Addon>
           <InputGroup.Button>
-            <Button onClick={this.search}>Search</Button>
+            <Button disabled={!searchName} onClick={this.search}>Search</Button>
           </InputGroup.Button>
         </InputGroup>
       </FormGroup>
