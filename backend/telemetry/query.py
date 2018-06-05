@@ -13,7 +13,8 @@ class TelemetryQuerySet(DevAPIQuerySet):
 
         @return     Dict of match ID and telemetry data from the API.
         """
-        match_obj = Match.objects.get(id=match_id)  # Will pull from the API if necessary
+        # Will pull from the API if necessary
+        match_obj = Match.objects.only('telemetry_url').get(id=match_id)
         return {
             'match_id': match_id,  # Include match ID in output
             'telemetry': api.get(match_obj.telemetry_url),  # Pull the data from the API
