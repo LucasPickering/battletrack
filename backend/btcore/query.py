@@ -3,7 +3,7 @@ import requests
 import traceback
 
 from django.conf import settings
-from django.db import models
+from django.db import models, utils
 from django.http import Http404
 
 from . import devapi
@@ -45,7 +45,15 @@ class DevAPIQuerySet(models.QuerySet):
             return self._get_from_db(*args, **kwargs)
         except self.model.DoesNotExist:
             # Object isn't in the DB, fetch it from the API
-            return self._get_from_api(*args, **kwargs)
+            try:
+                return self._get_from_api(*args, **kwargs)
+            except utils.IntegrityError as e:
+                # It's possible that the object was inserted between our original DB get and our
+                # attempted insertion. If we get an error because of a duplicate insertion, just
+                # try to fetch from the DB again.
+                if 'already exists' in str(e):
+                    return self._get_from_db(*args, **kwargs)  # Try again
+                raise e
 
     def preload(self, **kwargs):
         """
