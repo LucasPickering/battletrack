@@ -166,7 +166,7 @@ class TelemetrySerializer(DevDeserializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        match = validated_data['match_write']  # Match object
+        match_id = validated_data['match_write']  # Match object
         events = validated_data['events']  # List of event dicts
 
         # Group events by type
@@ -179,7 +179,7 @@ class TelemetrySerializer(DevDeserializer):
         zones = self._calc_zones(events_by_type['GameStatePeriodic'])
 
         # Create models
-        telemetry = models.Telemetry.objects.create(match_id=match, plane=plane, zones=zones)
+        telemetry = models.Telemetry.objects.create(match_id=match_id, plane=plane, zones=zones)
 
         # Regroup events by model (multiple types can map to one model, so we want to reduce that)
         events_by_model = defaultdict(list)
@@ -192,6 +192,8 @@ class TelemetrySerializer(DevDeserializer):
                 model(telemetry=telemetry, **event) for event in subevents
             )
 
+        match = Match.objects.prefetch_related('rosters__players__stats').get(id=match_id)
+        telemetry.cache_related_single('match', match)
         return telemetry
 
 

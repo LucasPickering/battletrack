@@ -2,7 +2,7 @@ from collections import namedtuple
 
 from django.db import models
 
-from btcore.models import Match
+from btcore.models import RelatedCacheModel, Match
 
 from .fields import Position3Field, CircleField, RayField, EventPlayerField, ItemField, \
     VehicleField, CircleListField, ItemListField
@@ -10,7 +10,7 @@ from .query import TelemetryQuerySet
 
 
 EventModelTuple = namedtuple('EventModelTuple', 'model related_name')
-# Dict of evernt type to event model and model related name,
+# Dict of event type to event model and model related name,
 # e.g. 'VehicleRide':EventModelTuple(VehicleEvent, 'vehicleevents')
 # This can have duplicate values, because multiple event types can map to one model
 _EVENT_MODELS = {}
@@ -61,7 +61,7 @@ def get_all_event_models():
     return set(_EVENT_MODELS.values())  # De-dup
 
 
-class Telemetry(models.Model):
+class Telemetry(RelatedCacheModel):
     objects = TelemetryQuerySet.as_manager()
 
     match = models.OneToOneField(Match, on_delete=models.CASCADE, primary_key=True)
