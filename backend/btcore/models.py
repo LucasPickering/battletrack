@@ -36,29 +36,7 @@ objects where possible. An unlinked in this case PlayerMatch will have a null re
 """
 
 
-class RelatedCacheModel(models.Model):
-    class Meta:
-        abstract = True
-
-    def cache_related_single(self, field, value):
-        self._state.fields_cache[field] = value
-
-    def cache_related_multi(self, field, *values):
-        if not hasattr(self, '_prefetched_objects_cache'):
-            self._prefetched_objects_cache = {}
-        try:
-            field_cache = self._prefetched_objects_cache[field]
-
-            # If it isn't a list already, convert it to one
-            if not isinstance(field_cache, list):
-                field_cache = self._prefetched_objects_cache[field] = list(field_cache)
-
-            self._prefetched_objects_cache[field] += values
-        except KeyError:
-            self._prefetched_objects_cache[field] = list(values)
-
-
-class Match(RelatedCacheModel):
+class Match(models.Model):
     objects = MatchQuerySet.as_manager()
 
     id = models.CharField(primary_key=True, max_length=util.MATCH_ID_LENGTH)
@@ -71,20 +49,20 @@ class Match(RelatedCacheModel):
     telemetry_url = models.URLField()
 
 
-class Player(RelatedCacheModel):
+class Player(models.Model):
     objects = PlayerQuerySet.as_manager()
 
     id = models.CharField(primary_key=True, max_length=util.PLAYER_ID_LENGTH)
     name = models.CharField(max_length=50, unique=True)
 
 
-class RosterMatch(RelatedCacheModel):
+class RosterMatch(models.Model):
     id = models.CharField(primary_key=True, max_length=util.ROSTER_ID_LENGTH)
     match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='rosters')
     win_place = models.PositiveSmallIntegerField()
 
 
-class PlayerMatch(RelatedCacheModel):
+class PlayerMatch(models.Model):
     # Null if match/player isn't in the DB yet
     roster = models.ForeignKey(RosterMatch, on_delete=models.SET_NULL, null=True,
                                related_name='players')

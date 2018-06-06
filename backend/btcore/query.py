@@ -16,7 +16,7 @@ class DevAPIQuerySet(models.QuerySet):
     def _get_from_db(self, *args, **kwargs):
         return super().get(*args, **kwargs)
 
-    def _get_from_api(self, *args, **kwargs):
+    def _insert_from_api(self, *args, **kwargs):
         try:
             data = self._execute_api_query(*args, **kwargs)
         except requests.exceptions.HTTPError as e:
@@ -32,13 +32,10 @@ class DevAPIQuerySet(models.QuerySet):
             logger.error(traceback.format_exc())
             raise e  # Re-raise it
 
-        return self._save_api_data(data, *args, **kwargs)
-
-    def _save_api_data(self, data, *args, **kwargs):
         # Deserialize the data and save it
         serializer = self.model.serializer.from_dev_data(data)
         serializer.is_valid(raise_exception=True)
-        return serializer.save()
+        serializer.save()
 
     def get(self, *args, **kwargs):
         try:
@@ -46,14 +43,14 @@ class DevAPIQuerySet(models.QuerySet):
         except self.model.DoesNotExist:
             # Object isn't in the DB, fetch it from the API
             try:
-                return self._get_from_api(*args, **kwargs)
+                self._insert_from_api(*args, **kwargs)
             except utils.IntegrityError as e:
                 # It's possible that the object was inserted between our original DB get and our
-                # attempted insertion. If we get an error because of a duplicate insertion, just
-                # try to fetch from the DB again.
-                if 'already exists' in str(e):
-                    return self._get_from_db(*args, **kwargs)  # Try again
-                raise e
+                # attempted insertion. If we get an error because of a duplicate insertion, throw
+                # it away and just fetch from the DB again.
+                if 'already exists' not in str(e):
+                    raise e
+            return self._get_from_db(*args, **kwargs)  # Try again
 
     def preload(self, **kwargs):
         """
@@ -68,7 +65,7 @@ class DevAPIQuerySet(models.QuerySet):
         @return     None
         """
         if not self.filter(**kwargs).exists():
-            self._get_from_api(**kwargs)
+            self._insert_from_api(**kwargs)
 
     def multi_preload(self, field, values):
         """
@@ -107,20 +104,9 @@ class PlayerQuerySet(DevAPIQuerySet):
     def _execute_api_query(self, **kwargs):
         return api.get_player(**kwargs)
 
-    def _save_api_data(self, data, shard, *args, **kwargs):
-        # Deserialize the data and save it. First, check if the player is already in the DB so
-        # they can be updated instead of inserted
-        try:
-            player = self._get_from_db(**kwargs)
-            serializer = self.model.serializer.from_dev_data(data, instance=player)
-        except self.model.DoesNotExist:
-            serializer = self.model.serializer.from_dev_data(data)
-        serializer.is_valid(raise_exception=True)
-        return serializer.save()
-
-    def get(self, shard, hit_api=True, *args, **kwargs):
+    def get(self, shard=None, *args, **kwargs):
         # Pull latest data from API, will add Player if missing, or if Player is already in DB,
         # will just add latest PlayerMatches
-        if hit_api:
-            return self._get_from_api(*args, shard=shard, **kwargs)
+        if shard:
+            self._insert_from_api(*args, shard=shard, **kwargs)
         return self._get_from_db(*args, **kwargs)
