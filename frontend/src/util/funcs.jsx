@@ -2,9 +2,11 @@ import moment from 'moment-timezone';
 import React from 'react';
 
 import Erangel from '../images/maps/Erangel.jpg';
+import Miramar from '../images/maps/Miramar.jpg';
 
 const MAP_IMAGES = {
   Erangel,
+  Miramar,
 };
 
 export const SHARDS = Object.freeze([
