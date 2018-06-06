@@ -192,8 +192,6 @@ class TelemetrySerializer(DevDeserializer):
                 model(telemetry=telemetry, **event) for event in subevents
             )
 
-        match = Match.objects.prefetch_related('rosters__players__stats').get(id=match_id)
-        telemetry.cache_related_single('match', match)
         return telemetry
 
 

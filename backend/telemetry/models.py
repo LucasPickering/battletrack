@@ -2,7 +2,7 @@ from collections import namedtuple
 
 from django.db import models
 
-from btcore.models import RelatedCacheModel, Match
+from btcore.models import Match
 
 from .fields import Position3Field, CircleField, RayField, EventPlayerField, ItemField, \
     VehicleField, CircleListField, ItemListField
@@ -61,7 +61,7 @@ def get_all_event_models():
     return set(_EVENT_MODELS.values())  # De-dup
 
 
-class Telemetry(RelatedCacheModel):
+class Telemetry(models.Model):
     objects = TelemetryQuerySet.as_manager()
 
     match = models.OneToOneField(Match, on_delete=models.CASCADE, primary_key=True)

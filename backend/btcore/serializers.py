@@ -351,7 +351,6 @@ class MatchSerializer(DevDeserializer):
         roster_matches = RosterMatch.objects.bulk_create(
             RosterMatch(match=match, **roster) for roster in rosters,
         )
-        match.cache_related_multi('rosters', *roster_matches)  # Cache each RosterMatch on the Match
 
         # Using our dict of RosterID:List(PlayerMatch-dict), build a dict of PlayerID:RosterMatch
         player_to_roster = {player['player_id']: rm
@@ -373,10 +372,6 @@ class MatchSerializer(DevDeserializer):
             if player['player_id'] not in existing_set
         )
         all_pms = existing_pms + created_pms
-
-        # Cache each PlayerMatch on its associated RosterMatch object
-        for pm in all_pms:
-            player_to_roster[pm.player_id].cache_related_multi('players', pm)
 
         # Create all Stats objects. We have to re-query for all the PlayerMatch objects in order
         # to get copies with the primary keys
@@ -415,35 +410,18 @@ class PlayerSerializer(DevDeserializer):
             'matches': matches,
         }
 
-    def _update_or_create_matches(self, player, matches):
-        # Find the PlayerMatches that are already in the DB
-        existing = player.matches.all()
-
-        # Create all the PlayerMatches that are missing
-        existing_match_ids = set(pm.match_id for pm in existing)
-        created = PlayerMatch.objects.bulk_create(
-            PlayerMatch(player=player, player_name=player.name, **match)
-            for match in matches if match['match_id'] not in existing_match_ids
-        )
-
-        # We know these new PlayerMatches have no stats, so cache None on them so that DRF doesn't
-        # try to the hit the DB again
-        for pm in created:
-            pm.cache_related_single('stats', None)
-
-        player.cache_related_multi('matches', *created)
-
-    @transaction.atomic
-    def update(self, player, validated_data):
-        self._update_or_create_matches(player, validated_data.pop('matches'))
-        return player
-
     @transaction.atomic
     def create(self, validated_data):
         matches = validated_data.pop('matches')
 
-        # Create the Player, then update PlayerMatches
-        player = Player.objects.create(**validated_data)
-        self._update_or_create_matches(player, matches)
+        # Create the Player if necessary, otherwise just grab them from the DB
+        player, _ = Player.objects.prefetch_related('matches').get_or_create(**validated_data)
+
+        # Create all PlayerMatches that are missing
+        existing_match_ids = set(pm.match_id for pm in player.matches.all())
+        PlayerMatch.objects.bulk_create(
+            PlayerMatch(player=player, player_name=player.name, **match)
+            for match in matches if match['match_id'] not in existing_match_ids
+        )
 
         return player
