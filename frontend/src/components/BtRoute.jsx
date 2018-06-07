@@ -27,7 +27,7 @@ PageWrapper.defaultProps = {
 
 function routeComponent(component, fullscreen) {
   return ({ match, ...rest }) => {
-    const el = component && React.createElement(component, { ...match.params, ...rest });
+    const el = React.createElement(component, { ...match.params, ...rest });
     return fullscreen ? el : <PageWrapper>{el}</PageWrapper>;
   };
 }
