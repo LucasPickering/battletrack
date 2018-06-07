@@ -1,15 +1,9 @@
-.match-container {
+.match {
+  display: flex;
+  flex-direction: column;
   width: 500px;
   height: 100%;
   margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.match-container .match {
-  flex: 1 1;
-  display: flex;
-  flex-direction: column;
 }
 
 .match .match-info {

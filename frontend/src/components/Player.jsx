@@ -4,7 +4,6 @@ import { ListGroup } from 'react-bootstrap';
 
 import { playerLink } from '../util/funcs';
 import ApiComponent from './ApiComponent';
-import PlayerSearch from './PlayerSearch';
 import PlayerMatchSummary from './PlayerMatchSummary';
 import ShardSelect from './ShardSelect';
 import '../styles/Player.css';
@@ -29,7 +28,6 @@ PlayerMatches.propTypes = {
 
 const Player = ({ shard, playerName, history }) => (
   <div className="player">
-    <PlayerSearch defaultShard={shard} />
     <div className="header">
       <h2>{playerName}</h2>
       <ShardSelect

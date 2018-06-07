@@ -1,0 +1,29 @@
+.bt-page-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.bt-page-wrapper .beta-tag {
+  position: absolute;
+  top: -100px;
+  left: -100px;
+  transform: rotate(-45deg);
+  width: 200px;
+  height: 200px;
+  background-color: var(--accent-color-1);
+}
+
+.bt-page-wrapper .beta-tag p {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  margin: 0;
+  font-size: 40px;
+  text-align: center;
+  color: var(--background-color-1);
+}
+
+.bt-page-wrapper .child-container {
+  flex: 1 1;
+}
+

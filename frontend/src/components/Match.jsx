@@ -11,7 +11,6 @@ import {
   overviewLink,
 } from '../util/funcs';
 import ApiComponent from './ApiComponent';
-import PlayerSearch from './PlayerSearch';
 import RosterMatchSummary from './RosterMatchSummary';
 import '../styles/Match.css';
 
@@ -57,16 +56,13 @@ MatchHelper.propTypes = {
 };
 
 const Match = ({ matchId }) => (
-  <div className="match-container">
-    <PlayerSearch />
-    <ApiComponent
-      url={`/api/core/matches/${matchId}`}
-      component={MatchHelper}
-      dataProp="matchData"
-      matchId={matchId}
-      loaderText="Loading match..."
-    />
-  </div>
+  <ApiComponent
+    url={`/api/core/matches/${matchId}`}
+    component={MatchHelper}
+    dataProp="matchData"
+    matchId={matchId}
+    loaderText="Loading match..."
+  />
 );
 
 Match.propTypes = {

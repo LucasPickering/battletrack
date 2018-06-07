@@ -1,5 +1,4 @@
 import moment from 'moment-timezone';
-import React from 'react';
 
 import Erangel from '../images/maps/Erangel.jpg';
 import Miramar from '../images/maps/Miramar.jpg';
@@ -90,8 +89,4 @@ export function range(start, end, step = 1) {
     rv.push(i);
   }
   return rv;
-}
-
-export function routeComponent(component) {
-  return ({ match, ...rest }) => React.createElement(component, { ...match.params, ...rest });
 }

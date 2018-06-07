@@ -1,7 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Switch } from 'react-router-dom';
 
-import { routeComponent } from './util/funcs';
+import BtRoute from './components/BtRoute';
 import Match from './components/Match';
 import MatchOverview from './components/MatchOverview';
 import Player from './components/Player';
@@ -11,10 +11,10 @@ import './styles/App.css';
 const App = () => (
   <Router>
     <Switch>
-      <Route exact path="/" component={null} />
-      <Route exact path="/matches/:matchId" render={routeComponent(Match)} />
-      <Route exact path="/matches/:matchId/overview" render={routeComponent(MatchOverview)} />
-      <Route exact path="/players/:shard/:playerName" render={routeComponent(Player)} />
+      <BtRoute exact path="/" component={null} />
+      <BtRoute exact path="/matches/:matchId" component={Match} />
+      <BtRoute exact path="/matches/:matchId/overview" component={MatchOverview} fullscreen />
+      <BtRoute exact path="/players/:shard/:playerName" component={Player} />
     </Switch>
   </Router>
 );
