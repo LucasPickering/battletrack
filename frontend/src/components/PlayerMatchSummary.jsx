@@ -3,6 +3,7 @@ import React from 'react';
 import { Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
+import 'styles/PlayerMatchSummary.css';
 import {
   formatDate,
   formatSeconds,
@@ -10,15 +11,20 @@ import {
   formatPerspective,
   matchLink,
   playerLink,
-} from '../util/funcs';
+} from 'util/funcs';
+import Localization from 'util/Localization';
 import Stat from './Stat';
-import '../styles/PlayerMatchSummary.css';
 
 const PlayerMatchSummary = props => {
   const { playerName, data } = props;
   const {
     match_id: matchId,
-    match,
+    match: {
+      mode,
+      perspective,
+      map_name: mapName,
+      date,
+    },
     roster,
     stats,
   } = data;
@@ -29,12 +35,12 @@ const PlayerMatchSummary = props => {
     <Panel className="player-match-summary">
       <Panel.Heading>
         <Panel.Title>
-          {formatGameMode(match.mode)} {formatPerspective(match.perspective)}
+          {formatGameMode(mode)} {formatPerspective(perspective)}
         </Panel.Title>
         <Panel.Title style={{ textAlign: 'right' }}>
-          {formatDate(match.date)}
+          {formatDate(date)}
         </Panel.Title>
-        <Panel.Title>{match.map_name}</Panel.Title>
+        <Panel.Title>{Localization.maps[mapName]}</Panel.Title>
       </Panel.Heading>
       <Panel.Body>
         <Link className="placement" to={matchLink(matchId)}>#{stats.win_place}</Link>

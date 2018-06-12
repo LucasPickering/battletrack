@@ -10,6 +10,7 @@ import {
   formatPerspective,
   overviewLink,
 } from '../util/funcs';
+import Localization from '../util/Localization';
 import ApiComponent from './ApiComponent';
 import RosterMatchSummary from './RosterMatchSummary';
 import '../styles/Match.css';
@@ -32,7 +33,7 @@ const MatchHelper = props => {
     <div className="match">
       <div className="match-info">
         <h2>{formatGameMode(mode)} {formatPerspective(perspective)}</h2>
-        <h2 style={{ textAlign: 'right' }}>{mapName}</h2>
+        <h2 style={{ textAlign: 'right' }}>{Localization.maps[mapName]}</h2>
         <h3>{formatDate(date)}</h3>
         <h3 style={{ textAlign: 'right' }}>{formatSeconds(duration)}</h3>
       </div>

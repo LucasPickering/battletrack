@@ -1,13 +1,5 @@
 import moment from 'moment-timezone';
 
-import Erangel from '../images/maps/Erangel.jpg';
-import Miramar from '../images/maps/Miramar.jpg';
-
-const MAP_IMAGES = {
-  Erangel,
-  Miramar,
-};
-
 export const SHARDS = Object.freeze([
   'pc-na',
   'pc-eu',
@@ -63,8 +55,8 @@ export function objectFilter(obj, pred) {
     }, {});
 }
 
-export function mapImage(mapName) {
-  return MAP_IMAGES[mapName];
+export function mapImage(mapKey) {
+  return require(`api-assets/Assets/Maps/${mapKey}.jpg`); // eslint-disable-line
 }
 
 export function matchLink(matchId) {

@@ -286,7 +286,7 @@ class MatchSerializer(DevDeserializer):
             mode, perspective = mode_temp, 'tpp'
 
         shard = attrs['shardId']
-        map_name = util.MAPS[attrs['mapName']]
+        map_name = attrs['mapName']
 
         # Separate 'included' objects by type: we'll need to access all 3 types later
         incl = defaultdict(list)

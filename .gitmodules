@@ -1,0 +1,3 @@
+[submodule "frontend/src/api-assets"]
+	path = frontend/src/api-assets
+	url = https://github.com/pubg/api-assets

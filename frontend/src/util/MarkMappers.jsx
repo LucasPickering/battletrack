@@ -18,7 +18,7 @@ function deathTooltip(event) {
   const { attacker, player, damage_causer: damageCauser } = event;
   // Attacker element is only included if attacker is non-null
   return (attacker ? [`${ICONS.Kill} ${attacker.name}`] : [])
-    .concat([`${ICONS.Death} ${player.name}`, `\uf35a ${damageCauser}`]);
+    .concat([`${ICONS.Death} ${player.name}`, `\uf35a ${Localization.damageCausers[damageCauser]}`]);
 }
 
 export const SpecialMarkTypes = Object.freeze({

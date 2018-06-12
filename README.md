@@ -24,6 +24,8 @@ python3 manage.py migrate
 1. Install Node.js/npm
 2. Do this stuff:
 ```
+git submodule init
+git submodule update`
 cd frontend
 npm install
 ```

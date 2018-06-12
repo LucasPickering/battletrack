@@ -5,13 +5,9 @@ import time
 from django.conf import settings
 
 PERSPECTIVES = ['fpp', 'tpp']
-MAPS = {
-    'Erangel_Main': 'Erangel',
-    'Desert_Main': 'Miramar',
-}
 MAP_SIZES = {
-    'Erangel': 8000,
-    'Miramar': 8000,
+    'Erangel_Main': 8000,
+    'Desert_Main': 8000,
 }
 
 MATCH_ID_LENGTH = 36
