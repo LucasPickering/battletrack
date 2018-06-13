@@ -71,7 +71,6 @@ class PlayerMatch(models.Model):
 
     # Store these additional fields, because they can be gotten from match OR player data
     match_id = models.CharField(max_length=36)
-    # player_id = models.CharField(max_length=util.PLAYER_ID_LENGTH)
     player_name = models.CharField(max_length=30)
     shard = models.CharField(max_length=20)
 
