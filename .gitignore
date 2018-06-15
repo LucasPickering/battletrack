@@ -1,3 +1,6 @@
+# Only here because this doubles as a .dockerignore file
+.git/
+
 # Front end stuff
 /frontend/node_modules
 /frontend/coverage
@@ -15,7 +18,6 @@ yarn-debug.log*
 yarn-error.log*
 
 *.sqlite3
-*.cfg
 *.pyc
 *.log
 *.sql

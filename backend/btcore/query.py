@@ -8,7 +8,7 @@ from django.http import Http404
 
 from . import devapi
 
-api = devapi.DevAPI.from_file(settings.DEV_API_KEY_FILE)
+api = devapi.DevAPI(settings.DEV_API_KEY)
 logger = logging.getLogger(settings.BT_LOGGER_NAME)
 
 

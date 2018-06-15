@@ -1,0 +1,11 @@
+FROM python:3
+
+RUN apt-get update
+RUN apt-get install -y postgresql
+RUN service postgresql start && echo "\
+    CREATE USER btuser WITH PASSWORD 'btpassword'; \
+    ALTER USER btuser CREATEDB; \
+    ALTER ROLE btuser SET client_encoding TO 'utf8'; \
+    ALTER ROLE btuser SET default_transaction_isolation TO 'read committed'; \
+    ALTER ROLE btuser SET timezone TO 'UTC';" \
+    | su - postgres -c "psql -v ON_ERROR_STOP=1"

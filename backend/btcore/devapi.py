@@ -13,6 +13,8 @@ class DevAPI:
     URL_FMT = 'https://api.playbattlegrounds.com/shards/{shard}/{endpoint}'
 
     def __init__(self, key):
+        if not key:
+            logger.warning("No Dev API key specified")
         self._headers = {
             'Accept': 'application/vnd.api+json',
             'Accept-Encoding': 'gzip',
