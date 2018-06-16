@@ -82,7 +82,7 @@ class GameMap extends React.PureComponent {
 GameMap.propTypes = {
   map: BtPropTypes.map.isRequired,
   showGrid: PropTypes.bool,
-  children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.any)]),
+  children: BtPropTypes.children,
 };
 
 GameMap.defaultProps = {

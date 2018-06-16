@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 
+const children = PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)]);
+
 const pos = PropTypes.shape({
   x: PropTypes.number.isRequired,
   y: PropTypes.number.isRequired,
@@ -21,6 +23,7 @@ const map = PropTypes.shape({
 });
 
 const exported = {
+  children,
   pos,
   ray,
   circle,

@@ -3,6 +3,7 @@ import React from 'react';
 import { Panel } from 'react-bootstrap';
 import uniqid from 'uniqid';
 
+import BtPropTypes from '../util/BtPropTypes';
 import { formatSeconds } from '../util/funcs';
 import '../styles/MarkTooltip.css';
 
@@ -31,7 +32,7 @@ MarkTooltip.propTypes = {
   title: PropTypes.string.isRequired,
   time: PropTypes.number.isRequired,
   text: PropTypes.arrayOf(PropTypes.string),
-  children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)]),
+  children: BtPropTypes.children,
 };
 
 MarkTooltip.defaultProps = {

@@ -3,6 +3,7 @@ import React from 'react';
 import { AutoSizer } from 'react-virtualized';
 import uniqid from 'uniqid';
 
+import BtPropTypes from '../util/BtPropTypes';
 import Localization from '../util/Localization';
 import { SpecialMarkTypes } from '../util/MarkMappers';
 import RosterPalette from '../util/RosterPalette';
@@ -92,7 +93,7 @@ MarkedGameMap.propTypes = {
   rosterPalette: PropTypes.instanceOf(RosterPalette).isRequired,
   lineScaleFactor: PropTypes.number,
   markScaleFactor: PropTypes.number,
-  children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)]),
+  children: BtPropTypes.children,
 };
 
 MarkedGameMap.defaultProps = {
