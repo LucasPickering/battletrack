@@ -14,12 +14,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-*.json
 *.sqlite3
 *.cfg
 *.pyc
 *.log
 *.sql
 *.p
-!.eslintrc.json
-!package.json
+key.sh
