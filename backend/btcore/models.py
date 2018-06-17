@@ -74,6 +74,9 @@ class PlayerMatch(models.Model):
     player_name = models.CharField(max_length=30)
     shard = models.CharField(max_length=20)
 
+    class Meta:
+        unique_together = ('roster', 'player')
+
 
 # This object will only be create when a PlayerMatch is populated from the Match side
 class PlayerMatchStats(models.Model):
