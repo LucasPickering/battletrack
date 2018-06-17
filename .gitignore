@@ -1,6 +1,3 @@
-# Only here because this doubles as a .dockerignore file
-.git/
-
 # Front end stuff
 /frontend/node_modules
 /frontend/coverage
@@ -13,13 +10,10 @@
 .env.test.local
 .env.production.local
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
 *.sqlite3
 *.pyc
-*.log
+*.log*
 *.sql
 *.p
 key.sh
+package-lock.json
