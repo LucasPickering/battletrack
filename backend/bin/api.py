@@ -1,7 +1,6 @@
 import argparse
-import django
 
-from . import django  # Set up django
+import django_cli  # Set up django
 
 from btcore.devapi import DevAPI
 

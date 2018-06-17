@@ -15,16 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+DEV_API_KEY = os.getenv('BT_DEV_API_KEY')  # Key for the PUBG developer API
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '(w%e*18h0$e5t$_#34!v&%92qdbjey3r$=+f@mz)b18abxnrv3'
-DEV_API_KEY = os.getenv('BT_DEV_API_KEY')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -33,7 +25,6 @@ APPEND_SLASH = False
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
-
 
 # Application definition
 
@@ -89,23 +80,6 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.profiling.ProfilingPanel',
 ]
 
-# Database
-# https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
-DATABASES = {
-    # Warning: Certain object creation procedures rely on the fact that Postgres returns
-    # auto-generated primary keys from bulk_create. Keep that in mind if you change the backend!
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'battletrack',
-        'USER': 'btuser',
-        'PASSWORD': 'btpassword',
-        'HOST': 'localhost',
-        'PORT': '',
-    },
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
@@ -123,7 +97,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/

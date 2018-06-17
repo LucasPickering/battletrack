@@ -1,10 +1,9 @@
 import argparse
-import django
 import numpy as np
 import pickle
 from collections import defaultdict
 
-from . import django  # Set up django
+import django_cli  # Set up django
 
 from btcore.models import Match
 from telemetry.models import Telemetry

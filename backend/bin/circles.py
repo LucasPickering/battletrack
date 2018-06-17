@@ -1,9 +1,8 @@
 import argparse
-import django
 import math
 import pandas as pd
 
-from . import django  # Set up django
+import django_cli  # Set up django
 
 from btcore.models import Match
 from telemetry.models import Telemetry

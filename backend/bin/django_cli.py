@@ -7,6 +7,6 @@ sys.path.append('')  # Add cwd to path so we can import battletrack and its apps
 import battletrack.settings
 os.environ.setdefault(
     "DJANGO_SETTINGS_MODULE",
-    "battletrack.settings"
+    "battletrack.settings.dev"
 )
 django.setup()

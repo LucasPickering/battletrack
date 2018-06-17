@@ -3,7 +3,7 @@ import os
 import sys
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "battletrack.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "battletrack.settings.dev")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -12,4 +12,5 @@ if __name__ == "__main__":
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+    print(sys.argv)
     execute_from_command_line(sys.argv)
