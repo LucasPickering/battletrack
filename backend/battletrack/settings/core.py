@@ -17,9 +17,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEV_API_KEY = os.getenv('BT_DEV_API_KEY')  # Key for the PUBG developer API
 
-
-ALLOWED_HOSTS = []
-
 APPEND_SLASH = False
 
 INTERNAL_IPS = [
