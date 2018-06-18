@@ -1,0 +1,109 @@
+stages:
+  - build
+  - test
+  - build_main
+  - deploy
+  - cleanup
+
+variables:
+  BT_LOGGING_DIR: /var/log/battletrack
+  IMAGE_REGISTRY: registry.gitlab.com/lucaspickering/battletrack
+  BACKEND_IMAGE: ${IMAGE_REGISTRY}/backend
+  FRONTEND_IMAGE: ${IMAGE_REGISTRY}/frontend
+  PROD_IMAGE: ${IMAGE_REGISTRY}/prod
+  DEPLOY_HOST: tcp://battletrack.lucaspickering.me:2375
+  DEPLOY_CERT_PATH: /home/gitlab-runner/certs/battletrack
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+
+
+build_backend:
+  stage: build
+  tags:
+    - shell
+  script:
+    - docker build -t $BACKEND_IMAGE backend/
+    - docker push $BACKEND_IMAGE
+
+build_frontend:
+  stage: build
+  tags:
+    - shell
+  script:
+    - docker build -t $FRONTEND_IMAGE frontend/
+    - docker push $FRONTEND_IMAGE
+
+
+test_backend:
+  stage: test
+  tags:
+    - shell
+  script:
+    - docker-compose -f docker-compose.test.yml pull
+    - docker-compose -f docker-compose.test.yml run backend
+    - docker-compose rm -s -f
+
+test_frontend:
+  stage: test
+  tags:
+    - shell
+  script:
+    - docker-compose -f docker-compose.test.yml pull
+    - docker-compose -f docker-compose.test.yml run frontend
+    - docker-compose rm -s -f
+
+
+build_main:
+  stage: build_main
+  only:
+    - master
+  tags:
+    - shell
+  script:
+    # Open the frontend image, build it, copy out the build, then delete the container
+    - "id=$(docker create $FRONTEND_IMAGE npm run build); \
+      docker start -a $id; \
+      docker cp $id:/battletrack/build prod/; \
+      docker rm $id;"
+    - docker build -t $PROD_IMAGE prod/
+    - docker push $PROD_IMAGE
+
+
+deploy:
+  stage: deploy
+  only:
+    - master
+  variables:
+    DOCKER_HOST: $DEPLOY_HOST
+    DOCKER_TLS_VERIFY: "1"
+    DOCKER_CERT_PATH: $DEPLOY_CERT_PATH
+  tags:
+    - shell
+  script:
+    # I AM PETER DEPLOYERS
+    - docker-compose -f prod/docker-compose.yml pull
+    - docker stack deploy -c prod/docker-compose.yml battletrack
+
+
+local_cleanup:
+  stage: cleanup
+  tags:
+    - shell
+  script:
+    - docker container prune -f
+    - docker image prune -f
+
+remote_cleanup:
+  stage: cleanup
+  only:
+    - master
+  variables:
+    DOCKER_HOST: $DEPLOY_HOST
+    DOCKER_TLS_VERIFY: "1"
+    DOCKER_CERT_PATH: $DEPLOY_CERT_PATH
+  tags:
+    - shell
+  script:
+    - docker container prune -f
+    - docker image prune -f

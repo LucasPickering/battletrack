@@ -23,6 +23,17 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'battletrack',
+        'USER': 'btuser',
+        'PASSWORD': os.getenv('BT_DB_PASSWORD', 'btpassword'),
+        'HOST': os.getenv('BT_DB_HOST', 'db'),
+        'PORT': '',
+    },
+}
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -132,10 +143,10 @@ LOGGING = {
             'formatter': 'simple',
         },
         'file': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.FileHandler',
             'formatter': 'simple',
-            'filename': 'debug.log',
+            'filename': os.path.join(os.getenv('BT_LOGGING_DIR', './'), 'django.log'),
         },
     },
     'loggers': {

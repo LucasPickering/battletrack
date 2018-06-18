@@ -14,7 +14,7 @@ services:
   backend:
     build: ./backend/
     image: battletrack/backend
-    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+    command: ./manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend/:/battletrack:rw
     depends_on:
@@ -27,7 +27,7 @@ services:
   frontend:
     build: ./frontend/
     image: battletrack/frontend
-    command: bash -c "npm start"
+    command: npm start
     volumes:
       - ./frontend/:/battletrack:rw
     ports:

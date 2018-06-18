@@ -13,5 +13,10 @@ PUBG map stuff
 `docker-compose run backend ./manage.py migrate`
 
 ### Testing
-`docker-compose run backend ./manage.py test`
-`docker-compose run -e CI=true frontend npm test`
+`docker-compose run backend ./manage.py test && docker-compose rm -s -f`
+`docker-compose run -e CI=true frontend npm test && docker-compose rm -s -f`
+
+## Production
+### Creating a new swarm manager
+1. Install Docker
+1. [Set up remote docker access with TLS](https://github.com/IcaliaLabs/guides/wiki/Deploy-and-Secure-a-Remote-Docker-Engine)

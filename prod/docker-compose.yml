@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  db:
+    restart: always
+    image: postgres:10-alpine
+    volumes:
+      - /var/lib/postgresql:/var/lib/postgresql:rw
+    environment:
+      POSTGRES_DB: battletrack
+      POSTGRES_USER: btuser
+      POSTGRES_PASSWORD: $BT_DB_PASSWORD
+
+  api:
+    restart: always
+    image: registry.gitlab.com/lucaspickering/battletrack/backend
+    command: sh -c "dockerize -wait tcp://db:5432 && ./manage.py migrate && gunicorn battletrack.wsgi -b :8000 --log-file $BT_LOGGING_DIR/gunicorn_error.log --access-logfile $BT_LOGGING_DIR/gunicorn_access.log"
+    depends_on:
+      - db
+    volumes:
+      - $BT_LOGGING_DIR:$BT_LOGGING_DIR:rw
+    environment:
+      - DJANGO_SETTINGS_MODULE=battletrack.settings.prod
+      - BT_LOGGING_DIR
+      - BT_DEV_API_KEY
+      - BT_DB_PASSWORD
+      - BT_SECRET_KEY
+
+  main:
+    restart: always
+    image: registry.gitlab.com/lucaspickering/battletrack/prod
+    depends_on:
+      - api
+    volumes:
+      - $BT_LOGGING_DIR:/var/log/nginx:rw
+    ports:
+      - "80:80"
+
+networks:
+  public:
+    external: true

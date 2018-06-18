@@ -1,3 +1,4 @@
 node_modules/
 
 assets.py
+package-lock.json

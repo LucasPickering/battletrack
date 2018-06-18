@@ -3,6 +3,8 @@
 /frontend/coverage
 /frontend/build
 
+/prod/build
+
 # misc
 .DS_Store
 .env.local
@@ -17,3 +19,4 @@
 *.p
 key.sh
 package-lock.json
+gitlab_token
