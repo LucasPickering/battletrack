@@ -13,8 +13,11 @@ PUBG map stuff
 `docker-compose run backend ./manage.py migrate`
 
 ### Testing
-`docker-compose run backend ./manage.py test && docker-compose rm -s -f`
-`docker-compose run -e CI=true frontend npm test && docker-compose rm -s -f`
+```
+./test.sh backend
+./test.sh frontend
+./test.sh all
+```
 
 ## Production
 ### Creating a new swarm manager
