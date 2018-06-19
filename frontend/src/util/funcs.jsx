@@ -56,7 +56,7 @@ export function objectFilter(obj, pred) {
 }
 
 export function mapImage(mapKey) {
-  return require(`api-assets/Assets/Maps/${mapKey}.jpg`); // eslint-disable-line
+  return `/Assets/Maps/${mapKey}.jpg`;
 }
 
 export function matchLink(matchId) {

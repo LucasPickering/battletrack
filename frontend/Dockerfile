@@ -1,6 +1,7 @@
 FROM node:10-alpine
 
 WORKDIR /battletrack/
-COPY . .
 
+COPY package.json .
 RUN npm install
+COPY . .
