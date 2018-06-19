@@ -83,7 +83,7 @@ deploy:
   script:
     # I AM PETER DEPLOYERS
     - docker-compose -f prod/docker-compose.yml pull
-    - docker stack deploy -c prod/docker-compose.yml battletrack
+    - docker stack deploy -c prod/docker-compose.yml --with-registry-auth battletrack
 
 
 local_cleanup:

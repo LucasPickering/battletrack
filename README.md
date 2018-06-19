@@ -20,3 +20,5 @@ PUBG map stuff
 ### Creating a new swarm manager
 1. Install Docker
 1. [Set up remote docker access with TLS](https://github.com/IcaliaLabs/guides/wiki/Deploy-and-Secure-a-Remote-Docker-Engine)
+1. `mkdir -p /var/log/battletrack /var/lib/postgresql`
+1. Add it to the swarm (flesh this out more pls)

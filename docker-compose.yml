@@ -13,7 +13,7 @@ services:
 
   backend:
     build: ./backend/
-    image: battletrack/backend
+    image: registry.gitlab.com/lucaspickering/battletrack/backend
     command: ./manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend/:/battletrack:rw
@@ -26,7 +26,7 @@ services:
 
   frontend:
     build: ./frontend/
-    image: battletrack/frontend
+    image: registry.gitlab.com/lucaspickering/battletrack/frontend
     command: npm start
     volumes:
       - ./frontend/:/battletrack:rw
