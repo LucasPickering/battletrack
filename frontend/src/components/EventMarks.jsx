@@ -1,48 +1,51 @@
+import Leaflet from 'leaflet';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Marker } from 'react-leaflet';
+import toCss from 'to-css';
 
 import BtPropTypes from '../util/BtPropTypes';
+import Localization from '../util/Localization';
 import RosterPalette from '../util/RosterPalette';
+import MarkTooltip from './MarkTooltip';
 
 class EventMarks extends React.PureComponent {
   render() {
     const {
       marks,
-      scale,
       rosterPalette,
-      onMarkSelect,
     } = this.props;
 
     return marks.map(mark => {
       const {
         id,
-        icon: { code: iconCode, ...iconProps },
-        pos: { x, y },
+        type,
+        icon: { code: iconCode, ...iconStyle },
+        time,
+        tooltip,
+        pos,
         player,
       } = mark;
 
-      // Select colors by player ID, if possible
-      const colors = player ? {
-        fill: rosterPalette.getRosterColorForPlayer(player.id),
-        stroke: rosterPalette.getPlayerColor(player.id),
-      } : {};
+      const fullIconStyle = {
+        // Set colors by player ID, if possible
+        color: player ? rosterPalette.getRosterColorForPlayer(player.id) : 'white',
+        ...iconStyle,
+      };
 
+      const icon = Leaflet.divIcon({
+        className: 'fa',
+        style: { color: 'red' },
+        html: `<p style="${toCss(fullIconStyle)}">${iconCode}</p>`,
+      });
       return (
-        <text
-          key={id}
-          className="fa"
-          transform={`translate(${x},${y}),scale(${scale})`}
-          textAnchor="middle"
-          dominantBaseline="central"
-          cursor="default"
-          onMouseEnter={() => onMarkSelect(mark)}
-          onMouseLeave={() => onMarkSelect(null)}
-          strokeWidth={0.75}
-          {...colors}
-          {...iconProps}
-        >
-          {iconCode}
-        </text>
+        <Marker key={id} position={[pos.x, pos.y]} icon={icon}>
+          <MarkTooltip
+            title={Localization.eventMarks[type].single}
+            time={time}
+            text={tooltip}
+          />
+        </Marker>
       );
     });
   }
@@ -56,7 +59,6 @@ EventMarks.propTypes = {
     time: PropTypes.number.isRequired,
     player: PropTypes.objectOf(PropTypes.any),
   })).isRequired,
-  scale: PropTypes.number.isRequired,
   rosterPalette: PropTypes.instanceOf(RosterPalette).isRequired,
   onMarkSelect: PropTypes.func,
 };

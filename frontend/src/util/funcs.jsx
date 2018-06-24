@@ -56,7 +56,7 @@ export function objectFilter(obj, pred) {
 }
 
 export function mapImage(mapKey) {
-  return `/Assets/Maps/${mapKey}.jpg`;
+  return `/assets/maps/${mapKey}.jpg`;
 }
 
 export function matchLink(matchId) {

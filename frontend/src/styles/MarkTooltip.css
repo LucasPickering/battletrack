@@ -1,15 +1,11 @@
-.bt-tooltip {
+.bt-tooltip .leaflet-popup-content-wrapper,
+.bt-tooltip .leaflet-popup-tip {
+  opacity: 0.9;
   background-color: var(--bg-color-1);
-  opacity: 0.8;
-  border: none;
-  margin: 10px 0px 0px 10px;
 }
 
-.bt-tooltip .text {
-  color: var(--accent-color-1);
-  opacity: 1.0;
-  margin: 0px;
-  padding: 5px;
+.bt-tooltip .leaflet-popup-content {
+  margin: 10px;
 }
 
 .bt-tooltip .title {
@@ -22,5 +18,5 @@
 }
 
 .bt-tooltip p + p {
-  padding-top: 8px;
+  padding-top: 5px;
 }

@@ -4,7 +4,7 @@
   height: 100vh;
   display: grid;
   grid-template-rows: 40px calc(100vh - 40px); /* HACK */
-  grid-template-columns: 320px auto;
+  grid-template-columns: 330px auto;
 }
 
 .overview .match-link {

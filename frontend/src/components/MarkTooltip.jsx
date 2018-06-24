@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Panel } from 'react-bootstrap';
+import { Popup } from 'react-leaflet';
 import uniqid from 'uniqid';
 
-import BtPropTypes from '../util/BtPropTypes';
 import { formatSeconds } from '../util/funcs';
 import '../styles/MarkTooltip.css';
 
@@ -12,19 +11,17 @@ const MarkTooltip = props => {
     title,
     time,
     text,
-    children,
-    ...rest
   } = props;
 
   const lines = [`\uf017 ${formatSeconds(time)}`, ...text];
 
   return (
-    <Panel className="bt-tooltip" {...rest}>
-      <div className="fa text">
+    <Popup className="bt-tooltip fa text">
+      <div>
         <h4 className="title">{title}</h4>
         {lines.map(line => <p key={uniqid()}>{line}</p>)}
       </div>
-    </Panel>
+    </Popup>
   );
 };
 
@@ -32,12 +29,10 @@ MarkTooltip.propTypes = {
   title: PropTypes.string.isRequired,
   time: PropTypes.number.isRequired,
   text: PropTypes.arrayOf(PropTypes.string),
-  children: BtPropTypes.children,
 };
 
 MarkTooltip.defaultProps = {
   text: [],
-  children: null,
 };
 
 export default MarkTooltip;

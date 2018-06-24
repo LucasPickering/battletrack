@@ -1,12 +1,20 @@
+import { CRS, Point, LatLng, transformation } from 'leaflet';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { ReactSVGPanZoom } from 'react-svg-pan-zoom';
+import { Map, ImageOverlay, Polyline } from 'react-leaflet';
 
 import { mapImage, range } from '../util/funcs';
 import BtPropTypes from '../util/BtPropTypes';
 
-const GRID_SMALL_STEP = 100;
-const GRID_LARGE_STEP = 1000;
+// Custom coordinate system - simple Cartesian coordiates with top-left as origin
+const CoordSystem = {
+  ...CRS.Simple,
+  projection: {
+    project: latlng => new Point(latlng.lat, latlng.lng),
+    unproject: point => new LatLng(point.x, point.y),
+  },
+  transformation: transformation(1, 0, 1, 0),
+};
 
 const GridLine = ({
   d,
@@ -15,10 +23,12 @@ const GridLine = ({
   vertical,
   ...rest
 }) => (
-  <path
+  <Polyline
     d={vertical ? `M${d},0 V${mapSize} Z` : `M0,${d} H${mapSize} Z`}
-    stroke={major ? '#444' : '#999'}
-    strokeWidth={major ? 6 : 1}
+    positions={vertical ? [[d, 0], [d, mapSize]] : [[0, d], [mapSize, d]]}
+    opacity={0.4}
+    color={major ? '#444' : '#999'}
+    weight={major ? 2 : 1}
     {...rest}
   />
 );
@@ -26,58 +36,55 @@ const GridLine = ({
 GridLine.propTypes = {
   d: PropTypes.number.isRequired,
   mapSize: PropTypes.number.isRequired,
-  major: PropTypes.bool,
-  vertical: PropTypes.bool,
+  major: PropTypes.bool.isRequired,
+  vertical: PropTypes.bool.isRequired,
 };
 
-GridLine.defaultProps = {
-  major: false,
-  vertical: false,
+const Grid = ({ mapSize, minorStep, majorStep }) => range(minorStep, mapSize, minorStep).map(d => {
+  const major = (d % majorStep === 0);
+  return (
+    <div>
+      <GridLine d={d} mapSize={mapSize} major={major} />
+      <GridLine d={d} mapSize={mapSize} major={major} vertical />
+    </div>
+  );
+});
+
+Grid.propTypes = {
+  mapSize: PropTypes.number.isRequired,
+  minorStep: PropTypes.number,
+  majorStep: PropTypes.number,
 };
 
-class GameMap extends React.PureComponent {
-  componentDidMount() {
-    this.viewer.fitToViewer();
-  }
+Grid.defaultProps = {
+  minorStep: 100,
+  majorStep: 1000,
+};
 
-  renderGrid() {
-    const { size } = this.props.map;
-    const lines = range(GRID_SMALL_STEP, size, GRID_SMALL_STEP);
-    return lines.map(d => {
-      const major = (d % GRID_LARGE_STEP === 0);
-      return (
-        <g>
-          <GridLine d={d} mapSize={size} major={major} />
-          <GridLine d={d} mapSize={size} major={major} vertical />
-        </g>
-      );
-    });
-  }
-
-  render() {
-    const {
-      map: { name, size },
-      showGrid,
-      children,
-      ...rest
-    } = this.props;
-    return (
-      <ReactSVGPanZoom
-        className="game-map"
-        ref={viewer => { this.viewer = viewer; }}
-        miniaturePosition="none"
-        detectAutoPan={false}
-        {...rest}
-      >
-        <svg width={size} height={size}>
-          <image href={mapImage(name)} width={size} height={size} />
-          {showGrid && this.renderGrid()}
-          {children}
-        </svg>
-      </ReactSVGPanZoom>
-    );
-  }
-}
+const GameMap = ({
+  map: { name, size },
+  showGrid,
+  children,
+  ...rest
+}) => {
+  const bounds = [[0, 0], [size, size]];
+  return (
+    <Map
+      className="full-size"
+      crs={CoordSystem}
+      bounds={bounds}
+      center={[size / 2, size / 2]}
+      minZoom={-4}
+      maxZoom={3}
+      zoomSnap={0.25}
+      {...rest}
+    >
+      <ImageOverlay url={mapImage(name)} bounds={bounds} />
+      {showGrid && <Grid mapSize={size} />}
+      {children}
+    </Map>
+  );
+};
 
 GameMap.propTypes = {
   map: BtPropTypes.map.isRequired,

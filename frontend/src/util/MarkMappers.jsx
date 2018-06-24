@@ -26,14 +26,14 @@ export const SpecialMarkTypes = Object.freeze({
     label: 'Plane',
     icon: { code: ICONS.Plane },
     render: (plane, { lineScale, ...rest }) => (
-      <Ray {...plane} color="white" showTailTip strokeWidth={lineScale * 1.5} {...rest} />
+      <Ray {...plane} color="white" showTailTip weight={1.5} {...rest} />
     ),
   },
   whiteZones: {
     label: 'Play Zones',
     icon: { code: ICONS.Circle, style: { fontWeight: 400 } },
-    render: (zones, { lineScale, ...rest }) => (
-      <Zones circles={zones} stroke="#ffffff" strokeWidth={lineScale} {...rest} />
+    render: (zones, props) => (
+      <Zones circles={zones} color="white" fill={false} weight={1.5} {...props} />
     ),
   },
 });
@@ -70,7 +70,7 @@ export const EventMarkTypes = Object.freeze({
     },
   },
   CarePackage: {
-    icon: { code: ICONS.CarePackage, fill: 'white' },
+    icon: { code: ICONS.CarePackage },
     convert: ({ pos, items }) => ({
       pos,
       tooltip: items.map(item => `${item.stack_count}x ${Localization.items[item.name]}`),
