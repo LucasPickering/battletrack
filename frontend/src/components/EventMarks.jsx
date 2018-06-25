@@ -8,6 +8,7 @@ import BtPropTypes from '../util/BtPropTypes';
 import Localization from '../util/Localization';
 import RosterPalette from '../util/RosterPalette';
 import MarkTooltip from './MarkTooltip';
+import { toLeaflet } from '../util/funcs';
 
 class EventMarks extends React.PureComponent {
   render() {
@@ -39,7 +40,7 @@ class EventMarks extends React.PureComponent {
         html: `<p style="${toCss(fullIconStyle)}">${iconCode}</p>`,
       });
       return (
-        <Marker key={id} position={[pos.x, pos.y]} icon={icon}>
+        <Marker key={id} position={toLeaflet(pos)} icon={icon}>
           <MarkTooltip
             title={Localization.eventMarks[type].single}
             time={time}

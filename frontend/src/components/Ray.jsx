@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Polyline } from 'react-leaflet';
+import { Circle, Polyline } from 'react-leaflet';
 
 import BtPropTypes from '../util/BtPropTypes';
+import { toLeaflet } from '../util/funcs';
 
 const Ray = ({
   start,
@@ -10,10 +11,15 @@ const Ray = ({
   showTailTip,
   ...rest
 }) => (
-  <Polyline
-    positions={[[start.x, start.y], [end.x, end.y]]}
-    {...rest}
-  />
+  <div>
+    <Polyline
+      positions={[toLeaflet(start), toLeaflet(end)]}
+      {...rest}
+    />
+    {showTailTip &&
+      <Circle color="white" radius={10} center={toLeaflet(start)} />
+    }
+  </div>
 );
 
 Ray.propTypes = {

@@ -123,6 +123,15 @@ class MatchOverviewHelper extends React.PureComponent {
           enabledPlayers={enabledFilters}
           onChange={val => this.setState({ enabledFilters: val })}
         />
+        <Range
+          className="time-range"
+          count={1}
+          max={this.maxTime}
+          value={timeRange}
+          onChange={newRange => this.setState({ timeRange: newRange })}
+          marks={this.timeMarks}
+          tipFormatter={formatSeconds}
+        />
 
         <MarkedGameMap
           map={map}
@@ -130,16 +139,7 @@ class MatchOverviewHelper extends React.PureComponent {
           eventMarks={eventMarks}
           rosterPalette={this.rosterPalette}
           showGrid
-        >
-          <Range
-            count={1}
-            max={this.maxTime}
-            value={timeRange}
-            onChange={newRange => this.setState({ timeRange: newRange })}
-            marks={this.timeMarks}
-            tipFormatter={formatSeconds}
-          />
-        </MarkedGameMap>
+        />
       </div>
     );
   }
