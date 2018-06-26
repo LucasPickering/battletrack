@@ -93,7 +93,15 @@ class AbstractPlayerVictimEvent(AbstractPlayerEvent):
 
     attacker = EventPlayerField(blank=True)  # Blank if non-player damage
     damage_type = models.CharField(max_length=40)  # e.g. Damage_Gun
+    damage_reason = models.CharField(max_length=40)  # e.g. ArmShot
     damage_causer = models.CharField(max_length=40)  # e.g. WeapHK416_C
+
+
+class AbstractPlayerKillEvent(AbstractPlayerVictimEvent):
+    class Meta:
+        abstract = True
+
+    distance = models.FloatField()
 
 
 class AbstractItemEvent(AbstractPlayerEvent):
@@ -110,6 +118,13 @@ class AbstractVehicleEvent(AbstractPlayerEvent):
     vehicle = VehicleField()
 
 
+class AbstractVehicleRideEvent(AbstractVehicleEvent):
+    class Meta:
+        abstract = True
+
+    seat_index = models.PositiveSmallIntegerField()
+
+
 # CONCRETE EVENT MODELS
 
 @event_model('GameStatePeriodic')
@@ -120,9 +135,14 @@ class GameStatePeriodicEvent(AbstractEvent):
     blue_zone = CircleField()
 
 
-@event_model('PlayerPosition')
+@event_model('PlayerPosition', 'SwimStart')
 class PlayerPositionEvent(AbstractPlayerEvent):
     pass  # This exists solely to be a concrete subclass
+
+
+@event_model('SwimEnd')
+class SwimEndEvent(AbstractPlayerEvent):
+    swim_distance = models.FloatField()
 
 
 @event_model('PlayerAttack')
@@ -132,15 +152,25 @@ class PlayerAttackEvent(AbstractPlayerEvent):
     vehicle = VehicleField()
 
 
-@event_model('PlayerKill')
-class PlayerKillEvent(AbstractPlayerVictimEvent):
+# This is separate from PlayerKill because they need different serializers
+@event_model('PlayerMakeGroggy')
+class PlayerMakeGroggyEvent(AbstractPlayerKillEvent):
     pass
+
+
+@event_model('PlayerKill')
+class PlayerKillEvent(AbstractPlayerKillEvent):
+    pass
+
+
+@event_model('ArmorDestroy')
+class ArmorDestroyEvent(AbstractPlayerKillEvent):
+    item = ItemField()
 
 
 @event_model('PlayerTakeDamage')
 class PlayerTakeDamageEvent(AbstractPlayerVictimEvent):
     damage = models.FloatField()
-    damage_reason = models.CharField(max_length=40)  # e.g. ArmShot
 
 
 @event_model('ItemPickup', 'ItemDrop', 'ItemEquip', 'ItemUnequip', 'ItemUse')
@@ -153,9 +183,14 @@ class ItemAttachEvent(AbstractItemEvent):
     child_item = ItemField()
 
 
-@event_model('VehicleRide', 'VehicleLeave')
-class VehicleEvent(AbstractVehicleEvent):
+@event_model('VehicleRide')
+class VehicleRideEvent(AbstractVehicleRideEvent):
     pass
+
+
+@event_model('VehicleLeave')
+class VehicleLeaveEvent(AbstractVehicleRideEvent):
+    ride_distance = models.FloatField()
 
 
 @event_model('VehicleDestroy')

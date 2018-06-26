@@ -7,16 +7,18 @@ PUBG map stuff
 1. Save your API key to `backend/key.sh`
 1. Run:
     * `source backend/key.sh`
-    * `docker-compose up`
+    * `./dev.sh run`
 
 ### Migrations
-`docker-compose run backend ./manage.py migrate`
+```
+./dev.sh makemigrations
+./dev.sh migrate
+```
 
 ### Testing
 ```
-./test.sh backend
-./test.sh frontend
-./test.sh all
+./dev.sh testback
+./dev.sh testfront
 ```
 
 ## Production

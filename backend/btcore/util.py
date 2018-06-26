@@ -8,6 +8,7 @@ PERSPECTIVES = ['fpp', 'tpp']
 MAP_SIZES = {
     'Erangel_Main': 8000,
     'Desert_Main': 8000,
+    'Savage_Main': 4000,
 }
 
 MATCH_ID_LENGTH = 36

@@ -213,7 +213,6 @@ class AbstractPlayerEventSerializer(AbstractEventSerializer):
     @classmethod
     def convert_dev_data(cls, dev_data, player_key='character', **kwargs):
         rv = super(AbstractPlayerEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
-
         rv.update({
             'player': EventPlayer.convert_dev_data(dev_data[player_key])
         })
@@ -224,15 +223,25 @@ class AbstractPlayerVictimEventSerializer(AbstractPlayerEventSerializer):
     attacker = EventSerializerField()
 
     @classmethod
-    def convert_dev_data(cls, dev_data, attacker_key='killer', **kwargs):
+    def convert_dev_data(cls, dev_data, attacker_key='attacker', **kwargs):
         rv = super(AbstractPlayerVictimEventSerializer, cls).convert_dev_data(dev_data,
                                                                               player_key='victim',
                                                                               **kwargs)
-
         rv.update({
             'attacker': EventPlayer.convert_dev_data(dev_data[attacker_key]),
             'damage_type': dev_data['damageTypeCategory'],
+            'damage_reason': dev_data.get('damageReason', 'None'),
             'damage_causer': dev_data['damageCauserName'],
+        })
+        return rv
+
+
+class AbstractPlayerKillEventSerializer(AbstractPlayerVictimEventSerializer):
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        rv = super(AbstractPlayerKillEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
+        rv.update({
+            'distance': dev_data['distance'],
         })
         return rv
 
@@ -243,7 +252,6 @@ class AbstractItemEventSerializer(AbstractPlayerEventSerializer):
     @classmethod
     def convert_dev_data(cls, dev_data, item_key='item', **kwargs):
         rv = super(AbstractItemEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
-
         rv.update({
             'item': Item.convert_dev_data(dev_data[item_key]),
         })
@@ -256,9 +264,20 @@ class AbstractVehicleEventSerializer(AbstractPlayerEventSerializer):
     @classmethod
     def convert_dev_data(cls, dev_data, **kwargs):
         rv = super(AbstractVehicleEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
-
         rv.update({
             'vehicle': Vehicle.convert_dev_data(dev_data['vehicle']),
+        })
+        return rv
+
+
+class AbstractVehicleRideEventSerializer(AbstractVehicleEventSerializer):
+    vehicle = EventSerializerField()
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        rv = super(AbstractVehicleRideEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
+        rv.update({
+            'seat_index': dev_data['seatIndex'],
         })
         return rv
 
@@ -295,6 +314,21 @@ class PlayerPositionEventSerializer(AbstractPlayerEventSerializer):
         exclude = ('id', 'telemetry')
 
 
+class SwimEndEventSerializer(AbstractPlayerEventSerializer):
+    class Meta:
+        model = models.SwimEndEvent
+        exclude = ('id', 'telemetry')
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        rv = super(SwimEndEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
+        rv.update({
+            # As of now, not all matches have this field, so default to 0
+            'swim_distance': dev_data.get('swimDistance', 0),
+        })
+        return rv
+
+
 class PlayerAttackEventSerializer(AbstractPlayerEventSerializer):
     weapon = EventSerializerField()
     vehicle = EventSerializerField()
@@ -308,7 +342,6 @@ class PlayerAttackEventSerializer(AbstractPlayerEventSerializer):
         rv = super(PlayerAttackEventSerializer, cls).convert_dev_data(dev_data,
                                                                       player_key='attacker',
                                                                       **kwargs)
-
         rv.update({
             'attack_type': dev_data['attackType'],
             'weapon': Item.convert_dev_data(dev_data['weapon']),
@@ -317,10 +350,38 @@ class PlayerAttackEventSerializer(AbstractPlayerEventSerializer):
         return rv
 
 
-class PlayerKillEventSerializer(AbstractPlayerVictimEventSerializer):
+class PlayerMakeGroggyEventSerializer(AbstractPlayerKillEventSerializer):
+    class Meta:
+        model = models.PlayerMakeGroggyEvent
+        exclude = ('id', 'telemetry')
+
+
+class PlayerKillEventSerializer(AbstractPlayerKillEventSerializer):
     class Meta:
         model = models.PlayerKillEvent
         exclude = ('id', 'telemetry')
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        return super(PlayerKillEventSerializer, cls).convert_dev_data(dev_data,
+                                                                      attacker_key='killer',
+                                                                      **kwargs)
+
+
+class ArmorDestroyEventSerializer(AbstractPlayerKillEventSerializer):
+    item = EventSerializerField()
+
+    class Meta:
+        model = models.ArmorDestroyEvent
+        exclude = ('id', 'telemetry')
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        rv = super(ArmorDestroyEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
+        rv.update({
+            'item': Item.convert_dev_data(dev_data['item']),
+        })
+        return rv
 
 
 class PlayerTakeDamageEventSerializer(AbstractPlayerVictimEventSerializer):
@@ -333,10 +394,8 @@ class PlayerTakeDamageEventSerializer(AbstractPlayerVictimEventSerializer):
         rv = super(PlayerTakeDamageEventSerializer, cls).convert_dev_data(dev_data,
                                                                           attacker_key='attacker',
                                                                           **kwargs)
-
         rv.update({
             'damage': dev_data['damage'],
-            'damage_reason': dev_data['damageReason'],
         })
         return rv
 
@@ -359,17 +418,30 @@ class ItemAttachEventSerializer(AbstractItemEventSerializer):
         rv = super(ItemAttachEventSerializer, cls).convert_dev_data(dev_data,
                                                                     item_key='parentItem',
                                                                     **kwargs)
-
         rv.update({
             'child_item': Item.convert_dev_data(dev_data['childItem']),
         })
         return rv
 
 
-class VehicleEventSerializer(AbstractVehicleEventSerializer):
+class VehicleRideEventSerializer(AbstractVehicleRideEventSerializer):
     class Meta:
-        model = models.VehicleEvent
+        model = models.VehicleRideEvent
         exclude = ('id', 'telemetry')
+
+
+class VehicleLeaveEventSerializer(AbstractVehicleRideEventSerializer):
+    class Meta:
+        model = models.VehicleLeaveEvent
+        exclude = ('id', 'telemetry')
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        rv = super(VehicleLeaveEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
+        rv.update({
+            'ride_distance': dev_data['rideDistance'],
+        })
+        return rv
 
 
 class VehicleDestroyEventSerializer(AbstractVehicleEventSerializer):
@@ -384,7 +456,6 @@ class VehicleDestroyEventSerializer(AbstractVehicleEventSerializer):
         rv = super(VehicleDestroyEventSerializer, cls).convert_dev_data(dev_data,
                                                                         player_key='attacker',
                                                                         **kwargs)
-
         rv.update({
             'attacker': EventPlayer.convert_dev_data(dev_data['attacker']),
         })
@@ -402,7 +473,6 @@ class CarePackageEventSerializer(AbstractEventSerializer):
     @classmethod
     def convert_dev_data(cls, dev_data, **kwargs):
         rv = super(CarePackageEventSerializer, cls).convert_dev_data(dev_data, **kwargs)
-
         rv.update({
             'pos': Position3.convert_dev_data(dev_data['itemPackage']['location']),
             'items': [Item.convert_dev_data(i) for i in dev_data['itemPackage']['items']],

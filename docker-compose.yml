@@ -4,6 +4,7 @@ services:
   db:
     restart: always
     image: postgres:10-alpine
+    # user: "${DOCKER_UID}:${DOCKER_GID}"
     volumes:
       - .dbdata:/var/lib/postgresql:rw
     environment:
@@ -15,6 +16,7 @@ services:
     build: ./backend/
     image: registry.gitlab.com/lucaspickering/battletrack/backend
     command: ./manage.py runserver 0.0.0.0:8000
+    user: "${DOCKER_UID}:${DOCKER_GID}"
     volumes:
       - ./backend/:/battletrack:rw
     depends_on:
@@ -27,6 +29,7 @@ services:
   frontend:
     build: ./frontend/
     image: registry.gitlab.com/lucaspickering/battletrack/frontend
+    user: "${DOCKER_UID}:${DOCKER_GID}"
     command: npm start
     volumes:
       - ./frontend/:/battletrack:rw

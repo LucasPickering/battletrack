@@ -21,13 +21,6 @@ class DevAPI:
             'Authorization': key,
         }
 
-    @classmethod
-    def from_file(cls, file_name):
-        # Read the API key from the given file
-        with open(file_name) as f:
-            key = f.read().strip()
-        return cls(key)  # Instantiate the API
-
     def get(self, url):
         with Timed("Dev API GET took {time}"):
             r = requests.get(url, headers=self._headers)

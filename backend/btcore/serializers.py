@@ -180,6 +180,7 @@ class PlayerMatchStatsSerializer(DevDeserializer):
         ('revives', 'revives'),
         ('rideDistance', 'ride_distance'),
         ('roadKills', 'road_kills'),
+        ('swimDistance', 'swim_distance'),
         ('teamKills', 'team_kills'),
         ('timeSurvived', 'time_survived'),
         ('vehicleDestroys', 'vehicle_destroys'),
@@ -331,6 +332,7 @@ class MatchSerializer(DevDeserializer):
             'map_name': map_name,
             'date': attrs['createdAt'],
             'duration': attrs['duration'],
+            'custom_match': attrs['isCustomMatch'],
             'telemetry_url': tel_asset['attributes']['URL'],
             'rosters': roster_matches,
         }
