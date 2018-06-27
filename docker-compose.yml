@@ -4,9 +4,8 @@ services:
   db:
     restart: always
     image: postgres:10-alpine
-    # user: "${DOCKER_UID}:${DOCKER_GID}"
     volumes:
-      - .dbdata:/var/lib/postgresql:rw
+      - .database:/var/lib/postgresql/data:rw
     environment:
       POSTGRES_DB: battletrack
       POSTGRES_USER: btuser
@@ -15,8 +14,8 @@ services:
   backend:
     build: ./backend/
     image: registry.gitlab.com/lucaspickering/battletrack/backend
-    command: ./manage.py runserver 0.0.0.0:8000
     user: "${DOCKER_UID}:${DOCKER_GID}"
+    command: ./manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend/:/battletrack:rw
     depends_on:

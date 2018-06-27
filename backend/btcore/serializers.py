@@ -152,7 +152,7 @@ class DevDeserializer(serializers.ModelSerializer, metaclass=DevDeserializerMeta
 class MatchSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
-        fields = ('mode', 'perspective', 'map_name', 'date', 'duration')
+        exclude = ('id', 'telemetry_url')
 
 
 class PlayerSummarySerializer(serializers.ModelSerializer):
@@ -244,14 +244,14 @@ class PlayerMatchSerializer(EnhancedModelSerializer):
     """
     @brief      Contains info about a Match for a certain Player
     """
-    match = MatchSummarySerializer(source='roster.match', default=None, read_only=True)
+    summary = MatchSummarySerializer(source='roster.match', default=None, read_only=True)
     roster = PlayerSummarySerializer(source='roster.players', default=None, read_only=True,
                                      many=True)
     stats = PlayerMatchStatsSerializer(read_only=True)
 
     class Meta:
         model = PlayerMatch
-        fields = ('match', 'roster', 'match_id', 'shard', 'stats')
+        fields = ('summary', 'roster', 'match_id', 'stats')
 
 
 class MatchSerializer(DevDeserializer):
@@ -260,7 +260,7 @@ class MatchSerializer(DevDeserializer):
 
     class Meta:
         model = Match
-        fields = ('id', 'shard', 'mode', 'perspective', 'map', 'date', 'duration',
+        fields = ('id', 'shard', 'mode', 'perspective', 'map', 'date', 'duration', 'custom_match',
                   'telemetry_url', 'rosters')
         extra_kwargs = {
             'telemetry_url': {'write_only': True},
@@ -387,7 +387,7 @@ class MatchSerializer(DevDeserializer):
 
 class PlayerSerializer(DevDeserializer):
     # Latest matches first
-    matches = PlayerMatchSerializer(many=True, context_filters=['shard'], order_by='-match.date')
+    matches = PlayerMatchSerializer(many=True, context_filters=['shard'], order_by='-summary.date')
 
     class Meta:
         model = Player

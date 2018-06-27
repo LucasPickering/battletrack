@@ -11,7 +11,7 @@ import '../styles/Player.css';
 const PlayerMatches = ({ playerData }) => (
   <ListGroup className="matches">
     {playerData.matches
-      .filter(m => m.match) // Filter out null matches
+      .filter(m => m.summary) // Filter out null matches
       .map(m => (
         <PlayerMatchSummary
           key={m.match_id}

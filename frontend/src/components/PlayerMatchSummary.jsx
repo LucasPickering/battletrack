@@ -19,7 +19,7 @@ const PlayerMatchSummary = props => {
   const { playerName, data } = props;
   const {
     match_id: matchId,
-    match: {
+    summary: {
       mode,
       perspective,
       map_name: mapName,
