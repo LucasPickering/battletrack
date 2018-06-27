@@ -1,10 +1,9 @@
 action=$1
+shift
+rest_args=$*
 
 
 case "$action" in
-    "run" )
-        args="up"
-    ;;
     "makemigrations" )
         args="run backend ./manage.py makemigrations"
     ;;
@@ -17,10 +16,13 @@ case "$action" in
     "testfront" )
         args="run -e CI=true frontend npm test"
     ;;
+    * )
+        args=$action
+    ;;
 esac
 
 set -ex
 export DOCKER_UID=$(id -u)
 export DOCKER_GID=$(id -g)
-docker-compose $args
+docker-compose $args $rest_args
 docker-compose rm -s -f

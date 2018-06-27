@@ -1,9 +1,12 @@
+import os
 from vcr import VCR
 
 from django.test import Client, TestCase
 
+FIXTURE_DIR = 'fixtures'
+
 vcr = VCR(
-    cassette_library_dir='fixtures',
+    cassette_library_dir=os.path.join(FIXTURE_DIR, 'cassettes/'),
     record_mode='new_episodes',
     match_on=['uri', 'method'],
     filter_headers=['Authorization'],
@@ -15,18 +18,17 @@ class BtTestCase(TestCase):
         super().setUp()
         self.client = Client()
 
-    def check_object(self, obj, **kwargs):
+    def check_dict(self, d, **kwargs):
         for key, val in kwargs.items():
-            self.assertEqual(val, obj[key], f"Field '{key}'")
+            self.assertEqual(val, d[key], f"Field '{key}'")
+
+    def check_sorted(self, l, key=lambda x: x, reverse=False):
+        def cmp_func(a, b):
+            return (a >= b) if reverse else (a <= b)
+        self.assertTrue(all(cmp_func(key(l[i]), key(l[i + 1])) for i in range(len(l) - 1)))
 
     def get(self, *args, **kwargs):
         return self.client.get(*args, format='json', **kwargs).json()
-
-    def get_match(self, id):
-        return self.get(f'/api/core/matches/{id}')
-
-    def get_player(self, shard, key):
-        return self.get(f'/api/core/players/{shard}/{key}?popMatches')
 
 
 class MatchTests(BtTestCase):
@@ -52,38 +54,53 @@ class MatchTests(BtTestCase):
         },
     }
 
-    @vcr.use_cassette()
+    def get_match(self, id):
+        return self.get(f'/api/core/matches/{id}')
+
+    @vcr.use_cassette('match.yml')
+    def setUp(self):
+        super().setUp()
+        self.matches = {match_id: self.get_match(match_id) for match_id in self.MATCHES.keys()}
+
     def test_get_match(self):
-        for match_id, data in self.MATCHES.items():
-            self.check_object(self.get_match(match_id), id=match_id, **data)
+        for match_id, match in self.matches.items():
+            self.check_dict(match, id=match_id, **self.MATCHES[match_id])
+
+    def test_rosters_sorted(self):
+        # Make sure all rosters are sorted by placement
+        for match in self.matches.values():
+            self.check_sorted(match['rosters'], key=lambda m: m['win_place'])
 
 
 class PlayerTests(BtTestCase):
 
     PLAYER_NAME = 'zdkdz'
 
-    @vcr.use_cassette()
+    def get_player(self, shard, key):
+        return self.get(f'/api/core/players/{shard}/{key}?popMatches')
+
+    @vcr.use_cassette('player.yml')
+    def setUp(self):
+        super().setUp()
+        self.player = self.get_player(shard='pc-na', key=self.PLAYER_NAME)
+
     def test_get_player(self):
-        player = self.get_player(shard='pc-na', key=self.PLAYER_NAME)
-        self.check_object(player, name=self.PLAYER_NAME)
+        self.check_dict(self.player, name=self.PLAYER_NAME)
 
         # Make sure getting by ID returns the same thing
-        self.assertEqual(player, self.get_player(shard='pc-na', key=player['id']))
+        self.assertEqual(self.player, self.get_player(shard='pc-na', key=self.player['id']))
 
-    @vcr.use_cassette()
     def test_player_match(self):
-        player = self.get_player(shard='pc-na', key=self.PLAYER_NAME)
-        matches = player['matches']
-        self.assertEqual(10, len(matches))
+        matches = self.player['matches']
+        self.assertEqual(3, len(matches))
         match = matches[2]  # Chose this match because it had non-zero values
 
-        player = self.get_player(shard='pc-na', key=self.PLAYER_NAME)
-        self.check_object(match, match_id='1b8263d0-a4c6-4b7f-882f-ad134b458681')
+        self.check_dict(match, match_id='1b8263d0-a4c6-4b7f-882f-ad134b458681')
         self.assertEqual(match['roster'], [
             {'player_id': 'account.5e5642fcfb2c44c58acb2d22ecc9777c', 'player_name': 'zdkdz'},
             {'player_id': 'account.f2692b5c8d7c489d8f9a0aecf6500119', 'player_name': 'DJE1337'},
         ])
-        self.check_object(
+        self.check_dict(
             match['summary'],
             shard='pc-na',
             mode='duo',
@@ -93,7 +110,7 @@ class PlayerTests(BtTestCase):
             duration=1750,
             custom_match=False,
         )
-        self.check_object(
+        self.check_dict(
             match['stats'],
             assists=0,
             boosts=2,
@@ -120,3 +137,7 @@ class PlayerTests(BtTestCase):
             win_place=4,
             win_points=1648,
         )
+
+    def test_matches_sorted(self):
+        # Make sure all matches are sorted by date
+        self.check_sorted(self.player['matches'], key=lambda m: m['summary']['date'], reverse=True)

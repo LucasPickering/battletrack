@@ -115,6 +115,11 @@ class EventsSerializer(serializers.ListField):
         events_by_type = defaultdict(list)
         for event in serialized_events:
             events_by_type[event['type']].append(event)
+
+        # Sort each list of events by timestamp
+        for event_type, events_of_type in events_by_type.items():
+            events_by_type[event_type] = sorted(events_of_type, key=lambda e: e['time'])
+
         return events_by_type
 
 
