@@ -23,10 +23,15 @@ def choices(it):
 
 
 def timed(func):
+    start = time.time()
+    rv = func()
+    elapsed = time.time() - start
+    return (rv, elapsed)
+
+
+def timed_dec(func):
     def wrapper(*args, **kwargs):
-        start_time = time.time()  # Start the clock
-        rv = func(*args, **kwargs)  # Call the function
-        elapsed = time.time() - start_time  # Stop the clock
+        rv, elapsed = timed(lambda: func(*args, **kwargs))  # Run with a timer
 
         args_strs = (str(arg) for arg in args)
         kwargs_strs = (f'{k}={v}' for k, v in kwargs.items())
@@ -39,7 +44,7 @@ def timed(func):
 
 
 class Timed:
-    def __init__(self, msg):
+    def __init__(self, msg="Took {time}"):
         self._msg = msg
 
     def __enter__(self):

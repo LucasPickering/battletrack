@@ -3,7 +3,7 @@ import requests
 
 from django.conf import settings
 
-from .util import Timed
+from .util import timed
 
 logger = logging.getLogger(settings.BT_LOGGER_NAME)
 
@@ -22,9 +22,8 @@ class DevAPI:
         }
 
     def get(self, url):
-        with Timed("Dev API GET took {time}"):
-            r = requests.get(url, headers=self._headers)
-            logger.info(f"Dev API GET {url} {r.status_code}")
+        r, time = timed(lambda: requests.get(url, headers=self._headers))
+        logger.info(f"Dev API GET {url} {r.status_code} {time:.4f}s")
         r.raise_for_status()
         return r.json()
 
