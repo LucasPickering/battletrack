@@ -5,7 +5,7 @@ services:
     restart: always
     image: postgres:10-alpine
     volumes:
-      - /var/lib/postgresql:/var/lib/postgresql:rw
+      - /var/lib/postgresql/data:/var/lib/postgresql/data:rw
     environment:
       POSTGRES_DB: battletrack
       POSTGRES_USER: btuser

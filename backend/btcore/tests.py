@@ -75,15 +75,17 @@ class MatchTests(BtTestCase):
 class PlayerTests(BtTestCase):
 
     PLAYER_NAME = 'zdkdz'
+    CASSETTE_FILE = 'player.yml'
 
     def get_player(self, shard, key):
         return self.get(f'/api/core/players/{shard}/{key}?popMatches')
 
-    @vcr.use_cassette('player.yml')
+    @vcr.use_cassette(CASSETTE_FILE)
     def setUp(self):
         super().setUp()
         self.player = self.get_player(shard='pc-na', key=self.PLAYER_NAME)
 
+    @vcr.use_cassette(CASSETTE_FILE)
     def test_get_player(self):
         self.check_dict(self.player, name=self.PLAYER_NAME)
 

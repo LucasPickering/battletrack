@@ -838,4 +838,38 @@ interactions:
       X-Cache: [Hit from cloudfront]
       X-Request-Id: [59d3328b-7206-4a4c-bd1d-feea9023136e]
     status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: [application/vnd.api+json]
+      Accept-Encoding: [gzip]
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.19.1]
+    method: GET
+    uri: https://api.playbattlegrounds.com/shards/pc-na/players/account.5e5642fcfb2c44c58acb2d22ecc9777c
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAA/8SSMZLdIAyG76LaPNs8jHm+QS6QJrOFALH2LLYZIxe7O757Bt4kkyIpUm3HIKSf
+        ///0CR4ZYfoEfk8EE6SI73RAA4uHCdC5/dz4NtCglQwuWOmUcoNBZ6WXkpx7jOPooAFkPhZ7MuUy
+        LSG7+Tsdedk3mAAa2HAt8z/8m/+ABjIjZ5i2M8YGeOFI34qgjSfNeySRTvtans14+FpJTmwIVwMH
+        ReRl3/K8pKqFORPX09PLj5ergbV8gP68/W2xln457L29K2eC0P1jEEqSFmi0FWG0nZUGScmi+vdm
+        RN0F03dCI1qhuk4L4x9SkO6CfdxpRDX8s7m3Ruq77wQqp4WyYxDGyCDQ93dl1WC06eF6ua4G4rK9
+        VSuZYoAJZuaUp7bFtNwKMIvMkV6P/dx8vrl9bWtuua2htU+muf0PmtnNtGIh9xX6hR/VtbyunwEA
+        AP//u/HsbaICAAA=
+    headers:
+      Connection: [keep-alive]
+      Content-Encoding: [gzip]
+      Content-Length: ['353']
+      Content-Type: [application/json]
+      Date: ['Fri, 29 Jun 2018 16:22:01 GMT']
+      Vary: [Accept-Encoding]
+      Via: [1.1 f360bbb3d1999b5324e1d7ae31da1d7e.cloudfront.net (CloudFront)]
+      X-Amz-Cf-Id: [Eij33Lpx7PQE1CkJEQcAJ19-2X_0eODuYhBml-ZdioLa06Mr72wWLg==]
+      X-Cache: [Miss from cloudfront]
+      X-Ratelimit-Limit: ['50']
+      X-Ratelimit-Remaining: ['49']
+      X-Ratelimit-Reset: ['1530289381']
+      X-Request-Id: [7be3931a-2365-4dd1-9319-5ebe356f362f]
+    status: {code: 200, message: OK}
 version: 1
