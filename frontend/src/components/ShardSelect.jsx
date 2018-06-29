@@ -3,6 +3,7 @@ import React from 'react';
 import { DropdownButton, MenuItem } from 'react-bootstrap';
 
 import { SHARDS, formatShard } from '../util/funcs';
+import '../styles/ShardSelect.css';
 
 const ShardSelect = ({ activeShard, ...rest }) => (
   <DropdownButton
