@@ -6,8 +6,9 @@ PUBG map stuff
 1. Install Docker and Docker Compose
 1. Save your API key to `backend/key.sh`
 1. Run:
+    * `cd frontend && npm install`
     * `source backend/key.sh`
-    * `./dev.sh run`
+    * `./dev.sh up`
 
 ### Migrations
 ```

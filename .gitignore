@@ -4,6 +4,7 @@
 /frontend/build
 
 /prod/build
+.database/
 
 # misc
 .DS_Store
