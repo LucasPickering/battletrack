@@ -350,9 +350,8 @@ class MatchSerializer(DevDeserializer):
         match = Match.objects.create(**validated_data)
 
         # Create each RosterMatch
-        roster_matches = RosterMatch.objects.bulk_create(
-            RosterMatch(match=match, **roster) for roster in rosters,
-        )
+        roster_matches = RosterMatch.objects.bulk_create(RosterMatch(match=match, **roster)
+                                                         for roster in rosters)
 
         # Using our dict of RosterID:List(PlayerMatch-dict), build a dict of PlayerID:RosterMatch
         player_to_roster = {player['player_id']: rm
