@@ -1,7 +1,10 @@
 import os
 from vcr import VCR
 
+from django.conf import settings
 from django.test import Client, TestCase
+
+from . import devapi
 
 FIXTURE_DIR = 'fixtures'
 
@@ -29,6 +32,14 @@ class BtTestCase(TestCase):
 
     def get(self, *args, **kwargs):
         return self.client.get(*args, format='json', **kwargs).json()
+
+
+class ApiTests(TestCase):
+    def setUp(self):
+        self.api = devapi.DevAPI(settings.DEV_API_KEY)
+
+    def test_get_bulk_empty(self):
+        self.assertEqual([], self.api.get_bulk([]))
 
 
 class MatchTests(BtTestCase):

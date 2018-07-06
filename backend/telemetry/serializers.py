@@ -7,6 +7,7 @@ from rest_framework import serializers
 
 from btcore.models import Match
 from btcore.serializers import DevDeserializer, MatchSerializer
+from btcore.util import MATCH_ID_LENGTH
 
 from . import models
 from .fields import Position3, Circle, Ray, EventPlayer, Item, Vehicle, EventSerializerField, \
@@ -140,9 +141,15 @@ class TelemetrySerializer(DevDeserializer):
 
     @classmethod
     def convert_dev_data(cls, dev_data, **kwargs):
+        # dev_data is a list of events - the first event contains the match ID. This match ID
+        # is in a weird extended format, so cut it down to get the normal format we want.
+        long_match_id = dev_data[0]['MatchId']
+        'match.bro.official.2018-06.na.duo-fpp.2018.07.03.2cb735ee-98e5-4338-b3c6-98736b2fa7e0'
+        match_id = long_match_id[-MATCH_ID_LENGTH:]
+
         return {
-            'match_write': dev_data['match_id'],
-            'events': EventsSerializer.convert_dev_data(dev_data['telemetry'], **kwargs),
+            'match_write': match_id,
+            'events': EventsSerializer.convert_dev_data(dev_data, **kwargs),
         }
 
     @staticmethod

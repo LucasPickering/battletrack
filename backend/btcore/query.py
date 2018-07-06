@@ -8,8 +8,8 @@ from django.http import Http404
 
 from . import devapi
 
-api = devapi.DevAPI(settings.DEV_API_KEY)
-logger = logging.getLogger(settings.BT_LOGGER_NAME)
+_api = devapi.DevAPI(settings.DEV_API_KEY)
+_logger = logging.getLogger(settings.BT_LOGGER_NAME)
 
 
 class DevAPIQuerySet(models.QuerySet):
@@ -18,18 +18,20 @@ class DevAPIQuerySet(models.QuerySet):
 
     def _insert_from_api(self, *args, **kwargs):
         try:
-            data = self._execute_api_query(*args, **kwargs)
+            url = self._get_api_url(*args, **kwargs)
+            data = _api.get(url)
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 404:
                 # If it was a 404, re-throw it as a Django 404
                 raise Http404(str(e))
             else:
                 # Otherwise, log the error
-                logger.error(traceback.format_exc())
+                _logger.error(traceback.format_exc())
                 raise e
+
         except Exception as e:
             # Django likes to silence these errors, but we will not be silenced!
-            logger.error(traceback.format_exc())
+            _logger.error(traceback.format_exc())
             raise e  # Re-raise it
 
         # Deserialize the data and save it
@@ -87,7 +89,7 @@ class DevAPIQuerySet(models.QuerySet):
 
         # Pull all necessary objects from the API and save them in a list
         to_pull = values - existing
-        data = [self._execute_api_query(**{field: val}) for val in to_pull]
+        data = _api.get_bulk(self._get_api_url(**{field: val}) for val in to_pull)  # Get each URL
 
         # Deserialize the data and save it
         serializer = self.model.serializer.from_dev_data(data, many=True)
@@ -96,13 +98,11 @@ class DevAPIQuerySet(models.QuerySet):
 
 
 class MatchQuerySet(DevAPIQuerySet):
-    def _execute_api_query(self, id):
-        return api.get_match(id)
+    _get_api_url = _api.get_match_url
 
 
 class PlayerQuerySet(DevAPIQuerySet):
-    def _execute_api_query(self, **kwargs):
-        return api.get_player(**kwargs)
+    _get_api_url = _api.get_player_url
 
     def get(self, shard=None, *args, **kwargs):
         # Pull latest data from API, will add Player if missing, or if Player is already in DB,

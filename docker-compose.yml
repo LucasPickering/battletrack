@@ -15,7 +15,7 @@ services:
     build: ./backend/
     image: registry.gitlab.com/lucaspickering/battletrack/backend
     user: "${DOCKER_UID}:${DOCKER_GID}"
-    command: ./manage.py runserver 0.0.0.0:8000
+    command: sh -c "dockerize -wait tcp://db:5432 && ./manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend/:/battletrack:rw
     depends_on:

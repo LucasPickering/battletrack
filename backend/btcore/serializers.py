@@ -394,16 +394,21 @@ class PlayerSerializer(DevDeserializer):
 
     @classmethod
     def convert_dev_data(cls, dev_data, **kwargs):
-        attrs = dev_data['attributes']
+        data = dev_data['data']  # The only dict entry we care about
+        # If the player was retrieved by name, the data will be a list of players, so get the first
+        if isinstance(data, list):
+            data = data[0]
+
+        attrs = data['attributes']
 
         # Build a list of PlayerMatch dicts
-        player_id = dev_data['id']
+        player_id = data['id']
         player_name = attrs['name']
         shard = attrs['shardId']
         matches = [{
             'match_id': m['id'],
             'shard': shard,
-        } for m in dev_data['relationships']['matches']['data']]
+        } for m in data['relationships']['matches']['data']]
 
         return {
             'id': player_id,
