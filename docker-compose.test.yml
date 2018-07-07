@@ -17,6 +17,6 @@ services:
 
   frontend:
     image: registry.gitlab.com/lucaspickering/battletrack/frontend
-    command: npm test
+    command: npm run lint && npm run test
     environment:
       CI: "true"
