@@ -27,10 +27,15 @@ PageWrapper.defaultProps = {
 };
 
 function routeComponent(component, fullscreen) {
-  return ({ match, ...rest }) => {
+  const comp = ({ match, ...rest }) => {
     const el = React.createElement(component, { ...match.params, ...rest });
     return fullscreen ? el : <PageWrapper>{el}</PageWrapper>;
   };
+  comp.propTypes = {
+    match: PropTypes.shape({ params: PropTypes.object.isRequired }).isRequired,
+  };
+
+  return comp;
 }
 
 const BtRoute = props => {

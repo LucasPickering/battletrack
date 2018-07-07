@@ -1,4 +1,5 @@
 *
+!.env
 !package.json
 !.eslintrc.json
 !public/

@@ -15,6 +15,7 @@ class EventMarks extends React.PureComponent {
     const {
       marks,
       rosterPalette,
+      onMarkSelect,
     } = this.props;
 
     return marks.map(mark => {
@@ -40,7 +41,7 @@ class EventMarks extends React.PureComponent {
         html: `<p style="${toCss(fullIconStyle)}">${iconCode}</p>`,
       });
       return (
-        <Marker key={id} position={toLeaflet(pos)} icon={icon}>
+        <Marker key={id} position={toLeaflet(pos)} icon={icon} onClick={onMarkSelect}>
           <MarkTooltip
             title={Localization.eventMarks[type].single}
             time={time}
