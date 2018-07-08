@@ -1,4 +1,4 @@
-version: '3'
+version: '3.2'
 
 services:
   db:
@@ -34,7 +34,9 @@ services:
     volumes:
       - $BT_LOGGING_DIR:/var/log/nginx:rw
     ports:
-      - "80:80"
+      - target: 80
+        published: 80
+        mode: host
 
 networks:
   public:
