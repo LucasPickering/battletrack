@@ -24,6 +24,7 @@ const PlayerMatchSummary = props => {
       perspective,
       map_name: mapName,
       date,
+      shard,
     },
     roster,
     stats,
@@ -68,7 +69,7 @@ const PlayerMatchSummary = props => {
             <li key={name}>
               {name === playerName
                 ? <b>{name}</b>
-                : <Link to={playerLink(data.shard, name)}>{name}</Link>}
+                : <Link to={playerLink(shard, name)}>{name}</Link>}
             </li>
           ))}
         </ul>
