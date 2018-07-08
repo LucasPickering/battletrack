@@ -3,6 +3,6 @@
 branch="$(git rev-parse --abbrev-ref HEAD)"
 
 if [ "$branch" = "master" ]; then
-  echo "Can't commit directly to master"
+  echo "ERROR: Can't commit directly to master"
   exit 1
 fi

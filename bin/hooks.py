@@ -12,7 +12,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     rel_path = os.path.relpath(args.hook_dir, start=HOOK_DEST_DIR)
-    print(rel_path)
 
     for file in glob.glob(os.path.join(args.hook_dir, '*')):
         basename = os.path.basename(file)
