@@ -1,3 +1,26 @@
-.shard-select-addon a {
+.shard-select button {
+  background-color: var(--bg-color-3) !important;
+  color: var(--accent-color-1) !important;
+}
+
+.shard-select .dropdown,
+.shard-select button {
+  height: 100%;
+}
+
+.shard-select .dropdown-menu {
+  background-color: var(--bg-color-3);
+}
+
+.shard-select .dropdown-menu a,
+.shard-select .dropdown-menu a:hover,
+.shard-select .dropdown-menu a:focus {
+  background-color: var(--bg-color-3);
+  color: var(--accent-color-1);
   text-decoration: none;
+}
+
+.shard-select .dropdown-menu a:hover,
+.shard-select .dropdown-menu a:focus {
+  box-shadow: var(--hover-shadow-dark);
 }

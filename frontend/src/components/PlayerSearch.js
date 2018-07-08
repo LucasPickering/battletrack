@@ -1,11 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  Button,
-  FormControl,
-  FormGroup,
-  InputGroup,
-} from 'react-bootstrap';
+import { Button, FormControl } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 
 import { playerLink } from '../util/funcs';
@@ -32,9 +27,14 @@ class PlayerSearch extends React.PureComponent {
     const { searchName, shard } = this.state;
 
     return (
-      <FormGroup className="player-search">
-        <InputGroup>
+      <div className="player-search">
+        <ShardSelect
+          activeShard={shard}
+          onSelect={newShard => this.setState({ shard: newShard })}
+        />
+        <div className="name-input-container">
           <FormControl
+            className="name-input"
             type="text"
             placeholder="Player name..."
             onChange={e => this.setState({ searchName: e.target.value })}
@@ -44,17 +44,15 @@ class PlayerSearch extends React.PureComponent {
               }
             }}
           />
-          <InputGroup.Addon className="shard-select-addon">
-            <ShardSelect
-              activeShard={shard}
-              onSelect={newShard => this.setState({ shard: newShard })}
-            />
-          </InputGroup.Addon>
-          <InputGroup.Button>
-            <Button disabled={!searchName} onClick={this.search}>Search</Button>
-          </InputGroup.Button>
-        </InputGroup>
-      </FormGroup>
+          <Button
+            className="search-button fa"
+            disabled={!searchName}
+            onClick={this.search}
+          >
+            &#xf002;
+          </Button>
+        </div>
+      </div>
     );
   }
 }

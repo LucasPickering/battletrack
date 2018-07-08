@@ -17,20 +17,6 @@
   margin-bottom: 5px;
 }
 
-.player .header .shard-select {
-  background-color: var(--bg-color-2);
-  color: var(--accent-color-1);
-  border: none;
-}
-
-.player .header .shard-select:hover,
-.player .header .shard-select:focus,
-.player .header .shard-select:active {
-  background-color: var(--bg-color-3);
-  color: var(--accent-color-1);
-}
-
-
 .player .matches {
   flex: 1 1 250px;
   overflow-y: scroll;

@@ -1,18 +1,31 @@
 .player-search {
-  margin: 0 auto;
-  padding: 20px 0px;
-  width: 400px;
+  display: flex;
+  margin: 20px auto;
+  background-color: var(--bg-color-3);
+  border: 1px solid var(--highlight-color-2);
 }
 
-.player-search .shard-select-addon {
-  border: 0;
-  padding: 0;
-}
-
-.player-search .shard-select,
-.player-search .shard-select:focus,
-.player-search .shard-select:hover,
-.player-search .shard-select:active {
-  border-left: 0;
+.player-search .shard-select button {
   border-radius: 0;
+}
+
+.player-search .name-input-container {
+  display: flex;
+  width: 250px;
+  border-left: inherit;
+}
+
+.player-search .name-input,
+.player-search .search-button {
+  background-color: #00000000;
+  color: var(--highlight-color-3);
+  border-radius: 0;
+}
+
+.player-search .name-input {
+  box-shadow: none;
+}
+
+.player-search .search-button[disabled] {
+  background-color: #00000000;
 }

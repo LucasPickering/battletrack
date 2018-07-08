@@ -6,16 +6,17 @@ import { SHARDS, formatShard } from '../util/funcs';
 import '../styles/ShardSelect.css';
 
 const ShardSelect = ({ activeShard, ...rest }) => (
-  <DropdownButton
-    className="shard-select"
-    title={formatShard(activeShard)}
-    id="shards-dropdown"
-    {...rest}
-  >
-    {SHARDS.map(shard => (
-      <MenuItem key={shard} eventKey={shard}>{formatShard(shard)}</MenuItem>
-    ))}
-  </DropdownButton>
+  <div className="shard-select">
+    <DropdownButton
+      title={formatShard(activeShard)}
+      id="shards-dropdown"
+      {...rest}
+    >
+      {SHARDS.map(shard => (
+        <MenuItem key={shard} eventKey={shard}>{formatShard(shard)}</MenuItem>
+      ))}
+    </DropdownButton>
+  </div>
 );
 
 ShardSelect.propTypes = {
