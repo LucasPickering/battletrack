@@ -1,23 +1,27 @@
 .overview {
-  float: left;
   width: 100%;
   height: 100vh;
-  display: grid;
-  grid-template-rows: 40px calc(100vh - 40px); /* HACK */
-  grid-template-columns: 330px auto;
+  display: flex;
+}
+
+.overview .left-container {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-color-1);
 }
 
 .overview .match-link {
-  grid-row: 1;
-  grid-column: 1;
-  background-color: var(--bg-color-1);
-  color: var(--accent-color-1);
-  text-align: center;
+  width: 300px;
+  height: 40px;
   line-height: 100%;
+  padding-top: 6px;
+
+  color: var(--accent-color-1);
+
   font-size: 24px;
   text-decoration: none;
-  padding-top: 8px;
-  border-right: 1px var(--border-color-1) solid;
+  text-align: center;
+
   border-bottom: 1px var(--border-color-1) solid;
 }
 
@@ -26,45 +30,57 @@
 }
 
 .overview .filter-list {
-  grid-row: 2;
-  grid-column: 1;
   padding-top: 3px;
   height: 100%;
+  background-color: inherit;
   overflow-y: scroll;
 }
 
-.overview .time-range {
-  grid-row: 1 / 3;
-  grid-column: 2;
-  z-index: 500;
+.overview .map-container {
   position: relative;
-  top: 15px;
-  width: auto;
-  margin: 0 40px;
-  --slider-bg-color: var(--bg-color-2);
+  width: 100%;
+}
+
+.overview .drawer-button {
+  z-index: 500;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+
+  width: 24px;
+  height: 24px;
+  padding: 3px 4px;
+}
+
+.overview .time-range {
+  z-index: 500;
+  position: absolute;
+  top: 10px;
+  left: 30px;
+  width: calc(100% - 60px);
+  height: 39px;
+
+  --slider-bg-color: var(--bg-color-1);
   --slider-accent-color: var(--accent-color-1);
 }
 
-.overview .rc-slider-rail {
+.overview .rc-slider-rail,
+.overview .rc-slider-dot,
+.overview .rc-slider-dot-active,
+.overview .rc-slider-handle {
   background-color: var(--slider-bg-color);
-}
-
-.overview .rc-slider-dot {
-  background-color: var(--slider-bg-color);
-  border-color: var(--slider-bg-color);
 }
 
 .overview .rc-slider-track {
   background-color: var(--slider-accent-color);
 }
 
-.overview .rc-slider-dot-active {
-  background-color: var(--slider-bg-color);
-  border-color: var(--slider-accent-color);
+.overview .rc-slider-dot {
+  border-color: var(--slider-bg-color);
 }
 
+.overview .rc-slider-dot-active,
 .overview .rc-slider-handle {
-  background-color: var(--slider-bg-color);
   border-color: var(--slider-accent-color);
 }
 
@@ -77,11 +93,15 @@
 }
 
 .overview .game-map {
-  grid-row:  1 / 3;
-  grid-column: 2;
+  background-color: var(--bg-color-2);
 }
 
 .overview .game-map .leaflet-top {
-  top: auto;
-  bottom: 10px;
+  /* Move the zoom buttons down a bit */
+  top: 40px;
+}
+
+.overview .drawer-button,
+.overview .game-map .leaflet-control-zoom a {
+  color: var(--bg-color-1);
 }

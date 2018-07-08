@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
@@ -73,6 +74,7 @@ class MatchOverviewHelper extends React.PureComponent {
     this.timeMarks[this.maxTime] = formatSeconds(this.maxTime, 'm[m]'); // Add the final mark
 
     this.state = {
+      drawerOpen: true,
       timeRange: [0, this.maxTime], // Time range to display events in
       // Put every special mark type, event mark type, and player ID in one list
       enabledFilters: [].concat(
@@ -98,7 +100,7 @@ class MatchOverviewHelper extends React.PureComponent {
         zones: whiteZones,
       },
     } = this.props;
-    const { timeRange, enabledFilters } = this.state;
+    const { drawerOpen, timeRange, enabledFilters } = this.state;
     const [minTime, maxTime] = timeRange;
 
     // Build an object of special marks to display, but filter out ones that are disabled
@@ -114,33 +116,46 @@ class MatchOverviewHelper extends React.PureComponent {
 
     return (
       <div className="overview">
-        <Link className="match-link" to={matchLink(matchId)}>
-          <Icon code={0xf060} /> Back To Match
-        </Link>
+        {drawerOpen &&
+          <div className="left-container">
+            <Link className="match-link" to={matchLink(matchId)}>
+              <Icon name="arrow-left" /> Back To Match
+            </Link>
+            <FilterCheckList
+              rosters={rosters}
+              rosterPalette={this.rosterPalette}
+              enabledPlayers={enabledFilters}
+              onChange={val => this.setState({ enabledFilters: val })}
+            />
+          </div>
+        }
 
-        <FilterCheckList
-          rosters={rosters}
-          rosterPalette={this.rosterPalette}
-          enabledPlayers={enabledFilters}
-          onChange={val => this.setState({ enabledFilters: val })}
-        />
-        <Range
-          className="time-range"
-          count={1}
-          max={this.maxTime}
-          value={timeRange}
-          onChange={newRange => this.setState({ timeRange: newRange })}
-          marks={this.timeMarks}
-          tipFormatter={formatSeconds}
-        />
+        <div className="map-container">
+          <Button
+            className="drawer-button"
+            onClick={() => this.setState({ drawerOpen: !drawerOpen })}
+          >
+            <Icon name={drawerOpen ? 'chevron-left' : 'chevron-right'} />
+          </Button>
 
-        <MarkedGameMap
-          map={map}
-          specialMarks={specialMarks}
-          eventMarks={eventMarks}
-          rosterPalette={this.rosterPalette}
-          showGrid
-        />
+          <Range
+            className="time-range"
+            count={1}
+            max={this.maxTime}
+            value={timeRange}
+            onChange={newRange => this.setState({ timeRange: newRange })}
+            marks={this.timeMarks}
+            tipFormatter={formatSeconds}
+          />
+
+          <MarkedGameMap
+            map={map}
+            specialMarks={specialMarks}
+            eventMarks={eventMarks}
+            rosterPalette={this.rosterPalette}
+            showGrid
+          />
+        </div>
       </div>
     );
   }

@@ -18,7 +18,7 @@
 
 .player-match-summary .panel-body {
   display: grid;
-  grid-template-columns: 10% 25% 30% 35%;
+  grid-template-columns: 10% 25% 25% 40%;
   grid-template-rows: repeat(2, 1fr);
 }
 

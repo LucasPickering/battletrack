@@ -50,7 +50,7 @@ class PlayerSearch extends React.PureComponent {
             disabled={!searchName}
             onClick={this.search}
           >
-            <Icon code={0xf002} />
+            <Icon name="search" />
           </Button>
         </div>
       </div>

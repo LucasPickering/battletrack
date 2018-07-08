@@ -5,6 +5,7 @@
   "proxy": "http://backend:8000",
   "dependencies": {
     "axios": "^0.18.0",
+    "classnames": "^2.2.6",
     "fast-json-stable-stringify": "^2.0.0",
     "google-palette": "^1.1.0",
     "json-schema-traverse": "^0.4.0",
