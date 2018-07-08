@@ -4,6 +4,7 @@ import { Button, FormControl } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 
 import { playerLink } from '../util/funcs';
+import Icon from './Icon';
 import ShardSelect from './ShardSelect';
 import '../styles/PlayerSearch.css';
 
@@ -45,11 +46,11 @@ class PlayerSearch extends React.PureComponent {
             }}
           />
           <Button
-            className="search-button fa"
+            className="search-button"
             disabled={!searchName}
             onClick={this.search}
           >
-            &#xf002;
+            <Icon code={0xf002} />
           </Button>
         </div>
       </div>

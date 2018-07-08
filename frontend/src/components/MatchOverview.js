@@ -20,6 +20,7 @@ import {
 } from '../util/funcs';
 import ApiComponent from './ApiComponent';
 import FilterCheckList from './FilterCheckList';
+import Icon from './Icon';
 import MarkedGameMap from './MarkedGameMap';
 import '../styles/MatchOverview.css';
 
@@ -113,8 +114,8 @@ class MatchOverviewHelper extends React.PureComponent {
 
     return (
       <div className="overview">
-        <Link className="match-link fa" to={matchLink(matchId)}>
-          &#xf060; Back To Match
+        <Link className="match-link" to={matchLink(matchId)}>
+          <Icon code={0xf060} /> Back To Match
         </Link>
 
         <FilterCheckList

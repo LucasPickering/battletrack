@@ -1,6 +1,7 @@
 .player-search {
   display: flex;
   margin: 20px auto;
+  height: 36px;
   background-color: var(--bg-color-3);
   border: 1px solid var(--highlight-color-2);
 }
@@ -16,7 +17,8 @@
 }
 
 .player-search .name-input,
-.player-search .search-button {
+.player-search .search-button,
+.player-search .search-button p {
   background-color: #00000000;
   color: var(--highlight-color-3);
   border-radius: 0;
