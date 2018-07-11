@@ -88,7 +88,8 @@ class MatchOverviewHelper extends React.PureComponent {
   }
 
   filterEnabled(key) {
-    return this.state.enabledFilters.includes(key);
+    const { enabledFilters } = this.state;
+    return enabledFilters.includes(key);
   }
 
   render() {
@@ -116,7 +117,7 @@ class MatchOverviewHelper extends React.PureComponent {
 
     return (
       <div className="overview">
-        {drawerOpen &&
+        {drawerOpen && (
           <div className="left-container">
             <Link className="match-link" to={matchLink(matchId)}>
               <Icon name="arrow-left" /> Back To Match
@@ -128,7 +129,7 @@ class MatchOverviewHelper extends React.PureComponent {
               onChange={val => this.setState({ enabledFilters: val })}
             />
           </div>
-        }
+        )}
 
         <div className="map-container">
           <Button

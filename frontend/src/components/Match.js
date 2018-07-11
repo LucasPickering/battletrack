@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Panel } from 'react-bootstrap';
+import { Button, Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 import {
@@ -40,7 +40,7 @@ const MatchHelper = props => {
 
       <div className="links">
         <Link to={overviewLink(matchId)}>
-          <button>Overview</button>
+          <Button>Overview</Button>
         </Link>
       </div>
 

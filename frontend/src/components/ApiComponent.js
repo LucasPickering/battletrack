@@ -16,7 +16,8 @@ class ApiComponent extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.loadData(this.props.url);
+    const { url } = this.props;
+    this.loadData(url);
   }
 
   componentDidUpdate(prevProps) {

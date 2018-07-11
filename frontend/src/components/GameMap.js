@@ -1,4 +1,9 @@
-import { CRS, Point, LatLng, transformation } from 'leaflet';
+import {
+  CRS,
+  Point,
+  LatLng,
+  transformation,
+} from 'leaflet';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Map, ImageOverlay, Polyline } from 'react-leaflet';

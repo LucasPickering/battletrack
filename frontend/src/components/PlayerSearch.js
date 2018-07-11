@@ -20,8 +20,9 @@ class PlayerSearch extends React.PureComponent {
   }
 
   search() {
+    const { history } = this.props;
     const { searchName, shard } = this.state;
-    this.props.history.push(playerLink(shard, searchName));
+    history.push(playerLink(shard, searchName));
   }
 
   render() {
