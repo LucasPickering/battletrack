@@ -3,7 +3,7 @@ import React from 'react';
 import { Circle } from 'react-leaflet';
 import uniqid from 'uniqid';
 
-import BtPropTypes from '../util/BtPropTypes';
+import BtPropTypes from 'util/BtPropTypes';
 
 const Zones = ({ circles, ...rest }) => circles.map(({
   pos: { x, y },

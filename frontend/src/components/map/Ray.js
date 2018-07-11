@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Circle, Polygon, Polyline } from 'react-leaflet';
 
-import BtPropTypes from '../util/BtPropTypes';
-import { toLeaflet } from '../util/funcs';
+import BtPropTypes from 'util/BtPropTypes';
+import { toLeaflet } from 'util/funcs';
 
 const ArrowEnds = ({
   start,

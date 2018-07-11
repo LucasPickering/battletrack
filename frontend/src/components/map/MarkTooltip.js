@@ -3,8 +3,8 @@ import React from 'react';
 import { Popup } from 'react-leaflet';
 import uniqid from 'uniqid';
 
-import { formatSeconds } from '../util/funcs';
-import '../styles/MarkTooltip.css';
+import { formatSeconds } from 'util/funcs';
+import 'styles/map/MarkTooltip.css';
 
 const MarkTooltip = props => {
   const {

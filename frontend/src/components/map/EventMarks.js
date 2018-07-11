@@ -4,11 +4,11 @@ import React from 'react';
 import { Marker } from 'react-leaflet';
 import toCss from 'to-css';
 
-import BtPropTypes from '../util/BtPropTypes';
-import Localization from '../util/Localization';
-import RosterPalette from '../util/RosterPalette';
+import BtPropTypes from 'util/BtPropTypes';
+import Localization from 'util/Localization';
+import RosterPalette from 'util/RosterPalette';
+import { toLeaflet } from 'util/funcs';
 import MarkTooltip from './MarkTooltip';
-import { toLeaflet } from '../util/funcs';
 
 class EventMarks extends React.PureComponent {
   render() {

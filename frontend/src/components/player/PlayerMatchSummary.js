@@ -3,7 +3,6 @@ import React from 'react';
 import { Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-import 'styles/PlayerMatchSummary.css';
 import {
   formatDate,
   formatSeconds,
@@ -13,7 +12,8 @@ import {
   playerLink,
 } from 'util/funcs';
 import Localization from 'util/Localization';
-import Stat from './Stat';
+import Stat from '../Stat';
+import 'styles/player/PlayerMatchSummary.css';
 
 const PlayerMatchSummary = props => {
   const { playerName, data } = props;

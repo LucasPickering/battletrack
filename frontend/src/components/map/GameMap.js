@@ -8,8 +8,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Map, ImageOverlay, Polyline } from 'react-leaflet';
 
-import { mapImage, range } from '../util/funcs';
-import BtPropTypes from '../util/BtPropTypes';
+import { mapImage, range } from 'util/funcs';
+import BtPropTypes from 'util/BtPropTypes';
 
 // Custom coordinate system - simple Cartesian coordiates with top-left as origin
 const CoordSystem = {

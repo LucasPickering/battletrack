@@ -9,11 +9,11 @@ import {
   formatGameMode,
   formatPerspective,
   overviewLink,
-} from '../util/funcs';
-import Localization from '../util/Localization';
-import ApiComponent from './ApiComponent';
+} from 'util/funcs';
+import Localization from 'util/Localization';
+import ApiComponent from '../ApiComponent';
 import RosterMatchSummary from './RosterMatchSummary';
-import '../styles/Match.css';
+import 'styles/match/Match.css';
 
 const MatchHelper = props => {
   const {

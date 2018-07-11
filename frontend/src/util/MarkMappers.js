@@ -1,9 +1,9 @@
 import React from 'react';
 import uniqid from 'uniqid';
 
+import Ray from 'components/map/Ray';
+import Zones from 'components/map/Zones';
 import Localization from './Localization';
-import Ray from '../components/Ray';
-import Zones from '../components/Zones';
 
 const ICONS = Object.freeze({
   Kill: '\uf05b',

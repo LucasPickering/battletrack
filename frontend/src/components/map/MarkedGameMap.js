@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { SpecialMarkTypes } from '../util/MarkMappers';
-import RosterPalette from '../util/RosterPalette';
+import { SpecialMarkTypes } from 'util/MarkMappers';
+import RosterPalette from 'util/RosterPalette';
 import GameMap from './GameMap';
 import EventMarks from './EventMarks';
 

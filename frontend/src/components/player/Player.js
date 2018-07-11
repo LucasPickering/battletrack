@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { ListGroup } from 'react-bootstrap';
 
-import { playerLink } from '../util/funcs';
-import ApiComponent from './ApiComponent';
+import { playerLink } from 'util/funcs';
+import ApiComponent from '../ApiComponent';
+import ShardSelect from '../ShardSelect';
 import PlayerMatchSummary from './PlayerMatchSummary';
-import ShardSelect from './ShardSelect';
-import '../styles/Player.css';
+import 'styles/player/Player.css';
 
 const PlayerMatches = ({ playerData }) => (
   <ListGroup className="matches">

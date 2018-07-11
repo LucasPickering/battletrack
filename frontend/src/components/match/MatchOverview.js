@@ -10,20 +10,20 @@ import {
   EventMarkTypes,
   EventTypes,
   convertEvent,
-} from '../util/MarkMappers';
-import RosterPalette from '../util/RosterPalette';
+} from 'util/MarkMappers';
+import RosterPalette from 'util/RosterPalette';
 import {
   formatSeconds,
   objectFilter,
   matchLink,
   inRange,
   range,
-} from '../util/funcs';
-import ApiComponent from './ApiComponent';
-import FilterCheckList from './FilterCheckList';
-import Icon from './Icon';
-import MarkedGameMap from './MarkedGameMap';
-import '../styles/MatchOverview.css';
+} from 'util/funcs';
+import ApiComponent from '../ApiComponent';
+import Icon from '../Icon';
+import FilterCheckList from '../map/FilterCheckList';
+import MarkedGameMap from '../map/MarkedGameMap';
+import 'styles/match/MatchOverview.css';
 
 const Range = Slider.createSliderWithTooltip(Slider.Range); // Janky AF
 

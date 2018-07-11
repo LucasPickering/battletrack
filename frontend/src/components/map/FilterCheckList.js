@@ -3,10 +3,10 @@ import React from 'react';
 import CheckboxTree from 'react-checkbox-tree';
 import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 
-import { SpecialMarkTypes, EventMarkTypes } from '../util/MarkMappers';
-import Localization from '../util/Localization';
-import RosterPalette from '../util/RosterPalette';
-import '../styles/FilterCheckList.css';
+import { SpecialMarkTypes, EventMarkTypes } from 'util/MarkMappers';
+import Localization from 'util/Localization';
+import RosterPalette from 'util/RosterPalette';
+import 'styles/map/FilterCheckList.css';
 
 class FilterCheckList extends React.PureComponent {
   constructor(props, ...args) {

@@ -3,9 +3,9 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import BtRoute from './components/BtRoute';
 import Home from './components/Home';
-import Match from './components/Match';
-import MatchOverview from './components/MatchOverview';
-import Player from './components/Player';
+import Match from './components/match/Match';
+import MatchOverview from './components/match/MatchOverview';
+import Player from './components/player/Player';
 import NotFound from './components/NotFound';
 import './styles/App.css';
 
