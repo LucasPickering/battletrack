@@ -3,30 +3,6 @@
 }
 
 #root {
-  --bg-color-1: #45494f;
-  --bg-color-2: #666; /* Spooky */
-  --bg-color-3: #707070;
-  --bg-color-4: #8c8c8c;
-
-  --border-color-1: #333333;
-
-  --accent-color-1: #c49e15;
-  --accent-color-2: #b28f11;
-  --accent-color-3: #9e7e0e;
-
-  --highlight-color-1: #777777;
-  --highlight-color-2: #909090;
-  --highlight-color-3: #b0b0b0;
-
-  --hover-shadow: inset 0 0 0 99999px;
-  --hover-shadow-light: var(--hover-shadow) rgba(255, 255, 255, 0.1);
-  --hover-shadow-dark: var(--hover-shadow) rgba(0, 0, 0, 0.1);
-  --active-shadow: inset 0 3px 5px;
-  --active-shadow-light: var(--active-shadow) rgba(255, 255, 255, 0.5);
-  --active-shadow-dark: var(--active-shadow) rgba(0, 0, 0, 0.5);
-
-  --error-color-1: #cc0a0a;
-
   background-color: var(--bg-color-1);
 }
 

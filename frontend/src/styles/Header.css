@@ -1,0 +1,12 @@
+.bt-header {
+  display: flex;
+  height: 36px;
+  background-color: var(--highlight-color-3);
+  margin-bottom: 20px;
+}
+
+.bt-header .player-search {
+  position: relative;
+  left: calc(50% - 50px);
+  height: 36px;
+}

@@ -3,15 +3,12 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 
 import BtPropTypes from 'util/BtPropTypes';
-import PlayerSearch from './PlayerSearch';
+import Header from './Header';
 import 'styles/BtRoute.css';
 
 const PageWrapper = ({ children }) => (
   <div className="bt-page-wrapper full-size">
-    <div className="beta-tag">
-      <p>BETA</p>
-    </div>
-    <PlayerSearch />
+    <Header />
     <div className="child-container">
       {children}
     </div>

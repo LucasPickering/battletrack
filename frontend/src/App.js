@@ -7,7 +7,8 @@ import Match from './components/match/Match';
 import MatchOverview from './components/match/MatchOverview';
 import Player from './components/player/Player';
 import NotFound from './components/NotFound';
-import './styles/App.css';
+import 'styles/colors.css';
+import 'styles/App.css';
 
 
 const App = () => (

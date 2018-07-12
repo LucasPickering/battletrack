@@ -1,0 +1,41 @@
+#root {
+  --gray-1: #333333;
+  --gray-2: #45494f;
+  --gray-3: #666; /* Spooky */
+  --gray-4: #707070;
+  --gray-5: #777777;
+  --gray-6: #8c8c8c;
+  --gray-7: #909090;
+  --gray-8: #b0b0b0;
+
+  --red-1: #cc0a0a;
+
+  --gold-1: #b28f11;
+  --gold-2: #c49e15;
+  --gold-3: #9e7e0e;
+
+
+  --bg-color-1: var(--gray-2);
+  --bg-color-2: var(--gray-3);
+  --bg-color-3: var(--gray-4);
+  --bg-color-4: var(--gray-6);
+
+  --border-color-1: var(--gray-1);
+
+  --accent-color-1: var(--gold-2);
+  --accent-color-2: var(--gold-1);
+  --accent-color-3: var(--gold-3);
+
+  --highlight-color-1: var(--gray-5);
+  --highlight-color-2: var(--gray-7);
+  --highlight-color-3: var(--gray-8);
+
+  --error-color-1: var(--red-1);
+
+  --hover-shadow: inset 0 0 0 99999px;
+  --hover-shadow-light: var(--hover-shadow) rgba(255, 255, 255, 0.1);
+  --hover-shadow-dark: var(--hover-shadow) rgba(0, 0, 0, 0.1);
+  --active-shadow: inset 0 3px 5px;
+  --active-shadow-light: var(--active-shadow) rgba(255, 255, 255, 0.5);
+  --active-shadow-dark: var(--active-shadow) rgba(0, 0, 0, 0.5);
+}
