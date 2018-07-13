@@ -65,10 +65,10 @@ class MatchTests(BtTestCase):
         },
     }
 
+    @vcr.use_cassette('match.yml')
     def get_match(self, id):
         return self.get(f'/api/core/matches/{id}')
 
-    @vcr.use_cassette('match.yml')
     def setUp(self):
         super().setUp()
         self.matches = {match_id: self.get_match(match_id) for match_id in self.MATCHES.keys()}
@@ -85,23 +85,23 @@ class MatchTests(BtTestCase):
 
 class PlayerTests(BtTestCase):
 
+    SHARD = 'pc-na'
     PLAYER_NAME = 'zdkdz'
     CASSETTE_FILE = 'player.yml'
 
-    def get_player(self, shard, key):
-        return self.get(f'/api/core/players/{shard}/{key}?popMatches')
-
     @vcr.use_cassette(CASSETTE_FILE)
+    def get_player(self, shard, key, pop_matches=''):
+        return self.get(f'/api/core/players/{shard}/{key}?popMatches={pop_matches}')
+
     def setUp(self):
         super().setUp()
-        self.player = self.get_player(shard='pc-na', key=self.PLAYER_NAME)
+        self.player = self.get_player(shard=self.SHARD, key=self.PLAYER_NAME)
 
-    @vcr.use_cassette(CASSETTE_FILE)
     def test_get_player(self):
         self.check_dict(self.player, name=self.PLAYER_NAME)
 
         # Make sure getting by ID returns the same thing
-        self.assertEqual(self.player, self.get_player(shard='pc-na', key=self.player['id']))
+        self.assertEqual(self.player, self.get_player(shard=self.SHARD, key=self.player['id']))
 
     def test_player_match(self):
         matches = self.player['matches']
@@ -115,7 +115,7 @@ class PlayerTests(BtTestCase):
         ])
         self.check_dict(
             match['summary'],
-            shard='pc-na',
+            shard=self.SHARD,
             mode='duo',
             perspective='fpp',
             map_name='Desert_Main',
@@ -154,3 +154,8 @@ class PlayerTests(BtTestCase):
     def test_matches_sorted(self):
         # Make sure all matches are sorted by date
         self.check_sorted(self.player['matches'], key=lambda m: m['summary']['date'], reverse=True)
+
+    @vcr.use_cassette('player.yml')
+    def test_pop_matches(self):
+        player = self.get_player(self.SHARD, self.PLAYER_NAME, pop_matches=1)
+        print(player)

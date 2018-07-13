@@ -14,7 +14,7 @@ case "$action" in
         args="run backend ./manage.py test"
     ;;
     "testfront" )
-        args="run -e CI=true frontend npm test"
+        args="run frontend -e CI=true frontend npm test"
     ;;
     * )
         args=$action
