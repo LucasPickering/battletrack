@@ -1,11 +1,8 @@
+import aiohttp
 import asyncio
-import concurrent.futures
 import logging
-import requests
 
 from django.conf import settings
-
-from .util import timed
 
 logger = logging.getLogger(settings.BT_LOGGER_NAME)
 
@@ -23,25 +20,23 @@ class DevAPI:
             'Authorization': key,
         }
 
-    def get(self, url):
-        r, time = timed(lambda: requests.get(url, headers=self._headers))
-        logger.info(f"Dev API GET {url} {r.status_code} {time:.4f}s")
-        r.raise_for_status()
-        return r.json()
-
-    def get_bulk(self, urls):
-        # Convert the input to a list, then check if it's empty to avoid error conditions
-        url_list = list(urls)
-        if not url_list:
-            return []
-
-        # Asynchronous!
+    def get(self, *urls, bulk=False):
         async def helper():
-            with concurrent.futures.ThreadPoolExecutor(max_workers=len(url_list)) as executor:
-                loop = asyncio.get_event_loop()
-                futures = (loop.run_in_executor(executor, self.get, url) for url in url_list)
-                return await asyncio.gather(*futures)
-        return asyncio.run(helper())
+            async with aiohttp.ClientSession(headers=self._headers) as session:
+                async def fetch(url):
+                    async with session.get(url) as resp:
+                        logger.info(f"Dev API GET {url} {resp.status}")
+                        resp.raise_for_status()
+                        return await resp.json()
+
+                return await asyncio.gather(*(fetch(url) for url in urls))
+
+        num_urls = len(urls)
+        if not bulk and num_urls != 1:
+            raise ValueError(f"{num_urls} URLs given for non-bulk request. Must be exactly 1.")
+
+        rv = asyncio.run(helper())
+        return rv if bulk else rv[0]
 
     def get_match_url(self, id):
         return self.URL_FMT.format(shard='pc-na', endpoint=f'matches/{id}')

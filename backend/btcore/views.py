@@ -29,7 +29,6 @@ class MatchView(views.APIView):
 
 class PlayerView(views.APIView):
     POP_MATCHES_PARAM = 'popMatches'
-    POP_MATCHES_ALL = 'all'
 
     queryset = Player.objects.prefetch_related('matches__stats', 'matches__roster__match',
                                                'matches__roster__players')
@@ -40,21 +39,9 @@ class PlayerView(views.APIView):
         player = self.queryset.get(shard=shard, **kwargs)
 
         # If requested, populate missing match matches for the player
-        pop_matches = request.GET.get(self.POP_MATCHES_PARAM, self.POP_MATCHES_ALL)
-        if pop_matches:
+        pop_matches = request.GET.get(self.POP_MATCHES_PARAM)
+        if pop_matches is not None:
             match_ids = player.matches.filter(shard=shard).values_list('match_id', flat=True)
-
-            if pop_matches != self.POP_MATCHES_ALL:
-                try:
-                    num_to_pop = int(pop_matches)
-                    if num_to_pop >= 0:
-                        match_ids = match_ids[num_to_pop]
-                    else:
-                        raise BadRequestException(f"{self.POP_MATCHES_PARAM} must be non-negative")
-                except ValueError:
-                    raise BadRequestException(f"{self.POP_MATCHES_PARAM} must be a non-negative"
-                                              f" number or '{self.POP_MATCHES_ALL}'")
-
             Match.objects.multi_preload('id', match_ids)
 
             # Refresh the object. By excluding the shard, we tell it not to hit the API this time.

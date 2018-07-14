@@ -121,14 +121,15 @@ class EventPlayer:
 
     @staticmethod
     def convert_dev_data(dev_data):
-        id_ = dev_data['accountId']
-        if id_:
-            return {
-                'id': id_,
-                'name': dev_data['name'],
-                'health': dev_data['health'],
-                'pos': Position3.convert_dev_data(dev_data['location']),
-            }
+        if dev_data:
+            id_ = dev_data['accountId']
+            if id_:
+                return {
+                    'id': id_,
+                    'name': dev_data['name'],
+                    'health': dev_data['health'],
+                    'pos': Position3.convert_dev_data(dev_data['location']),
+                }
         return None
 
     def to_dict(self):
@@ -182,14 +183,15 @@ class Vehicle:
 
     @staticmethod
     def convert_dev_data(dev_data):
-        type_ = dev_data['vehicleType']
-        if type_:
-            return {
-                'type': type_,
-                'name': dev_data['vehicleId'],
-                'health': dev_data['healthPercent'],
-                'fuel': dev_data['feulPercent'],  # Yes, it's spelled wrong in the API data...
-            }
+        if dev_data:
+            type_ = dev_data['vehicleType']
+            if type_:
+                return {
+                    'type': type_,
+                    'name': dev_data['vehicleId'],
+                    'health': dev_data['healthPercent'],
+                    'fuel': dev_data['feulPercent'],  # Yes, it's spelled wrong in the API data...
+                }
         return None
 
     def to_dict(self):

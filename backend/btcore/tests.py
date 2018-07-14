@@ -39,28 +39,28 @@ class ApiTests(TestCase):
         self.api = devapi.DevAPI(settings.DEV_API_KEY)
 
     def test_get_bulk_empty(self):
-        self.assertEqual([], self.api.get_bulk([]))
+        self.assertEqual([], self.api.get(bulk=True))
 
 
 class MatchTests(BtTestCase):
 
     MATCHES = {
-        'd86e3e72-8c0e-4018-a79f-f15ece28ed89': {
-            'shard': 'pc-na',
-            'mode': 'duo',
-            'perspective': 'fpp',
-            'map': {'name': 'Erangel_Main', 'size': 8000},
-            'date': '2018-06-12T22:40:14-04:00',
-            'duration': 1784,
-            'custom_match': False,
-        },
-        '99589fb8-57a6-44a7-9ff5-727daa0ded38': {
+        '5cf3ed16-6383-4172-bb60-8ead540d1245': {
             'shard': 'pc-eu',
             'mode': 'squad',
             'perspective': 'fpp',
             'map': {'name': 'Savage_Main', 'size': 4000},
-            'date': '2018-06-26T13:54:30-04:00',
-            'duration': 1327,
+            'date': '2018-07-11T12:46:57-04:00',
+            'duration': 1380,
+            'custom_match': False,
+        },
+        'c050b420-6d3d-4c52-9ed2-bac98d123875': {
+            'shard': 'pc-eu',
+            'mode': 'squad',
+            'perspective': 'fpp',
+            'map': {'name': 'Erangel_Main', 'size': 8000},
+            'date': '2018-07-11T11:49:14-04:00',
+            'duration': 1968,
             'custom_match': False,
         },
     }
@@ -85,77 +85,92 @@ class MatchTests(BtTestCase):
 
 class PlayerTests(BtTestCase):
 
-    SHARD = 'pc-na'
-    PLAYER_NAME = 'zdkdz'
+    SHARD = 'pc-eu'
+    PLAYER_NAME = 'BreaK'
     CASSETTE_FILE = 'player.yml'
 
     @vcr.use_cassette(CASSETTE_FILE)
-    def get_player(self, shard, key, pop_matches=''):
-        return self.get(f'/api/core/players/{shard}/{key}?popMatches={pop_matches}')
-
-    def setUp(self):
-        super().setUp()
-        self.player = self.get_player(shard=self.SHARD, key=self.PLAYER_NAME)
+    def get_player(self, shard, key, pop_matches=True):
+        params = 'popMatches' if pop_matches else ''
+        return self.get(f'/api/core/players/{shard}/{key}?{params}')
 
     def test_get_player(self):
-        self.check_dict(self.player, name=self.PLAYER_NAME)
+        player = self.get_player(shard=self.SHARD, key=self.PLAYER_NAME)
+        self.check_dict(player, name=self.PLAYER_NAME)
 
         # Make sure getting by ID returns the same thing
-        self.assertEqual(self.player, self.get_player(shard=self.SHARD, key=self.player['id']))
+        self.assertEqual(player, self.get_player(shard=self.SHARD, key=player['id']))
 
     def test_player_match(self):
-        matches = self.player['matches']
+        player = self.get_player(shard=self.SHARD, key=self.PLAYER_NAME)
+        matches = player['matches']
         self.assertEqual(3, len(matches))
-        match = matches[2]  # Chose this match because it had non-zero values
+        match = matches[0]
 
-        self.check_dict(match, match_id='1b8263d0-a4c6-4b7f-882f-ad134b458681')
-        self.assertEqual(match['roster'], [
-            {'player_id': 'account.5e5642fcfb2c44c58acb2d22ecc9777c', 'player_name': 'zdkdz'},
-            {'player_id': 'account.f2692b5c8d7c489d8f9a0aecf6500119', 'player_name': 'DJE1337'},
-        ])
+        self.check_dict(
+            match,
+            match_id='5cf3ed16-6383-4172-bb60-8ead540d1245',
+            roster=[
+                {'player_id': 'account.a36bed11ed214557b0ddef9ef1a56d07',
+                 'player_name': 'BreaK'},
+                {'player_id': 'account.3dccfecabd8b442aba349136e2751c1d',
+                 'player_name': 'rawryy'},
+                {'player_id': 'account.e890ba1dda24475e9d55990c66ccc1c8',
+                 'player_name': 'aimPR'},
+                {'player_id': 'account.fdea0890724e410dbe298cee7e3abede',
+                 'player_name': 'VissGames'},
+            ],
+        )
         self.check_dict(
             match['summary'],
             shard=self.SHARD,
-            mode='duo',
+            mode='squad',
             perspective='fpp',
-            map_name='Desert_Main',
-            date='2018-06-22T23:51:36-04:00',
-            duration=1750,
+            map_name='Savage_Main',
+            date='2018-07-11T12:46:57-04:00',
+            duration=1380,
             custom_match=False,
         )
         self.check_dict(
             match['stats'],
             assists=0,
-            boosts=2,
-            damage_dealt=267.012451,
-            dbnos=1,
+            boosts=5,
+            damage_dealt=1366.98792,
+            dbnos=8,
             death_type='byplayer',
-            headshot_kills=1,
-            heals=7,
-            kill_place=12,
-            kill_points=1410,
-            kill_streaks=2,
-            kills=2,
-            longest_kill=33.0,
+            headshot_kills=3,
+            heals=2,
+            kill_place=1,
+            kill_points=1407,
+            kill_streaks=3,
+            kills=13,  # What a hoss
+            longest_kill=346.3509,
             most_damage=0,
-            revives=0,
-            ride_distance=3466.68213,
+            revives=2,
+            ride_distance=0.0,
             road_kills=0,
             swim_distance=0.0,
             team_kills=0,
-            time_survived=1459.0,
+            time_survived=1372.279,
             vehicle_destroys=0,
-            walk_distance=2707.56934,
+            walk_distance=3766.725,
             weapons_acquired=4,
-            win_place=4,
-            win_points=1648,
+            win_place=2,
+            win_points=1527,
         )
 
     def test_matches_sorted(self):
         # Make sure all matches are sorted by date
-        self.check_sorted(self.player['matches'], key=lambda m: m['summary']['date'], reverse=True)
+        player = self.get_player(shard=self.SHARD, key=self.PLAYER_NAME)
+        self.check_sorted(player['matches'], key=lambda m: m['summary']['date'], reverse=True)
 
-    @vcr.use_cassette('player.yml')
     def test_pop_matches(self):
-        player = self.get_player(self.SHARD, self.PLAYER_NAME, pop_matches=1)
-        print(player)
+        # Don't populate matches, all summaries are None
+        matches = self.get_player(self.SHARD, self.PLAYER_NAME, pop_matches=False)['matches']
+        self.assertEqual(3, len(matches))
+        self.assertTrue(all(not m['summary'] for m in matches))
+
+        # Populate matches, all summaries should be populated
+        matches = self.get_player(self.SHARD, self.PLAYER_NAME, pop_matches=True)['matches']
+        self.assertEqual(3, len(matches))
+        self.assertTrue(all(m['summary'] for m in matches))

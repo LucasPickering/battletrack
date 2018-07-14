@@ -89,7 +89,7 @@ class DevAPIQuerySet(models.QuerySet):
 
         # Pull all necessary objects from the API and save them in a list
         to_pull = values - existing
-        data = _api.get_bulk(self._get_api_url(**{field: val}) for val in to_pull)  # Get each URL
+        data = _api.get(*(self._get_api_url(**{field: val}) for val in to_pull), bulk=True)
 
         # Deserialize the data and save it
         serializer = self.model.serializer.from_dev_data(data, many=True)

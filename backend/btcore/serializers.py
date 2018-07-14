@@ -276,7 +276,6 @@ class MatchSerializer(DevDeserializer):
     @classmethod
     def convert_dev_data(cls, dev_data, **kwargs):
         data = dev_data['data']
-
         attrs = data['attributes']
 
         # 'squad' = TPP Squad, 'squad-fpp' = FPP Squad
