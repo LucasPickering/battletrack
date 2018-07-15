@@ -8,7 +8,6 @@ stages:
 variables:
   BT_LOGGING_DIR: /var/log/battletrack
   IMAGE_REGISTRY: registry.gitlab.com/lucaspickering/battletrack
-  # IMAGE_TAG: ${CI_COMMIT_REF_NAME}
   BACKEND_IMAGE: ${IMAGE_REGISTRY}/backend:${CI_COMMIT_REF_NAME}
   FRONTEND_IMAGE: ${IMAGE_REGISTRY}/frontend:${CI_COMMIT_REF_NAME}
   PROD_IMAGE: ${IMAGE_REGISTRY}/prod:${CI_COMMIT_REF_NAME}
