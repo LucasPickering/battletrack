@@ -1,6 +1,6 @@
 import logging
-import requests
 import traceback
+from aiohttp.client_exceptions import ClientResponseError
 
 from django.conf import settings
 from django.db import models, utils
@@ -20,8 +20,8 @@ class DevAPIQuerySet(models.QuerySet):
         try:
             url = self._get_api_url(*args, **kwargs)
             data = _api.get(url)
-        except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 404:
+        except ClientResponseError as e:
+            if e.status == 404:
                 # If it was a 404, re-throw it as a Django 404
                 raise Http404(str(e))
             else:

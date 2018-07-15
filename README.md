@@ -4,23 +4,23 @@ PUBG map stuff
 ## Development
 ### Setup
 1. Install Docker and Docker Compose
-1. Save your API key to `key.sh`
-1. [OPTIONAL] Set up git hooks with `bin/hooks.py`
+1. Save your API key to `key`
+1. `source bin/dev.sh`
+1. [OPTIONAL] Set up git hooks by running `bin/hooks.py`
 1. Run:
     * `cd frontend && npm install`
-    * `source key.sh`
-    * `bin/dev.sh up`
+    * `docker-compose up`
 
 ### Migrations
 ```
-bin/dev.sh makemigrations
-bin/dev.sh migrate
+docker-compose makemigrations
+docker-compose migrate
 ```
 
 ### Testing
 ```
-bin/dev.sh testback
-bin/dev.sh testfront
+docker-compose run backend ./manage.py test
+docker-compose run frontend npm run test
 ```
 
 ## Production
