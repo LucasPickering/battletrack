@@ -10,13 +10,13 @@ services:
       POSTGRES_PASSWORD: btpassword
 
   backend:
-    image: registry.gitlab.com/lucaspickering/battletrack/backend
+    image: registry.gitlab.com/lucaspickering/battletrack/backend:${CI_COMMIT_REF_NAME}
     command: sh -c "dockerize -wait tcp://db:5432 && ./manage.py test"
     depends_on:
       - db
 
   frontend:
-    image: registry.gitlab.com/lucaspickering/battletrack/frontend
+    image: registry.gitlab.com/lucaspickering/battletrack/frontend:${CI_COMMIT_REF_NAME}
     command: sh -c "npm run lint && npm run test"
     environment:
       CI: "true"
