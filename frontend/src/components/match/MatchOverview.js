@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
@@ -15,13 +14,12 @@ import RosterPalette from 'util/RosterPalette';
 import {
   formatSeconds,
   objectFilter,
-  matchLink,
   inRange,
   range,
 } from 'util/funcs';
 import ApiComponent from '../ApiComponent';
 import Icon from '../Icon';
-import FilterCheckList from '../map/FilterCheckList';
+import OverviewDrawer from './OverviewDrawer';
 import MarkedGameMap from '../map/MarkedGameMap';
 import 'styles/match/MatchOverview.css';
 
@@ -118,17 +116,13 @@ class MatchOverviewHelper extends React.PureComponent {
     return (
       <div className="overview">
         {drawerOpen && (
-          <div className="left-container">
-            <Link className="match-link" to={matchLink(matchId)}>
-              <Icon name="arrow-left" /> Back To Match
-            </Link>
-            <FilterCheckList
-              rosters={rosters}
-              rosterPalette={this.rosterPalette}
-              enabledPlayers={enabledFilters}
-              onChange={val => this.setState({ enabledFilters: val })}
-            />
-          </div>
+          <OverviewDrawer
+            matchId={matchId}
+            rosters={rosters}
+            rosterPalette={this.rosterPalette}
+            enabledPlayers={enabledFilters}
+            onChange={val => this.setState({ enabledFilters: val })}
+          />
         )}
 
         <div className="map-container">

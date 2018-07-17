@@ -1,10 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { LayerGroup } from 'react-leaflet';
 
 import { SpecialMarkTypes } from 'util/MarkMappers';
 import RosterPalette from 'util/RosterPalette';
 import GameMap from './GameMap';
-import EventMarks from './EventMarks';
+import EventMark from './EventMark';
+
+function renderSpecialMarks(marks) {
+  return Object.entries(marks)
+    .map(([markType, markData]) => (
+      <LayerGroup key={markType}>
+        {SpecialMarkTypes[markType].render(markData, { key: markType })}
+      </LayerGroup>
+    ));
+}
 
 const MarkedGameMap = ({
   specialMarks,
@@ -13,14 +23,13 @@ const MarkedGameMap = ({
   ...rest
 }) => (
   <GameMap {...rest}>
-    {Object.entries(specialMarks)
-      .map(([markType, markData]) => SpecialMarkTypes[markType].render(markData, {
-        key: markType,
-      }))}
-    <EventMarks
-      marks={eventMarks}
-      rosterPalette={rosterPalette}
-    />
+    {renderSpecialMarks(specialMarks)}
+    {eventMarks.map(mark => (
+      <EventMark
+        {...mark}
+        rosterPalette={rosterPalette}
+      />
+    ))}
   </GameMap>
 );
 

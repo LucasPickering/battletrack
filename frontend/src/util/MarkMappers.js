@@ -92,7 +92,7 @@ export function convertEvent(markType, event) {
   // return null.
   return dynamicFields ? {
     type: markType,
-    id: uniqid(),
+    key: uniqid(),
     ...staticFields,
     time: event.time,
     ...dynamicFields,

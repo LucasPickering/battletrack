@@ -6,10 +6,11 @@ import {
 } from 'leaflet';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Map, ImageOverlay, Polyline } from 'react-leaflet';
+import { Map, ImageOverlay } from 'react-leaflet';
 
-import { mapImage, range } from 'util/funcs';
+import { mapImage } from 'util/funcs';
 import BtPropTypes from 'util/BtPropTypes';
+import Grid from './Grid';
 
 // Custom coordinate system - simple Cartesian coordiates with top-left as origin
 const CoordSystem = {
@@ -19,54 +20,6 @@ const CoordSystem = {
     unproject: point => new LatLng(point.x, point.y),
   },
   transformation: transformation(1, 0, 1, 0),
-};
-
-const GridLine = ({
-  d,
-  mapSize,
-  major,
-  vertical,
-  ...rest
-}) => (
-  <Polyline
-    positions={vertical ? [[d, 0], [d, mapSize]] : [[0, d], [mapSize, d]]}
-    opacity={0.7}
-    color={major ? '#999' : '#777'}
-    weight={major ? 2 : 0.7}
-    {...rest}
-  />
-);
-
-GridLine.propTypes = {
-  d: PropTypes.number.isRequired,
-  mapSize: PropTypes.number.isRequired,
-  major: PropTypes.bool.isRequired,
-  vertical: PropTypes.bool,
-};
-
-GridLine.defaultProps = {
-  vertical: false,
-};
-
-const Grid = ({ mapSize, minorStep, majorStep }) => range(minorStep, mapSize, minorStep).map(d => {
-  const major = (d % majorStep === 0);
-  return (
-    <div key={d}>
-      <GridLine d={d} mapSize={mapSize} major={major} />
-      <GridLine d={d} mapSize={mapSize} major={major} vertical />
-    </div>
-  );
-});
-
-Grid.propTypes = {
-  mapSize: PropTypes.number.isRequired,
-  minorStep: PropTypes.number,
-  majorStep: PropTypes.number,
-};
-
-Grid.defaultProps = {
-  minorStep: 100,
-  majorStep: 1000,
 };
 
 const GameMap = ({
