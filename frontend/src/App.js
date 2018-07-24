@@ -17,7 +17,7 @@ const App = () => (
       <BtRoute exact path="/" component={Home} />
       <BtRoute exact path="/matches/:matchId" component={Match} />
       <BtRoute exact path="/matches/:matchId/overview" component={MatchOverview} fullscreen />
-      <BtRoute exact path="/players/:shard/:playerName" component={Player} />
+      <BtRoute exact path="/players/:shard/:name" component={Player} />
       <Route component={NotFound} />
     </Switch>
   </Router>

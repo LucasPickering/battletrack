@@ -1,0 +1,7 @@
+.player .player-matches {
+  flex: 1 1 250px;
+  overflow-y: scroll;
+  background-color: var(--border-color-1);
+  border: 3px solid var(--border-color-1);
+  border-radius: 4px;
+}
