@@ -2,43 +2,45 @@ import { combineReducers } from 'redux';
 
 import { ActionTypes } from './actions';
 
-const initialPlayerState = {
-  shard: null,
-  name: null,
+const initialApiState = {
+  params: null,
   loading: false,
   data: null,
   error: null,
 };
 
-const playerReducer = (state = initialPlayerState, { type, payload }) => {
-  switch (type) {
-    case ActionTypes.player.request:
-      return {
-        ...state,
-        ...payload,
-        loading: true,
-        data: null,
-        error: null,
-      };
-    case ActionTypes.player.success:
-      return {
-        ...state,
-        loading: false,
-        data: payload,
-      };
-    case ActionTypes.player.failure:
-      return {
-        ...state,
-        loading: false,
-        error: payload,
-      };
-    default:
-      return state;
-  }
-};
+function createApiReducer(actionType) {
+  return (state = initialApiState, { type, payload }) => {
+    switch (type) {
+      case actionType.request:
+        return {
+          params: payload,
+          loading: true,
+          data: null,
+          error: null,
+        };
+      case actionType.success:
+        return {
+          ...state,
+          loading: false,
+          data: payload,
+        };
+      case actionType.failure:
+        return {
+          ...state,
+          loading: false,
+          error: payload,
+        };
+      default:
+        return state;
+    }
+  };
+}
 
+// TODO: Automate
 const rootReducer = combineReducers({
-  player: playerReducer,
+  player: createApiReducer(ActionTypes.player),
+  match: createApiReducer(ActionTypes.match),
 });
 
 export default rootReducer;

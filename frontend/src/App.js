@@ -15,8 +15,8 @@ const App = () => (
   <Router>
     <Switch>
       <BtRoute exact path="/" component={Home} />
-      <BtRoute exact path="/matches/:matchId" component={Match} />
-      <BtRoute exact path="/matches/:matchId/overview" component={MatchOverview} fullscreen />
+      <BtRoute exact path="/matches/:id" component={Match} />
+      <BtRoute exact path="/matches/:id/overview" component={MatchOverview} fullscreen />
       <BtRoute exact path="/players/:shard/:name" component={Player} />
       <Route component={NotFound} />
     </Switch>

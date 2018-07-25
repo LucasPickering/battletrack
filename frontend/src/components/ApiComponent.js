@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { ClipLoader } from 'react-spinners';
 
-import 'styles/ApiComponent.css';
-
 class ApiComponent extends React.PureComponent {
   constructor(props, context) {
     super(props, context);

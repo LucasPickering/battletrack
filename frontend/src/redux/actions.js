@@ -8,18 +8,25 @@ const API_ACTIONS = {
   failure: 'FAILURE',
 };
 
+const ident = a => a;
+
+const API_ACTION = {
+  REQUEST: ident,
+  SUCCESS: ident,
+  FAILURE: ident,
+};
+
 function createApiActionTypes(base) {
   return objectMap(API_ACTIONS, (key, val) => `${base}/${val}`);
 }
 
 export const ActionTypes = {
   player: createApiActionTypes('PLAYER'),
+  match: createApiActionTypes('MATCH'),
 };
 
+// TODO: Automate
 export const Actions = createActions({
-  PLAYER: {
-    REQUEST: (shard, name) => ({ shard, name }),
-    SUCCESS: data => ({ data }),
-    FAILURE: error => ({ error }),
-  },
+  PLAYER: API_ACTION,
+  MATCH: API_ACTION,
 });

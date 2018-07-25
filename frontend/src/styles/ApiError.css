@@ -1,0 +1,5 @@
+.api-error {
+  font-size: 20px;
+  color: var(--error-color-1);
+  text-align: center;
+}

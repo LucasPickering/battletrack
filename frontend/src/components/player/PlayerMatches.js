@@ -5,14 +5,19 @@ import BtPropTypes from 'util/BtPropTypes';
 import PlayerMatchSummary from './PlayerMatchSummary';
 import 'styles/player/PlayerMatches.css';
 
-const PlayerMatches = ({ data }) => (
+const PlayerMatches = ({
+  data: {
+    name,
+    matches,
+  },
+}) => (
   <ListGroup className="player-matches">
-    {data.matches
+    {matches
       .filter(m => m.summary) // Filter out null matches
       .map(m => (
         <PlayerMatchSummary
           key={m.match_id}
-          playerName={data.name}
+          playerName={name}
           data={m}
         />
       ))}

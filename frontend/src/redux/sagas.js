@@ -1,22 +1,35 @@
 import axios from 'axios';
-import { call, put, takeLatest } from 'redux-saga/effects';
+import {
+  all,
+  call,
+  put,
+  takeLatest,
+} from 'redux-saga/effects';
 
-import { ActionTypes } from './actions';
+import { ActionTypes, Actions } from './actions';
 
-function* fetchPlayer(action) {
+function* fetchApi(actionGroup, url) {
   try {
-    // Make the API call
-    const data = yield call(
-      ({ shard, name }) => axios.get(`/api/core/players/${shard}/${name}?popMatches`),
-      action.payload,
-    );
-
-    yield put({ type: ActionTypes.player.success, payload: data.data });
+    const response = yield call(axios.get, url); // Make the API call
+    yield put(actionGroup.success(response.data));
   } catch (e) {
-    yield put({ type: ActionTypes.player.failure, payload: e.response });
+    yield put(actionGroup.failure(e.response));
   }
 }
 
+function* fetchPlayer(action) {
+  const { shard, name } = action.payload;
+  yield* fetchApi(Actions.player, `/api/core/players/${shard}/${name}?popMatches`);
+}
+
+function* fetchMatch(action) {
+  const { id } = action.payload;
+  yield* fetchApi(Actions.match, `/api/core/matches/${id}`);
+}
+
 export default function* rootSaga() {
-  yield takeLatest(ActionTypes.player.request, fetchPlayer);
+  yield all([
+    takeLatest(ActionTypes.player.request, fetchPlayer),
+    takeLatest(ActionTypes.match.request, fetchMatch),
+  ]);
 }

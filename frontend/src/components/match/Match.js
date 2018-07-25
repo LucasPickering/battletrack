@@ -1,73 +1,44 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Button, Panel } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
-import {
-  formatDate,
-  formatSeconds,
-  formatGameMode,
-  formatPerspective,
-  overviewLink,
-} from 'util/funcs';
-import Localization from 'util/Localization';
-import ApiComponent from '../ApiComponent';
-import RosterMatchSummary from './RosterMatchSummary';
+import { Actions } from 'redux/actions';
+
+import ApiComponent from '../ApiComponent2';
+import ApiStatusComponent from '../ApiStatusComponent';
+import MatchDisplay from './MatchDisplay';
 import 'styles/match/Match.css';
 
-const MatchHelper = props => {
-  const {
-    matchId,
-    matchData: {
-      shard,
-      mode,
-      perspective,
-      map: { name: mapName },
-      date,
-      duration,
-      rosters,
-    },
-  } = props;
+class Match extends ApiComponent {
+  constructor(props, context) {
+    super(props, context, props.fetchMatch, 'match', ['id']);
+  }
 
-  return (
-    <div className="match">
-      <div className="match-info">
-        <h2>{formatGameMode(mode)} {formatPerspective(perspective)}</h2>
-        <h2 style={{ textAlign: 'right' }}>{Localization.maps[mapName]}</h2>
-        <h3>{formatDate(date)}</h3>
-        <h3 style={{ textAlign: 'right' }}>{formatSeconds(duration)}</h3>
-      </div>
-
-      <div className="links">
-        <Link to={overviewLink(matchId)}>
-          <Button>Overview</Button>
-        </Link>
-      </div>
-
-      <Panel className="rosters">
-        {rosters.map(r => <RosterMatchSummary key={r.id} shard={shard} data={r} />)}
-      </Panel>
-    </div>
-  );
-};
-
-MatchHelper.propTypes = {
-  matchId: PropTypes.string.isRequired,
-  matchData: PropTypes.objectOf(PropTypes.any).isRequired,
-};
-
-const Match = ({ matchId }) => (
-  <ApiComponent
-    url={`/api/core/matches/${matchId}`}
-    component={MatchHelper}
-    dataProp="matchData"
-    matchId={matchId}
-    loaderText="Loading match..."
-  />
-);
+  render() {
+    const { match } = this.props;
+    return (
+      <ApiStatusComponent
+        component={MatchDisplay}
+        status={match}
+        loadingText="Loading match..."
+      />
+    );
+  }
+}
 
 Match.propTypes = {
-  matchId: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  match: PropTypes.objectOf(PropTypes.any).isRequired,
+  fetchMatch: PropTypes.func.isRequired,
 };
 
-export default Match;
+const mapStateToProps = state => ({
+  match: state.match,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  fetchMatch: Actions.match.request,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Match);

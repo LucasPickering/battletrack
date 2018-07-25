@@ -18,11 +18,10 @@ const player = PropTypes.shape({
 
 // --- API STATUSES ---
 
-const playerApiStatus = PropTypes.shape({
-  shard: PropTypes.string,
-  name: PropTypes.string,
+const apiStatus = PropTypes.shape({
+  params: PropTypes.object,
   loading: PropTypes.bool.isRequired,
-  data: PropTypes.playerData,
+  data: PropTypes.object,
   error: PropTypes.error,
 });
 
@@ -53,7 +52,7 @@ const exported = {
   children,
   error,
   player,
-  playerApiStatus,
+  apiStatus,
   pos,
   ray,
   circle,
