@@ -6,7 +6,7 @@ import PlayerMatchSummary from './PlayerMatchSummary';
 import 'styles/player/PlayerMatches.css';
 
 const PlayerMatches = ({
-  data: {
+  player: {
     name,
     matches,
   },
@@ -25,7 +25,7 @@ const PlayerMatches = ({
 );
 
 PlayerMatches.propTypes = {
-  data: BtPropTypes.player.isRequired,
+  player: BtPropTypes.player.isRequired,
 };
 
 export default PlayerMatches;

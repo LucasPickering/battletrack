@@ -16,9 +16,9 @@ const player = PropTypes.shape({
   matches: PropTypes.arrayOf(PropTypes.object).isRequired,
 });
 
-// --- API STATUSES ---
+// --- API STUFF ---
 
-const apiStatus = PropTypes.shape({
+const apiState = PropTypes.shape({
   params: PropTypes.object,
   loading: PropTypes.bool.isRequired,
   data: PropTypes.object,
@@ -52,7 +52,7 @@ const exported = {
   children,
   error,
   player,
-  apiStatus,
+  apiState,
   pos,
   ray,
   circle,

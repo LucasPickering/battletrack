@@ -4,10 +4,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { apiActions } from 'redux/api/apiActions';
-import { isApiStatusStale } from 'util/funcs';
+import { isApiStateStale } from 'util/funcs';
 
 import ApiComponent from '../ApiComponent2';
-import ApiStatusComponent from '../ApiStatusComponent';
+import ApiDataComponent from '../ApiDataComponent';
 import MatchDisplay from './MatchDisplay';
 import 'styles/match/Match.css';
 
@@ -20,7 +20,7 @@ class Match extends ApiComponent {
     } = this.props;
     const newParams = { id };
 
-    if (isApiStatusStale(newParams, match)) {
+    if (isApiStateStale(newParams, match)) {
       fetchMatch(newParams);
     }
   }
@@ -28,9 +28,9 @@ class Match extends ApiComponent {
   render() {
     const { match } = this.props;
     return (
-      <ApiStatusComponent
+      <ApiDataComponent
         component={MatchDisplay}
-        status={match}
+        states={{ match }}
         loadingText="Loading match..."
       />
     );

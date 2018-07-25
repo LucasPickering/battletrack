@@ -5,10 +5,10 @@ import { connect } from 'react-redux';
 
 import { apiActions } from 'redux/api/apiActions';
 import BtPropTypes from 'util/BtPropTypes';
-import { isApiStatusStale } from 'util/funcs';
+import { isApiStateStale } from 'util/funcs';
 
 import ApiComponent from '../ApiComponent2';
-import ApiStatusComponent from '../ApiStatusComponent';
+import ApiDataComponent from '../ApiDataComponent';
 import PlayerHeader from './PlayerHeader';
 import PlayerMatches from './PlayerMatches';
 import 'styles/player/Player.css';
@@ -23,7 +23,7 @@ class Player extends ApiComponent {
     } = this.props;
     const newParams = { shard, name };
 
-    if (isApiStatusStale(newParams, player)) {
+    if (isApiStateStale(newParams, player)) {
       fetchPlayer(newParams);
     }
   }
@@ -37,9 +37,9 @@ class Player extends ApiComponent {
     return (
       <div className="player">
         <PlayerHeader shard={shard} name={name} />
-        <ApiStatusComponent
+        <ApiDataComponent
           component={PlayerMatches}
-          status={player}
+          states={{ player }}
           loadingText="Loading player..."
         />
       </div>
@@ -50,7 +50,7 @@ class Player extends ApiComponent {
 Player.propTypes = {
   shard: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  player: BtPropTypes.apiStatus.isRequired,
+  player: BtPropTypes.apiState.isRequired,
   fetchPlayer: PropTypes.func.isRequired,
 };
 

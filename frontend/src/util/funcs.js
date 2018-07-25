@@ -38,6 +38,34 @@ export function formatItem(item) {
   return `${stackCount}x ${name}`;
 }
 
+/**
+ * Determines if array empty.
+ *
+ * @param      {array}   arr     The arr
+ * @return     {boolean}  True if array empty, False otherwise.
+ */
+export function isArrayEmpty(arr) {
+  return arr.length === 0;
+}
+
+/**
+ * Determines if object empty.
+ *
+ * @param      {object}   obj     The object
+ * @return     {boolean}  True if object empty, False otherwise.
+ */
+export function isObjectEmpty(obj) {
+  return Object.keys(obj).length === 0;
+}
+
+/**
+ * Applies the given transformation function over each value in the given object. Returns a new
+ * object with the same keys, and each corresponding value transformed by the function.
+ *
+ * @param      {object}    obj     The object
+ * @param      {Function}  func    The function ((key, val) => newVal)
+ * @return     {object}    the transformed object
+ */
 export function objectMap(obj, func) {
   return Object.entries(obj).reduce((acc, [key, val]) => {
     acc[key] = func(key, val);
@@ -45,6 +73,14 @@ export function objectMap(obj, func) {
   }, {});
 }
 
+/**
+ * Filters entries in the given object with the given function. Returns a new object with the
+ * entries that passed the predicated.
+ *
+ * @param      {object}    obj     The object
+ * @param      {Function}  pred    The predicate ((key, val) => bool)
+ * @return     {object}    filtered object
+ */
 export function objectFilter(obj, pred) {
   return Object.entries(obj)
     .reduce((acc, [key, val]) => {
@@ -60,13 +96,13 @@ export function objectEqualShallow(o1, o2) {
   return Object.entries(o1).every(([k, v]) => v === o2[k]);
 }
 
-export function isApiStatusStale(newParams, apiStatus) {
+export function isApiStateStale(newParams, apiState) {
   const {
     params: oldParams,
     loading,
     data,
     error,
-  } = apiStatus;
+  } = apiState;
   // If load hasn't occurred yet, OR params are outdated, then fetch data
   return (!loading && !data && !error) || !objectEqualShallow(oldParams, newParams);
 }

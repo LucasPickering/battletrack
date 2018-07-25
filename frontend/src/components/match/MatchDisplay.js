@@ -15,7 +15,7 @@ import Localization from 'util/Localization';
 import RosterMatchSummary from './RosterMatchSummary';
 
 const MatchDisplay = ({
-  data: {
+  match: {
     id,
     shard,
     mode,
@@ -47,7 +47,7 @@ const MatchDisplay = ({
 );
 
 MatchDisplay.propTypes = {
-  data: PropTypes.objectOf(PropTypes.any).isRequired, // TODO
+  match: PropTypes.objectOf(PropTypes.any).isRequired, // TODO
 };
 
 export default MatchDisplay;
