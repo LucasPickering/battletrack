@@ -3,8 +3,9 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { Actions } from 'redux/actions';
+import { apiActions } from 'redux/api/apiActions';
 import BtPropTypes from 'util/BtPropTypes';
+import { isApiStatusStale } from 'util/funcs';
 
 import ApiComponent from '../ApiComponent2';
 import ApiStatusComponent from '../ApiStatusComponent';
@@ -13,8 +14,18 @@ import PlayerMatches from './PlayerMatches';
 import 'styles/player/Player.css';
 
 class Player extends ApiComponent {
-  constructor(props, context) {
-    super(props, context, props.fetchPlayer, 'player', ['shard', 'name']);
+  loadData() {
+    const {
+      shard,
+      name,
+      player,
+      fetchPlayer,
+    } = this.props;
+    const newParams = { shard, name };
+
+    if (isApiStatusStale(newParams, player)) {
+      fetchPlayer(newParams);
+    }
   }
 
   render() {
@@ -44,11 +55,11 @@ Player.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  player: state.player,
+  player: state.api.player,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchPlayer: Actions.player.request,
+  fetchPlayer: apiActions.player.request,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Player);

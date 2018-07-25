@@ -55,6 +55,22 @@ export function objectFilter(obj, pred) {
     }, {});
 }
 
+export function objectEqualShallow(o1, o2) {
+  // TODO finish
+  return Object.entries(o1).every(([k, v]) => v === o2[k]);
+}
+
+export function isApiStatusStale(newParams, apiStatus) {
+  const {
+    params: oldParams,
+    loading,
+    data,
+    error,
+  } = apiStatus;
+  // If load hasn't occurred yet, OR params are outdated, then fetch data
+  return (!loading && !data && !error) || !objectEqualShallow(oldParams, newParams);
+}
+
 export function mapImage(mapKey) {
   return `/assets/maps/${mapKey}.jpg`;
 }
