@@ -24,18 +24,9 @@ class TelemetryTests(BtTestCase):
         # Make sure the zones are sorted in descending radius
         self.check_sorted(self.telemetry['zones'], key=lambda z: z['radius'], reverse=True)
 
-    def test_match(self):
-        self.check_dict(
-            self.telemetry['match'],
-            id=self.MATCH_ID,
-            shard='pc-eu',
-            mode='squad',
-            perspective='fpp',
-            map={'name': 'Savage_Main', 'size': 4000},
-            date='2018-07-11T12:46:57-04:00',
-            duration=1380,
-            custom_match=False,
-        )
+    def test_match_not_present(self):
+        # Make sure the match key isn't in the output (should be write-only)
+        self.assertFalse('match' in self.telemetry)
 
     def test_events(self):
         # Make sure each event type appears in the telemetry data

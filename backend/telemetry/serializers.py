@@ -6,7 +6,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from btcore.models import Match
-from btcore.serializers import DevDeserializer, MatchSerializer
+from btcore.serializers import DevDeserializer
 from btcore.util import MATCH_ID_LENGTH
 
 from . import models
@@ -125,9 +125,7 @@ class EventsSerializer(serializers.ListField):
 
 
 class TelemetrySerializer(DevDeserializer):
-    # Read as a full object, write just as an ID
-    match = MatchSerializer(read_only=True)
-    match_write = serializers.PrimaryKeyRelatedField(queryset=Match.objects, write_only=True)
+    match = serializers.PrimaryKeyRelatedField(queryset=Match.objects, write_only=True)
 
     events = EventsSerializer(source='*', read_only=False)
     # "Read-only" fields because they aren't included in validated data - they are generated during
@@ -137,7 +135,7 @@ class TelemetrySerializer(DevDeserializer):
 
     class Meta:
         model = models.Telemetry
-        fields = ('match', 'match_write', 'plane', 'zones', 'events')
+        fields = ('match', 'plane', 'zones', 'events')
 
     @classmethod
     def convert_dev_data(cls, dev_data, **kwargs):
