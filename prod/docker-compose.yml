@@ -13,7 +13,7 @@ services:
 
   api:
     restart: always
-    image: registry.gitlab.com/lucaspickering/battletrack/backend:${CI_COMMIT_REF_NAME}
+    image: registry.gitlab.com/lucaspickering/battletrack/backend:${CI_COMMIT_REF_SLUG}
     command: sh -c "dockerize -wait tcp://db:5432 && ./manage.py migrate && gunicorn battletrack.wsgi -b :8000 --log-file $BT_LOGGING_DIR/gunicorn_error.log --access-logfile $BT_LOGGING_DIR/gunicorn_access.log"
     depends_on:
       - db
@@ -28,7 +28,7 @@ services:
 
   main:
     restart: always
-    image: registry.gitlab.com/lucaspickering/battletrack/prod:${CI_COMMIT_REF_NAME}
+    image: registry.gitlab.com/lucaspickering/battletrack/prod:${CI_COMMIT_REF_SLUG}
     depends_on:
       - api
     volumes:
