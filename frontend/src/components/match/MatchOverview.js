@@ -30,10 +30,8 @@ class MatchOverview extends React.PureComponent {
     super(props, ...args);
 
     const {
-      telemetry: {
-        match: { duration, rosters },
-        events,
-      },
+      match: { duration, rosters },
+      telemetry: { events },
     } = props;
 
     this.rosterPalette = new RosterPalette(rosters); // This creates a color for each roster
