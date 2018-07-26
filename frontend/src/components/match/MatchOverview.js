@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
+import BtPropTypes from 'util/BtPropTypes';
 import {
   SpecialMarkTypes,
   EventMarkTypes,
@@ -17,15 +17,15 @@ import {
   inRange,
   range,
 } from 'util/funcs';
-import ApiComponent from '../ApiComponent';
+import 'styles/match/MatchOverview.css';
+
 import Icon from '../Icon';
 import OverviewDrawer from './OverviewDrawer';
 import MarkedGameMap from '../map/MarkedGameMap';
-import 'styles/match/MatchOverview.css';
 
 const Range = Slider.createSliderWithTooltip(Slider.Range); // Janky AF
 
-class MatchOverviewHelper extends React.PureComponent {
+class MatchOverview extends React.PureComponent {
   constructor(props, ...args) {
     super(props, ...args);
 
@@ -92,9 +92,12 @@ class MatchOverviewHelper extends React.PureComponent {
 
   render() {
     const {
-      matchId,
+      match: {
+        id,
+        map,
+        rosters,
+      },
       telemetry: {
-        match: { map, rosters },
         plane,
         zones: whiteZones,
       },
@@ -117,7 +120,7 @@ class MatchOverviewHelper extends React.PureComponent {
       <div className="overview">
         {drawerOpen && (
           <OverviewDrawer
-            matchId={matchId}
+            matchId={id}
             rosters={rosters}
             rosterPalette={this.rosterPalette}
             enabledPlayers={enabledFilters}
@@ -156,23 +159,9 @@ class MatchOverviewHelper extends React.PureComponent {
   }
 }
 
-MatchOverviewHelper.propTypes = {
-  matchId: PropTypes.string.isRequired,
-  telemetry: PropTypes.objectOf(PropTypes.any).isRequired,
-};
-
-const MatchOverview = ({ matchId }) => (
-  <ApiComponent
-    url={`/api/telemetry/${matchId}?events=${Object.keys(EventTypes).join()}`}
-    component={MatchOverviewHelper}
-    dataProp="telemetry"
-    matchId={matchId}
-    loaderText="Loading match data..."
-  />
-);
-
 MatchOverview.propTypes = {
-  matchId: PropTypes.string.isRequired,
+  match: BtPropTypes.match.isRequired,
+  telemetry: BtPropTypes.match.isRequired,
 };
 
 export default MatchOverview;

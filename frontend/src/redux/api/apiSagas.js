@@ -6,6 +6,8 @@ import {
   takeLatest,
 } from 'redux-saga/effects';
 
+import { EventTypes } from 'util/MarkMappers';
+
 import { apiActionTypes, apiActions } from './apiActions';
 
 function* fetch(actionGroup, url) {
@@ -27,9 +29,18 @@ function* fetchMatch(action) {
   yield* fetch(apiActions.match, `/api/core/matches/${id}`);
 }
 
+function* fetchTelemetry(action) {
+  const { id } = action.payload;
+  yield* fetch(
+    apiActions.telemetry,
+    `/api/telemetry/${id}?events=${Object.keys(EventTypes).join()}`,
+  );
+}
+
 export default function* rootSaga() {
   yield all([
     takeLatest(apiActionTypes.player.request, fetchPlayer),
     takeLatest(apiActionTypes.match.request, fetchMatch),
+    takeLatest(apiActionTypes.telemetry.request, fetchTelemetry),
   ]);
 }

@@ -26,6 +26,7 @@ function createApiActionTypes(base) {
 const apiActionTypeMappings = {
   player: 'PLAYER',
   match: 'MATCH',
+  telemetry: 'TELEMETRY',
 };
 // ----- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -----
 

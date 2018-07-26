@@ -16,6 +16,14 @@ const player = PropTypes.shape({
   matches: PropTypes.arrayOf(PropTypes.object).isRequired,
 });
 
+const match = PropTypes.shape({
+  // TODO
+});
+
+const telemetry = PropTypes.shape({
+  // TODO
+});
+
 // --- API STUFF ---
 
 const apiState = PropTypes.shape({
@@ -52,6 +60,8 @@ const exported = {
   children,
   error,
   player,
+  match,
+  telemetry,
   apiState,
   pos,
   ray,

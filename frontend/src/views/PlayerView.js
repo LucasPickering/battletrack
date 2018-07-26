@@ -6,14 +6,16 @@ import { connect } from 'react-redux';
 import { apiActions } from 'redux/api/apiActions';
 import BtPropTypes from 'util/BtPropTypes';
 import { isApiStateStale } from 'util/funcs';
+import ApiDataComponent from 'components/ApiDataComponent';
+import PlayerHeader from 'components/player/PlayerHeader';
+import PlayerMatches from 'components/player/PlayerMatches';
 
-import ApiComponent from '../ApiComponent2';
-import ApiDataComponent from '../ApiDataComponent';
-import PlayerHeader from './PlayerHeader';
-import PlayerMatches from './PlayerMatches';
-import 'styles/player/Player.css';
+import ApiView from './ApiView';
 
-class Player extends ApiComponent {
+import 'styles/player/PlayerView.css';
+
+
+class PlayerView extends ApiView {
   loadData() {
     const {
       shard,
@@ -47,7 +49,7 @@ class Player extends ApiComponent {
   }
 }
 
-Player.propTypes = {
+PlayerView.propTypes = {
   shard: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   player: BtPropTypes.apiState.isRequired,
@@ -62,4 +64,4 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   fetchPlayer: apiActions.player.request,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Player);
+export default connect(mapStateToProps, mapDispatchToProps)(PlayerView);
