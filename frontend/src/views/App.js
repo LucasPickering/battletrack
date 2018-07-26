@@ -1,16 +1,16 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-import PlayerView from 'views/PlayerView';
-import MatchView from 'views/MatchView';
-import MatchOverviewView from 'views/MatchOverviewView';
-import NotFound from './components/NotFound';
+import BtRoute from 'components/BtRoute';
 
 import 'styles/colors.css';
 import 'styles/App.css';
 
-import BtRoute from './components/BtRoute';
-import Home from './components/Home';
+import Home from './Home';
+import PlayerView from './PlayerView';
+import MatchView from './MatchView';
+import MatchOverviewView from './MatchOverviewView';
+import NotFound from './NotFound';
 
 
 const App = () => (
