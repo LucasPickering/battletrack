@@ -10,6 +10,9 @@ import { Map, ImageOverlay } from 'react-leaflet';
 
 import { mapImage } from 'util/funcs';
 import BtPropTypes from 'util/BtPropTypes';
+
+import 'styles/map/GameMap.css';
+
 import Grid from './Grid';
 
 // Custom coordinate system - simple Cartesian coordiates with top-left as origin

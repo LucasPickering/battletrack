@@ -9,7 +9,7 @@ import 'styles/App.css';
 import Home from './Home';
 import PlayerView from './PlayerView';
 import MatchView from './MatchView';
-import MatchOverviewView from './MatchOverviewView';
+import OverviewView from './OverviewView';
 import NotFound from './NotFound';
 
 
@@ -19,7 +19,7 @@ const App = () => (
       <BtRoute exact path="/" component={Home} />
       <BtRoute exact path="/players/:shard/:name" component={PlayerView} />
       <BtRoute exact path="/matches/:id" component={MatchView} />
-      <BtRoute exact path="/matches/:id/overview" component={MatchOverviewView} fullscreen />
+      <BtRoute exact path="/matches/:id/overview" component={OverviewView} fullscreen />
       <Route component={NotFound} />
     </Switch>
   </Router>

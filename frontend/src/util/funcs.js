@@ -49,6 +49,17 @@ export function isArrayEmpty(arr) {
 }
 
 /**
+ * Flattens an array of array sinto one flat array. Ex: [[1, 2], [3, 4]] => [1, 2, 3, 4]
+ * TODO: Delete this in favor of Array.flat() when more browsers get support
+ *
+ * @param      {array}  arr     The array to flatten
+ * @return     {array}  The flattened array
+ */
+export function flattenArray(arr) {
+  return [].concat(...arr);
+}
+
+/**
  * Determines if object empty.
  *
  * @param      {object}   obj     The object
@@ -94,17 +105,6 @@ export function objectFilter(obj, pred) {
 export function objectEqualShallow(o1, o2) {
   // TODO finish
   return Object.entries(o1).every(([k, v]) => v === o2[k]);
-}
-
-export function isApiStateStale(newParams, apiState) {
-  const {
-    params: oldParams,
-    loading,
-    data,
-    error,
-  } = apiState;
-  // If load hasn't occurred yet, OR params are outdated, then fetch data
-  return (!loading && !data && !error) || !objectEqualShallow(oldParams, newParams);
 }
 
 export function mapImage(mapKey) {

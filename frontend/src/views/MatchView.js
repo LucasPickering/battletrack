@@ -3,16 +3,17 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import actions from 'redux/actions';
+import { isStateStale } from 'redux/api/apiSelectors';
+import BtPropTypes from 'util/BtPropTypes';
+
 import ApiDataComponent from 'components/ApiDataComponent';
 import Match from 'components/match/Match';
-import actions from 'redux/actions';
-import BtPropTypes from 'util/BtPropTypes';
-import { isApiStateStale } from 'util/funcs';
 
 import ApiView from './ApiView';
 
 class MatchView extends ApiView {
-  loadData() {
+  updateData() {
     const {
       id,
       matchState,
@@ -20,7 +21,7 @@ class MatchView extends ApiView {
     } = this.props;
     const newParams = { id };
 
-    if (isApiStateStale(newParams, matchState)) {
+    if (isStateStale(matchState, newParams)) {
       fetchMatch(newParams);
     }
   }
@@ -30,7 +31,7 @@ class MatchView extends ApiView {
     return (
       <ApiDataComponent
         component={Match}
-        states={{ match: matchState }}
+        state={matchState}
         loadingText="Loading match..."
       />
     );

@@ -1,0 +1,25 @@
+.overview-drawer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--bg-color-1);
+}
+
+.overview-drawer .match-link {
+  width: 300px;
+  height: 40px;
+  line-height: 100%;
+  padding-top: 6px;
+
+  color: var(--accent-color-1);
+
+  font-size: 24px;
+  text-decoration: none;
+  text-align: center;
+
+  border-bottom: 1px var(--border-color-1) solid;
+}
+
+.overview-drawer .match-link:hover {
+  box-shadow: var(--hover-shadow-light);
+}

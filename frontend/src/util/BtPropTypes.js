@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import RosterPalette from 'util/RosterPalette';
 
 const history = PropTypes.objectOf(PropTypes.any);
 
@@ -17,6 +18,10 @@ const apiState = PropTypes.shape({
 });
 
 // --- MAP STUFF ---
+
+const rosterPalette = PropTypes.instanceOf(RosterPalette);
+
+const timeRange = PropTypes.arrayOf(PropTypes.number.isRequired); // [min, max] TODO enforce length
 
 const pos = PropTypes.shape({
   x: PropTypes.number.isRequired,
@@ -78,6 +83,8 @@ const exported = {
   match,
   telemetry,
   apiState,
+  rosterPalette,
+  timeRange,
   pos,
   ray,
   circle,

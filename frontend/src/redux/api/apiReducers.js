@@ -35,6 +35,6 @@ function createApiReducer(actionType) {
   }, initialApiState);
 }
 
-const rootReducer = combineReducers(objectMap(apiActionTypes, createApiReducer));
+const reducer = combineReducers(objectMap(apiActionTypes, createApiReducer));
 
-export default rootReducer;
+export default reducer;

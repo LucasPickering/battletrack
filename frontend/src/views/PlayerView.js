@@ -3,20 +3,20 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import actions from 'redux/actions';
+import { isStateStale } from 'redux/api/apiSelectors';
+import BtPropTypes from 'util/BtPropTypes';
+
 import ApiDataComponent from 'components/ApiDataComponent';
 import PlayerHeader from 'components/player/PlayerHeader';
 import PlayerMatches from 'components/player/PlayerMatches';
-import actions from 'redux/actions';
-import BtPropTypes from 'util/BtPropTypes';
-import { isApiStateStale } from 'util/funcs';
-
-import ApiView from './ApiView';
 
 import 'styles/player/PlayerView.css';
 
+import ApiView from './ApiView';
 
 class PlayerView extends ApiView {
-  loadData() {
+  updateData() {
     const {
       shard,
       name,
@@ -25,7 +25,7 @@ class PlayerView extends ApiView {
     } = this.props;
     const newParams = { shard, name };
 
-    if (isApiStateStale(newParams, playerState)) {
+    if (isStateStale(playerState, newParams)) {
       fetchPlayer(newParams);
     }
   }
@@ -41,7 +41,7 @@ class PlayerView extends ApiView {
         <PlayerHeader shard={shard} name={name} />
         <ApiDataComponent
           component={PlayerMatches}
-          states={{ player: playerState }}
+          state={playerState}
           loadingText="Loading player..."
         />
       </div>

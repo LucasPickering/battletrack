@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { ListGroup } from 'react-bootstrap';
 
 import BtPropTypes from 'util/BtPropTypes';
@@ -28,4 +29,8 @@ PlayerMatches.propTypes = {
   player: BtPropTypes.player.isRequired,
 };
 
-export default PlayerMatches;
+const mapStateToProps = state => ({
+  player: state.api.player.data,
+});
+
+export default connect(mapStateToProps)(PlayerMatches);

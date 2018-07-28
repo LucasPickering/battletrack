@@ -15,7 +15,9 @@ export const apiActionTypes = {
   telemetry: ({ id }) => `/api/telemetry/${id}?events=${Object.keys(EventTypes).join()}`,
 };
 
-export const apiActions = objectMap(
+const apiActions = objectMap(
   apiActionTypes,
   () => API_ACTIONS,
 );
+
+export default apiActions;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Panel } from 'react-bootstrap';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import BtPropTypes from 'util/BtPropTypes';
@@ -51,4 +52,8 @@ Match.propTypes = {
   match: BtPropTypes.match.isRequired,
 };
 
-export default Match;
+const mapStateToProps = state => ({
+  match: state.api.match.data,
+});
+
+export default connect(mapStateToProps)(Match);

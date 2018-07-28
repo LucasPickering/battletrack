@@ -1,0 +1,32 @@
+.bt-range {
+  --slider-bg-color: var(--bg-color-1);
+  --slider-accent-color: var(--accent-color-1);
+}
+
+.rc-slider-rail,
+.rc-slider-dot,
+.rc-slider-dot-active,
+.rc-slider-handle {
+  background-color: var(--slider-bg-color);
+}
+
+.rc-slider-track {
+  background-color: var(--slider-accent-color);
+}
+
+.rc-slider-dot {
+  border-color: var(--slider-bg-color);
+}
+
+.rc-slider-dot-active,
+.rc-slider-handle {
+  border-color: var(--slider-accent-color);
+}
+
+.rc-slider .rc-slider-mark-text {
+  color: #ddd;
+  text-shadow: black 1px 1px;
+  /* Janky stuff to make the slider text line up but not overflow */
+  width: auto !important;
+  margin-left: -10px !important;
+}

@@ -1,0 +1,8 @@
+.overview-time-range {
+  z-index: 500;
+  position: absolute;
+  top: 10px;
+  left: 30px;
+  width: calc(100% - 60px);
+  height: 39px;
+}

@@ -1,32 +1,29 @@
+import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import React from 'react';
 
 const Icon = ({
   className,
-  code,
   name,
+  color,
   ...rest
 }) => (
-  <p
+  <i
     className={classnames(className, 'fa', `fa-${name}`)}
-    style={{ color: 'inherit' }}
+    style={{ color }}
     {...rest}
-  >
-    {code !== null && String.fromCharCode(code)}
-  </p>
+  />
 );
 
 Icon.propTypes = {
   className: PropTypes.string,
-  code: PropTypes.number,
-  name: PropTypes.string,
+  name: PropTypes.string.isRequired,
+  color: PropTypes.string,
 };
 
 Icon.defaultProps = {
   className: null,
-  code: null,
-  name: null,
+  color: 'inherit',
 };
 
 export default Icon;

@@ -1,59 +1,47 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ClipLoader } from 'react-spinners';
 
 import BtPropTypes from 'util/BtPropTypes';
-import { isObjectEmpty, objectFilter, objectMap } from 'util/funcs';
 
 import ApiError from './ApiError';
-import 'styles/ApiDataComponent.css';
+import Loading from './Loading';
 
 const ApiDataComponent = ({
   component,
-  states,
+  state,
   loadingText,
-  ...rest
+  isLoading,
+  ...componentProps
 }) => {
-  // If any states are loading, display loading
-  if (Object.values(states).some(s => s.loading)) {
-    return (
-      <div className="loading">
-        <ClipLoader color="var(--highlight-color-2)" loading {...rest} />
-        {loadingText && <p className="loading-text">{loadingText}</p>}
-      </div>
-    );
+  // If loading, display a loading status
+  if (isLoading(state.loading)) {
+    return <Loading text={loadingText} />;
   }
 
-  // Pull out all states with errors
-  const errors = objectMap(
-    objectFilter(states, (key, val) => val.error),
-    (key, val) => val.error,
-  );
-  // If there are any errors, render them
-  if (!isObjectEmpty(errors)) {
-    return <ApiError errors={errors} />;
+  // If is an error, render it
+  if (state.error) {
+    return <ApiError error={state.error} />;
   }
 
-  // If we have all data objects, render the component
-  const data = objectMap(states, (key, val) => val.data);
-  if (Object.values(data).every(d => d)) {
-    return React.createElement(component, data);
+  // If we have data, render the component
+  if (state.data) {
+    return React.createElement(component, componentProps);
   }
 
-  // Should only get here on first render
+  // No data, no error, no loading - should only get here on first render
   return null;
 };
 
 ApiDataComponent.propTypes = {
   component: PropTypes.func.isRequired, // React component
-  states: PropTypes.objectOf(BtPropTypes.apiState.isRequired).isRequired,
+  state: BtPropTypes.apiState.isRequired,
   loadingText: PropTypes.string,
-  size: PropTypes.number,
+  isLoading: PropTypes.func,
 };
 
 ApiDataComponent.defaultProps = {
-  loadingText: null,
-  size: 100,
+  loadingText: 'Loading...',
+  isLoading: stateLoading => stateLoading,
 };
 
 export default ApiDataComponent;
