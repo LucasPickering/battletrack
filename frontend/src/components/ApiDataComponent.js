@@ -31,7 +31,7 @@ const ApiDataComponent = ({
   );
   // If there are any errors, render them
   if (!isObjectEmpty(errors)) {
-    return objectMap(errors, (key, error) => <ApiError key={key} error={error} />);
+    return <ApiError errors={errors} />;
   }
 
   // If we have all data objects, render the component

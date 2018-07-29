@@ -6,9 +6,8 @@ import {
   takeLatest,
 } from 'redux-saga/effects';
 
-import { EventTypes } from 'util/MarkMappers';
-
-import { apiActionTypes, apiActions } from './apiActions';
+import actions from '../actions';
+import { apiActionTypes } from './apiActions';
 
 function* fetch(actionGroup, url) {
   try {
@@ -19,28 +18,13 @@ function* fetch(actionGroup, url) {
   }
 }
 
-function* fetchPlayer(action) {
-  const { shard, name } = action.payload;
-  yield* fetch(apiActions.player, `/api/core/players/${shard}/${name}?popMatches`);
-}
-
-function* fetchMatch(action) {
-  const { id } = action.payload;
-  yield* fetch(apiActions.match, `/api/core/matches/${id}`);
-}
-
-function* fetchTelemetry(action) {
-  const { id } = action.payload;
-  yield* fetch(
-    apiActions.telemetry,
-    `/api/telemetry/${id}?events=${Object.keys(EventTypes).join()}`,
-  );
+function createFetcher(actionGroup, urlFormatter) {
+  return action => fetch(actionGroup, urlFormatter(action.payload));
 }
 
 export default function* rootSaga() {
-  yield all([
-    takeLatest(apiActionTypes.player.request, fetchPlayer),
-    takeLatest(apiActionTypes.match.request, fetchMatch),
-    takeLatest(apiActionTypes.telemetry.request, fetchTelemetry),
-  ]);
+  yield all(Object.entries(apiActionTypes).map(([actionType, urlFormatter]) => {
+    const actionGroup = actions.api[actionType];
+    return takeLatest(actionGroup.request.toString(), createFetcher(actionGroup, urlFormatter));
+  }));
 }

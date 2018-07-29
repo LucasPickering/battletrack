@@ -1,44 +1,21 @@
-import { createActions } from 'redux-actions';
-
 import { objectMap } from 'util/funcs';
-
-const API_ACTION_TYPES = {
-  request: 'REQUEST',
-  success: 'SUCCESS',
-  failure: 'FAILURE',
-};
-
-// TODO: Remove the need for this
-const ident = a => a;
+import { EventTypes } from 'util/MarkMappers';
 
 const API_ACTIONS = {
-  REQUEST: ident,
-  SUCCESS: ident,
-  FAILURE: ident,
+  // undefined means use identity function
+  request: undefined,
+  success: undefined,
+  failure: undefined,
 };
 
-function createApiActionTypes(base) {
-  return objectMap(API_ACTION_TYPES, (key, val) => `${base}/${val}`);
-}
-
-
-// ----- ADD NEW ACTION TYPES HERE - EVERYTHING ELSE IS AUTOMATED -----
-const apiActionTypeMappings = {
-  player: 'PLAYER',
-  match: 'MATCH',
-  telemetry: 'TELEMETRY',
+// ADD NEW API DATA TYPES HERE (key to URL formatter)
+export const apiActionTypes = {
+  player: ({ shard, name }) => `/api/core/players/${shard}/${name}?popMatches`,
+  match: ({ id }) => `/api/core/matches/${id}`,
+  telemetry: ({ id }) => `/api/telemetry/${id}?events=${Object.keys(EventTypes).join()}`,
 };
-// ----- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -----
 
-
-export const apiActionTypes = objectMap(
-  apiActionTypeMappings,
-  (key, val) => createApiActionTypes(val),
-);
-
-export const apiActions = createActions(
-  Object.values(apiActionTypeMappings).reduce((acc, actionType) => {
-    acc[actionType] = API_ACTIONS;
-    return acc;
-  }, {}),
+export const apiActions = objectMap(
+  apiActionTypes,
+  () => API_ACTIONS,
 );

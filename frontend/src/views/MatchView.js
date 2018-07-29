@@ -3,11 +3,11 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { apiActions } from 'redux/api/apiActions';
-import BtPropTypes from 'util/BtPropTypes';
-import { isApiStateStale } from 'util/funcs';
 import ApiDataComponent from 'components/ApiDataComponent';
 import Match from 'components/match/Match';
+import actions from 'redux/actions';
+import BtPropTypes from 'util/BtPropTypes';
+import { isApiStateStale } from 'util/funcs';
 
 import ApiView from './ApiView';
 
@@ -15,22 +15,22 @@ class MatchView extends ApiView {
   loadData() {
     const {
       id,
-      match,
+      matchState,
       fetchMatch,
     } = this.props;
     const newParams = { id };
 
-    if (isApiStateStale(newParams, match)) {
+    if (isApiStateStale(newParams, matchState)) {
       fetchMatch(newParams);
     }
   }
 
   render() {
-    const { match } = this.props;
+    const { matchState } = this.props;
     return (
       <ApiDataComponent
         component={Match}
-        states={{ match }}
+        states={{ match: matchState }}
         loadingText="Loading match..."
       />
     );
@@ -39,16 +39,16 @@ class MatchView extends ApiView {
 
 MatchView.propTypes = {
   id: PropTypes.string.isRequired,
-  match: BtPropTypes.apiState.isRequired,
+  matchState: BtPropTypes.apiState.isRequired,
   fetchMatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
-  match: state.api.match,
+  matchState: state.api.match,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchMatch: apiActions.match.request,
+  fetchMatch: actions.api.match.request,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(MatchView);

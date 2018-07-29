@@ -3,12 +3,12 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { apiActions } from 'redux/api/apiActions';
-import BtPropTypes from 'util/BtPropTypes';
-import { isApiStateStale } from 'util/funcs';
 import ApiDataComponent from 'components/ApiDataComponent';
 import PlayerHeader from 'components/player/PlayerHeader';
 import PlayerMatches from 'components/player/PlayerMatches';
+import actions from 'redux/actions';
+import BtPropTypes from 'util/BtPropTypes';
+import { isApiStateStale } from 'util/funcs';
 
 import ApiView from './ApiView';
 
@@ -20,12 +20,12 @@ class PlayerView extends ApiView {
     const {
       shard,
       name,
-      player,
+      playerState,
       fetchPlayer,
     } = this.props;
     const newParams = { shard, name };
 
-    if (isApiStateStale(newParams, player)) {
+    if (isApiStateStale(newParams, playerState)) {
       fetchPlayer(newParams);
     }
   }
@@ -34,14 +34,14 @@ class PlayerView extends ApiView {
     const {
       shard,
       name,
-      player,
+      playerState,
     } = this.props;
     return (
       <div className="player">
         <PlayerHeader shard={shard} name={name} />
         <ApiDataComponent
           component={PlayerMatches}
-          states={{ player }}
+          states={{ player: playerState }}
           loadingText="Loading player..."
         />
       </div>
@@ -52,16 +52,16 @@ class PlayerView extends ApiView {
 PlayerView.propTypes = {
   shard: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  player: BtPropTypes.apiState.isRequired,
+  playerState: BtPropTypes.apiState.isRequired,
   fetchPlayer: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
-  player: state.api.player,
+  playerState: state.api.player,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchPlayer: apiActions.player.request,
+  fetchPlayer: actions.api.player.request,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlayerView);
