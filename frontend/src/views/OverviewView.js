@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 
 import actions from 'redux/actions';
 import { isStateStale } from 'redux/api/apiSelectors';
-import { isOverviewStale } from 'redux/overview/overviewSelectors';
+import { isOverviewValid } from 'redux/overview/overviewSelectors';
 import BtPropTypes from 'util/BtPropTypes';
 
 import ApiDataComponent from 'components/ApiDataComponent';
@@ -27,7 +27,7 @@ class OverviewView extends ApiView {
       id,
       matchState,
       telemetryState,
-      overviewData,
+      isOverviewStale,
       fetchMatch,
       fetchTelemetry,
       initMatch,
@@ -41,17 +41,16 @@ class OverviewView extends ApiView {
       fetchTelemetry(newParams);
     }
 
-    // If we have match data and the overview match ID is outdated, init overview
-    if (matchState.data && isOverviewStale(overviewData, matchState.data.id)) {
+    // If we have match data and the overview data is outdated, init overview now
+    if (matchState.data && isOverviewStale) {
       initMatch(matchState.data);
     }
   }
 
   render() {
     const {
-      id,
       matchState,
-      overviewData,
+      isOverviewStale,
     } = this.props;
 
     return (
@@ -59,7 +58,7 @@ class OverviewView extends ApiView {
         component={Overview}
         state={matchState}
         loadingText="Loading match..."
-        isLoading={stateLoading => stateLoading || isOverviewStale(overviewData, id)}
+        isLoading={stateLoading => stateLoading || isOverviewStale}
       />
     );
   }
@@ -72,10 +71,7 @@ OverviewView.propTypes = {
   // Redux state
   matchState: BtPropTypes.apiState.isRequired,
   telemetryState: BtPropTypes.apiState.isRequired,
-  overviewData: PropTypes.shape({ // TODO: Remove need for entire object
-    matchId: PropTypes.string,
-    rosterPalette: BtPropTypes.rosterPalette,
-  }),
+  isOverviewStale: PropTypes.bool.isRequired,
 
   // Redux dispatches
   fetchMatch: PropTypes.func.isRequired,
@@ -83,10 +79,14 @@ OverviewView.propTypes = {
   initMatch: PropTypes.func.isRequired,
 };
 
+OverviewView.defaultProps = {
+  overviewMatchId: null,
+};
+
 const mapStateToProps = state => ({
   matchState: state.api.match,
   telemetryState: state.api.telemetry,
-  overviewData: state.overview,
+  isOverviewStale: !isOverviewValid(state),
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
