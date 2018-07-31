@@ -1,21 +1,16 @@
 .player-search {
   display: flex;
-  width: 300px;
   background-color: var(--bg-color-2);
-}
-
-.player-search .shard-select {
-  background-color: red;
 }
 
 .player-search .shard-select button {
   border-radius: 0;
-  background-color: red;
 }
 
 .player-search .name-input-container {
   display: flex;
   border-left: inherit;
+  background-color: var(--bg-color-2);
 }
 
 .player-search .name-input,
@@ -28,10 +23,17 @@
 
 .player-search .name-input {
   box-shadow: none;
-  width: auto;
-  border-left: 1px solid var(--highlight-color-4);
+  width: 200px;
 }
 
-.player-search .search-button[disabled] {
+.player-search .search-button:disabled,
+.player-search .search-button:enabled:hover,
+.player-search .search-button:enabled:focus,
+.player-search .search-button:enabled:active {
   background-color: #00000000;
+  box-shadow: none;
+}
+
+.player-search .search-button:enabled:hover {
+  color: var(--accent-color-1);
 }

@@ -7,6 +7,6 @@
 
 .bt-header .player-search {
   position: relative;
-  left: calc(50% - 50px);
+  left: calc(50% - 317px + 250px); /* TODO fix this garbage */
   height: 36px;
 }

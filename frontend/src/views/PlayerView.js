@@ -42,7 +42,7 @@ class PlayerView extends ApiView {
         <ApiDataComponent
           component={PlayerMatches}
           state={playerState}
-          loadingText="Loading player..."
+          loadingText="Loading matches..."
         />
       </div>
     );
