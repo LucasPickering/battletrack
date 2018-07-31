@@ -4,18 +4,6 @@
   background-color: var(--bg-color-2);
 }
 
-.overview-map-container .drawer-button {
-  z-index: 500;
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-
-  width: 24px;
-  height: 24px;
-  padding: 3px 4px;
-  color: var(--bg-color-1);
-}
-
 .overview-map-container .bt-range {
   z-index: 500;
   position: absolute;

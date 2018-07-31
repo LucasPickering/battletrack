@@ -6,3 +6,8 @@
   width: calc(100% - 60px);
   height: 39px;
 }
+
+/* The tooltip is rendered outside the root div so we can't scope it with .overview-time-range */
+.rc-slider-tooltip {
+  z-index: 500;
+}
