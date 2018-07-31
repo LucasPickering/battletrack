@@ -6,7 +6,6 @@ import toCss from 'to-css';
 
 import BtPropTypes from 'util/BtPropTypes';
 import Localization from 'util/Localization';
-import RosterPalette from 'util/RosterPalette';
 import { toLeaflet } from 'util/funcs';
 import MarkTooltip from './MarkTooltip';
 
@@ -49,8 +48,8 @@ EventMark.propTypes = {
   pos: BtPropTypes.pos.isRequired,
   time: PropTypes.number.isRequired,
   tooltip: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]).isRequired,
-  player: PropTypes.objectOf(PropTypes.any),
-  rosterPalette: PropTypes.instanceOf(RosterPalette).isRequired,
+  player: PropTypes.shape({ id: PropTypes.string.isRequired }),
+  rosterPalette: BtPropTypes.rosterPalette.isRequired,
   onMarkSelect: PropTypes.func,
 };
 
