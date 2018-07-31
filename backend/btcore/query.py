@@ -1,6 +1,5 @@
 import logging
 import traceback
-from aiohttp.client_exceptions import ClientResponseError
 
 from django.conf import settings
 from django.db import models, utils
@@ -19,20 +18,13 @@ class DevAPIQuerySet(models.QuerySet):
     def _insert_from_api(self, *args, **kwargs):
         try:
             url = self._get_api_url(*args, **kwargs)
-            data = _api.get(url)
-        except ClientResponseError as e:
-            if e.status == 404:
-                # If it was a 404, re-throw it as a Django 404
-                raise Http404(str(e))
-            else:
-                # Otherwise, log the error
-                _logger.error(traceback.format_exc())
-                raise e
-
+            data = _api.django_get(url)
+        except Http404:
+            raise  # If a Django 404 was raised from somewhere else, let it through
         except Exception as e:
             # Django likes to silence these errors, but we will not be silenced!
             _logger.error(traceback.format_exc())
-            raise e  # Re-raise it
+            raise  # Re-raise it
 
         # Deserialize the data and save it
         serializer = self.model.serializer.from_dev_data(data)

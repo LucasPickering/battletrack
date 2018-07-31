@@ -1,8 +1,10 @@
 import aiohttp
 import asyncio
 import logging
+from aiohttp.client_exceptions import ClientResponseError
 
 from django.conf import settings
+from django.http import Http404
 
 logger = logging.getLogger(settings.BT_LOGGER_NAME)
 
@@ -19,6 +21,26 @@ class DevAPI:
             'Accept-Encoding': 'gzip',
             'Authorization': key,
         }
+
+    def django_get(self, *args, **kwargs):
+        """
+        @brief      Performs a GET on the dev API, and wraps certain responses in Django HTTP
+                    errors.
+
+        @param      self    The object
+        @param      args    Same as get
+        @param      kwargs  Same as get
+
+        @return     The output of get
+        """
+        try:
+            return self.get(*args, **kwargs)
+        except ClientResponseError as e:
+            # Special handling for 404s, to re-throw them as Django 404s
+            if e.status == 404:
+                raise Http404(str(e))
+            else:
+                raise e  # Just re-raise it
 
     def get(self, *urls, bulk=False):
         async def helper():
