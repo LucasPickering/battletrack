@@ -130,6 +130,7 @@ class PlayerTests(BtTestCase):
             date='2018-07-11T12:46:57-04:00',
             duration=1380,
             custom_match=False,
+            roster_count=28,
         )
         self.check_dict(
             match['stats'],

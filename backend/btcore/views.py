@@ -1,6 +1,4 @@
-from rest_framework import status
 from rest_framework import views
-from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 
 from . import serializers
@@ -8,12 +6,10 @@ from .models import Match, Player
 from telemetry.models import Telemetry
 
 
-class BadRequestException(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
-
-
 class MatchView(views.APIView):
-    queryset = Match.objects.prefetch_related('rosters__players__stats')
+    queryset = Match.objects.prefetch_related(
+        'rosters__players__stats',  # Player info, and stats for each player
+    )
     serializer_class = serializers.MatchSerializer
 
     def get(self, request, id):
@@ -30,8 +26,11 @@ class MatchView(views.APIView):
 class PlayerView(views.APIView):
     POP_MATCHES_PARAM = 'popMatches'
 
-    queryset = Player.objects.prefetch_related('matches__stats', 'matches__roster__match',
-                                               'matches__roster__players')
+    queryset = Player.objects.prefetch_related(
+        'matches__stats',  # Stats for each match
+        'matches__roster__match',  # Metadata (date, map, etc.) for each match
+        'matches__roster__players',  # Teammates for each match
+    )
     serializer_class = serializers.PlayerSerializer
 
     def get(self, request, shard, **kwargs):

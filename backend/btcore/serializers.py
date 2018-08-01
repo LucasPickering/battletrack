@@ -150,9 +150,15 @@ class DevDeserializer(serializers.ModelSerializer, metaclass=DevDeserializerMeta
 
 
 class MatchSummarySerializer(serializers.ModelSerializer):
+
+    roster_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Match
         exclude = ('id', 'telemetry_url')
+
+    def get_roster_count(self, match):
+        return match.rosters.count()
 
 
 class PlayerSummarySerializer(serializers.ModelSerializer):
@@ -163,32 +169,32 @@ class PlayerSummarySerializer(serializers.ModelSerializer):
 
 class PlayerMatchStatsSerializer(DevDeserializer):
     # Left value is the name in the API data, right value is the name in the model
-    FIELD_MAPPINGS = [
-        ('assists', 'assists'),
-        ('boosts', 'boosts'),
-        ('DBNOs', 'dbnos'),
-        ('damageDealt', 'damage_dealt'),
-        ('deathType', 'death_type'),
-        ('headshotKills', 'headshot_kills'),
-        ('heals', 'heals'),
-        ('killPlace', 'kill_place'),
-        ('killPoints', 'kill_points'),
-        ('killStreaks', 'kill_streaks'),
-        ('kills', 'kills'),
-        ('longestKill', 'longest_kill'),
-        ('mostDamage', 'most_damage'),
-        ('revives', 'revives'),
-        ('rideDistance', 'ride_distance'),
-        ('roadKills', 'road_kills'),
-        ('swimDistance', 'swim_distance'),
-        ('teamKills', 'team_kills'),
-        ('timeSurvived', 'time_survived'),
-        ('vehicleDestroys', 'vehicle_destroys'),
-        ('walkDistance', 'walk_distance'),
-        ('weaponsAcquired', 'weapons_acquired'),
-        ('winPlace', 'win_place'),
-        ('winPoints', 'win_points'),
-    ]
+    FIELD_MAPPINGS = {
+        'assists': 'assists',
+        'boosts': 'boosts',
+        'DBNOs': 'dbnos',
+        'damageDealt': 'damage_dealt',
+        'deathType': 'death_type',
+        'headshotKills': 'headshot_kills',
+        'heals': 'heals',
+        'killPlace': 'kill_place',
+        'killPoints': 'kill_points',
+        'killStreaks': 'kill_streaks',
+        'kills': 'kills',
+        'longestKill': 'longest_kill',
+        'mostDamage': 'most_damage',
+        'revives': 'revives',
+        'rideDistance': 'ride_distance',
+        'roadKills': 'road_kills',
+        'swimDistance': 'swim_distance',
+        'teamKills': 'team_kills',
+        'timeSurvived': 'time_survived',
+        'vehicleDestroys': 'vehicle_destroys',
+        'walkDistance': 'walk_distance',
+        'weaponsAcquired': 'weapons_acquired',
+        'winPlace': 'win_place',
+        'winPoints': 'win_points',
+    }
 
     class Meta:
         model = PlayerMatchStats
@@ -199,7 +205,7 @@ class PlayerMatchStatsSerializer(DevDeserializer):
         # Map each field from the API name to the model name. Fields excluded from the mapping are
         # not included in the output.
         return {model_name: dev_data[api_name] for api_name, model_name
-                in PlayerMatchStatsSerializer.FIELD_MAPPINGS}
+                in PlayerMatchStatsSerializer.FIELD_MAPPINGS.items()}
 
 
 class MatchPlayerSerializer(serializers.ModelSerializer):
