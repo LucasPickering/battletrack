@@ -1,7 +1,6 @@
+import { mapValues } from 'lodash';
 import { combineReducers } from 'redux';
 import { handleActions } from 'redux-actions';
-
-import { objectMap } from 'util/funcs';
 
 import actions from '../actions';
 import { apiActionTypes } from './apiActions';
@@ -35,6 +34,6 @@ function createApiReducer(actionType) {
   }, initialApiState);
 }
 
-const reducer = combineReducers(objectMap(apiActionTypes, createApiReducer));
+const reducer = combineReducers(mapValues(apiActionTypes, (val, key) => createApiReducer(key)));
 
 export default reducer;

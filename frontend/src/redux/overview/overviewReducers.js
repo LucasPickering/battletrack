@@ -1,6 +1,6 @@
+import { flatten } from 'lodash';
 import { handleActions } from 'redux-actions';
 
-import { flattenArray } from 'util/funcs';
 import {
   SpecialMarkTypes,
   EventMarkTypes,
@@ -21,7 +21,7 @@ function makeInitialFilters(rosters) {
     ...Object.keys(SpecialMarkTypes), // plane, whiteZones, etc...
     ...Object.keys(EventMarkTypes), // Kill, Death, etc...
     // Every player ID, in a flat list
-    ...flattenArray(rosters.map(roster => roster.players.map(player => player.player_id))),
+    ...flatten(rosters.map(roster => roster.players.map(player => player.player_id))),
   ];
 }
 

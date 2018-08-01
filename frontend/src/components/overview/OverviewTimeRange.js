@@ -1,4 +1,5 @@
 import React from 'react';
+import { range } from 'lodash';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -7,7 +8,6 @@ import actions from 'redux/actions';
 import BtPropTypes from 'util/BtPropTypes';
 import {
   formatSeconds,
-  range,
 } from 'util/funcs';
 
 import Range from 'components/Range';

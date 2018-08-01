@@ -1,4 +1,5 @@
-import { objectMap } from 'util/funcs';
+import { mapValues } from 'lodash';
+
 import { EventTypes } from 'util/MarkMappers';
 
 const API_ACTIONS = {
@@ -15,7 +16,7 @@ export const apiActionTypes = {
   telemetry: ({ id }) => `/api/telemetry/${id}?events=${Object.keys(EventTypes).join()}`,
 };
 
-const apiActions = objectMap(
+const apiActions = mapValues(
   apiActionTypes,
   () => API_ACTIONS,
 );

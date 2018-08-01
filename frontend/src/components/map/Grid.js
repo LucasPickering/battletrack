@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import { range } from 'lodash';
+import PropTypes from 'prop-types';
 import { Polyline } from 'react-leaflet';
 
-import { range } from 'util/funcs';
 
 const GridLine = ({
   d,

@@ -1,11 +1,11 @@
 import React from 'react';
+import { pickBy } from 'lodash';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import BtPropTypes from 'util/BtPropTypes';
 import {
-  objectFilter,
-  inRange,
+  inRangeIncl,
 } from 'util/funcs';
 import {
   EventTypes,
@@ -46,8 +46,6 @@ class OverviewMap extends React.PureComponent {
       return acc;
     }, {});
     Object.freeze(this.eventMarks);
-
-    this.filterEnabled = this.filterEnabled.bind(this);
   }
 
   filterEnabled(key) {
@@ -67,14 +65,14 @@ class OverviewMap extends React.PureComponent {
     } = this.props;
 
     // Build an object of special marks to display, but filter out ones that are disabled
-    const specialMarks = objectFilter({ plane, whiteZones }, this.filterEnabled);
+    const specialMarks = pickBy({ plane, whiteZones }, (val, key) => this.filterEnabled(key));
 
     // Filter marks by type/time/player and flatten them into one big list
     const eventMarks = [].concat(...Object.entries(this.eventMarks)
       .filter(([markType]) => this.filterEnabled(markType)) // Filter by type
       // Filter each mark list by time/player
       .map(([, markList]) => markList
-        .filter(({ time }) => inRange(time, minTime, maxTime)) // Filter by time
+        .filter(({ time }) => inRangeIncl(time, minTime, maxTime)) // Filter by time
         .filter(({ player }) => !player || this.filterEnabled(player.id)))); // Filter by player
 
     return (
