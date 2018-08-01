@@ -7,40 +7,47 @@ import toCss from 'to-css';
 import BtPropTypes from 'util/BtPropTypes';
 import Localization from 'util/Localization';
 import { toLeaflet } from 'util/funcs';
+
+import LeafletComponent from 'components/map/LeafletComponent';
+
 import MarkTooltip from './MarkTooltip';
 
-const EventMark = ({
-  type,
-  icon: { code: iconCode, ...iconStyle },
-  time,
-  tooltip,
-  pos,
-  player,
-  rosterPalette,
-  onMarkSelect,
-  ...rest
-}) => {
-  const fullIconStyle = {
-    // Set colors by player ID, if possible
-    color: player ? rosterPalette.getRosterColorForPlayer(player.id) : 'white',
-    ...iconStyle,
-  };
+class EventMark extends LeafletComponent {
+  render() {
+    const {
+      type,
+      icon: { code: iconCode, ...iconStyle },
+      time,
+      tooltip,
+      pos,
+      player,
+      rosterPalette,
+      onMarkSelect,
+      ...rest
+    } = this.props;
 
-  const icon = Leaflet.divIcon({
-    className: 'fa',
-    style: { color: 'red' },
-    html: `<p style="${toCss(fullIconStyle)}">${iconCode}</p>`,
-  });
-  return (
-    <Marker position={toLeaflet(pos)} icon={icon} onClick={onMarkSelect} {...rest}>
-      <MarkTooltip
-        title={Localization.eventMarks[type].single}
-        time={time}
-        text={tooltip}
-      />
-    </Marker>
-  );
-};
+    const fullIconStyle = {
+      // Set colors by player ID, if possible
+      color: player ? rosterPalette.getRosterColorForPlayer(player.id) : 'white',
+      ...iconStyle,
+    };
+    const icon = Leaflet.divIcon({
+      className: 'fa',
+      style: { color: 'red' },
+      html: `<p style="${toCss(fullIconStyle)}">${iconCode}</p>`,
+    });
+
+    return (
+      <Marker position={toLeaflet(pos)} icon={icon} onClick={onMarkSelect} {...rest}>
+        <MarkTooltip
+          title={Localization.eventMarks[type].single}
+          time={time}
+          text={tooltip}
+        />
+      </Marker>
+    );
+  }
+}
 
 EventMark.propTypes = {
   type: PropTypes.string.isRequired,

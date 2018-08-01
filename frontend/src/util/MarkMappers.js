@@ -1,8 +1,7 @@
-import React from 'react';
 import uniqid from 'uniqid';
 
-import Ray from 'components/map/Ray';
-import Zones from 'components/map/Zones';
+import Plane from 'components/map/Plane';
+import WhiteZones from 'components/map/WhiteZones';
 import Localization from './Localization';
 
 const ICONS = Object.freeze({
@@ -25,16 +24,12 @@ export const SpecialMarkTypes = Object.freeze({
   plane: {
     label: 'Plane',
     icon: { code: ICONS.Plane },
-    render: (plane, { lineScale, ...rest }) => (
-      <Ray {...plane} color="white" showTailTip weight={1.5} {...rest} />
-    ),
+    component: Plane,
   },
   whiteZones: {
     label: 'Play Zones',
     icon: { code: ICONS.Circle, style: { fontWeight: 400 } },
-    render: (zones, props) => (
-      <Zones circles={zones} color="white" fill={false} weight={1.5} {...props} />
-    ),
+    component: WhiteZones,
   },
 });
 

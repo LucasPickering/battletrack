@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 
 import actions from 'redux/actions';
 import { isStateStale } from 'redux/api/apiSelectors';
-import { isOverviewValid } from 'redux/overview/overviewSelectors';
+import { shouldInitOverview } from 'redux/overview/overviewSelectors';
 import BtPropTypes from 'util/BtPropTypes';
 
 import ApiDataComponent from 'components/ApiDataComponent';
@@ -27,7 +27,7 @@ class OverviewView extends ApiView {
       id,
       matchState,
       telemetryState,
-      isOverviewStale,
+      shouldInitOverviewProp,
       fetchMatch,
       fetchTelemetry,
       initMatch,
@@ -42,7 +42,7 @@ class OverviewView extends ApiView {
     }
 
     // If we have match data and the overview data is outdated, init overview now
-    if (matchState.data && isOverviewStale) {
+    if (shouldInitOverviewProp) {
       initMatch(matchState.data);
     }
   }
@@ -50,7 +50,7 @@ class OverviewView extends ApiView {
   render() {
     const {
       matchState,
-      isOverviewStale,
+      shouldInitOverviewProp,
     } = this.props;
 
     return (
@@ -58,7 +58,7 @@ class OverviewView extends ApiView {
         component={Overview}
         state={matchState}
         loadingText="Loading match..."
-        isLoading={stateLoading => stateLoading || isOverviewStale}
+        isLoading={stateLoading => stateLoading || shouldInitOverviewProp}
       />
     );
   }
@@ -71,7 +71,7 @@ OverviewView.propTypes = {
   // Redux state
   matchState: BtPropTypes.apiState.isRequired,
   telemetryState: BtPropTypes.apiState.isRequired,
-  isOverviewStale: PropTypes.bool.isRequired,
+  shouldInitOverviewProp: PropTypes.bool.isRequired,
 
   // Redux dispatches
   fetchMatch: PropTypes.func.isRequired,
@@ -86,7 +86,7 @@ OverviewView.defaultProps = {
 const mapStateToProps = state => ({
   matchState: state.api.match,
   telemetryState: state.api.telemetry,
-  isOverviewStale: !isOverviewValid(state),
+  shouldInitOverviewProp: shouldInitOverview(state), // Add "Prop" to avoid name collision
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

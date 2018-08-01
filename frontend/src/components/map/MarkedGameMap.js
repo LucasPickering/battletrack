@@ -11,7 +11,10 @@ function renderSpecialMarks(marks) {
   return Object.entries(marks)
     .map(([markType, markData]) => (
       <LayerGroup key={markType}>
-        {SpecialMarkTypes[markType].render(markData, { key: markType })}
+        {React.createElement(SpecialMarkTypes[markType].component, {
+          data: markData,
+          key: markType,
+        })}
       </LayerGroup>
     ));
 }

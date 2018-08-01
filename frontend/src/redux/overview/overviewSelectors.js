@@ -1,12 +1,13 @@
 /**
- * Determines if the current overview state is valid. Checks that the current match API data is
- * populated and that its match ID matches that of the overview data.
+ * Determines if the overview should be initialized. This happens if there IS match data, but the
+ * overview data hasn't been initialized on that match. If there is no data or the overview data has
+ * been initialized on the present match, returns false.
  *
- * @param      {object}   state   Redux state
- * @return     {bool}     true if overview data is valid, false otherwise.
+ * @param      {object}  state   Redux state
+ * @return     {bool}    true if overview data can and should be initialized, false otherwise
  */
 // eslint-disable-next-line import/prefer-default-export
-export function isOverviewValid(state) {
+export function shouldInitOverview(state) {
   const matchData = state.api.match.data;
-  return matchData && matchData.id === state.overview.matchId;
+  return Boolean(matchData) && matchData.id !== state.overview.matchId;
 }

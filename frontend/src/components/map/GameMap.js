@@ -11,6 +11,7 @@ import { Map, ImageOverlay } from 'react-leaflet';
 import { mapImage } from 'util/funcs';
 import BtPropTypes from 'util/BtPropTypes';
 
+import LeafletComponent from 'components/map/LeafletComponent';
 import 'styles/map/GameMap.css';
 
 import Grid from './Grid';
@@ -25,30 +26,34 @@ const CoordSystem = {
   transformation: transformation(1, 0, 1, 0),
 };
 
-const GameMap = ({
-  map: { name, size },
-  showGrid,
-  children,
-  ...rest
-}) => {
-  const bounds = [[0, 0], [size, size]];
-  return (
-    <Map
-      className="game-map full-size"
-      crs={CoordSystem}
-      bounds={bounds}
-      center={[size / 2, size / 2]}
-      minZoom={-4}
-      maxZoom={3}
-      zoomSnap={0.25}
-      {...rest}
-    >
-      <ImageOverlay url={mapImage(name)} bounds={bounds} />
-      {showGrid && <Grid mapSize={size} />}
-      {children}
-    </Map>
-  );
-};
+class GameMap extends LeafletComponent {
+  render() {
+    const {
+      map: { name, size },
+      showGrid,
+      children,
+      ...rest
+    } = this.props;
+
+    const bounds = [[0, 0], [size, size]];
+    return (
+      <Map
+        className="game-map full-size"
+        crs={CoordSystem}
+        bounds={bounds}
+        center={[size / 2, size / 2]}
+        minZoom={-4}
+        maxZoom={3}
+        zoomSnap={0.25}
+        {...rest}
+      >
+        <ImageOverlay url={mapImage(name)} bounds={bounds} />
+        {showGrid && <Grid mapSize={size} />}
+        {children}
+      </Map>
+    );
+  }
+}
 
 GameMap.propTypes = {
   map: BtPropTypes.map.isRequired,
