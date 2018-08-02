@@ -28,8 +28,8 @@ class PlayerView(views.APIView):
 
     queryset = Player.objects.prefetch_related(
         'matches__stats',  # Stats for each match
-        'matches__roster__match',  # Metadata (date, map, etc.) for each match
         'matches__roster__players',  # Teammates for each match
+        'matches__roster__match__rosters',  # Match metadata and roster count
     )
     serializer_class = serializers.PlayerSerializer
 
