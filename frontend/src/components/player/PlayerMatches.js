@@ -19,7 +19,7 @@ const PlayerMatches = ({
         <PlayerMatchSummary
           key={m.match_id}
           playerName={name}
-          data={m}
+          match={m}
         />
       ))}
   </ListGroup>

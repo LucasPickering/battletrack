@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import { identity } from 'lodash';
+import PropTypes from 'prop-types';
 import uniqid from 'uniqid';
 
 const Stat = props => {
@@ -10,7 +11,7 @@ const Stat = props => {
     ...rest
   } = props;
   return (
-    <ul className="stat" {...rest}>
+    <ul {...rest}>
       <li><b>{title}</b></li>
       {stats.map(stat => <li key={uniqid()}>{formatter(stat)}</li>)}
     </ul>
@@ -24,7 +25,7 @@ Stat.propTypes = {
 };
 
 Stat.defaultProps = {
-  formatter: (e => e),
+  formatter: identity,
 };
 
 export default Stat;

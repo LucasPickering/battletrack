@@ -1,4 +1,4 @@
-import { objectEqualShallow } from 'util/funcs';
+import { isEqual } from 'lodash';
 
 // eslint-disable-next-line import/prefer-default-export
 export function isStateStale(apiState, newParams) {
@@ -9,5 +9,5 @@ export function isStateStale(apiState, newParams) {
     error,
   } = apiState;
   // If load hasn't occurred yet, OR params are outdated, then fetch data
-  return (!loading && !data && !error) || !objectEqualShallow(oldParams, newParams);
+  return (!loading && !data && !error) || !isEqual(oldParams, newParams);
 }

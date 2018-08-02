@@ -45,6 +45,7 @@ const map = PropTypes.shape({
 
 // --- API DATA ---
 
+// TODO eliminate common fields between these, move them into their own file
 const roster = PropTypes.shape({
   id: PropTypes.string.isRequired,
   win_place: PropTypes.number.isRequired,
@@ -62,11 +63,31 @@ const match = PropTypes.shape({
   shard: PropTypes.string.isRequired,
   mode: PropTypes.string.isRequired,
   perspective: PropTypes.string.isRequired,
-  map: map.isRequired,
   date: PropTypes.string.isRequired,
   duration: PropTypes.number.isRequired,
   custom_match: PropTypes.bool.isRequired,
-  rosters: PropTypes.arrayOf(roster.isRequired).isRequired,
+  map: map.isRequired,
+  rosters: PropTypes.arrayOf(roster.isRequired),
+});
+
+const matchSummary = PropTypes.shape({
+  shard: PropTypes.string.isRequired,
+  mode: PropTypes.string.isRequired,
+  perspective: PropTypes.string.isRequired,
+  date: PropTypes.string.isRequired,
+  duration: PropTypes.number.isRequired,
+  custom_match: PropTypes.bool.isRequired,
+  map_name: PropTypes.string.isRequired,
+  roster_count: PropTypes.number.isRequired,
+});
+
+const playerMatchStats = PropTypes.objectOf(PropTypes.any); // TODO
+
+const playerMatch = PropTypes.shape({
+  match_id: PropTypes.string.isRequired,
+  summary: matchSummary.isRequired,
+  roster: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired,
+  stats: playerMatchStats.isRequired,
 });
 
 const telemetry = PropTypes.shape({
@@ -81,6 +102,9 @@ const exported = {
   error,
   player,
   match,
+  matchSummary,
+  playerMatchStats,
+  playerMatch,
   telemetry,
   apiState,
   rosterPalette,

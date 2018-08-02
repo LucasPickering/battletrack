@@ -1,4 +1,4 @@
-import palette from 'google-palette';
+import { playersInRosterPalette, rostersInMatchPalette } from 'util/palette';
 
 class RosterPalette {
   constructor(rosters) {
@@ -14,9 +14,7 @@ class RosterPalette {
 
     // Generate a color palette, with one color per roster
     this.rosterColors = {};
-    palette('tol-rainbow', rosters.length)
-      .reverse() // Reverse it so that better teams get brighter colors
-      .map(c => `#${c}`)
+    rostersInMatchPalette(rosters.length)
       .forEach((color, index) => {
         this.rosterColors[rosters[index].id] = color;
       });
@@ -24,8 +22,7 @@ class RosterPalette {
 
     this.playerColors = {};
     const maxRosterSize = Math.max(...rosters.map(roster => roster.players.length));
-    palette('mpn65', maxRosterSize)
-      .map(c => `#${c}`)
+    playersInRosterPalette(maxRosterSize)
       .forEach((color, index) => {
         rosters
           .filter(roster => index < roster.players.length)

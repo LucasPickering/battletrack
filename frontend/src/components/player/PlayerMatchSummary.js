@@ -1,22 +1,27 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
+import BtPropTypes from 'util/BtPropTypes';
 import {
   formatDate,
-  formatSeconds,
   formatGameMode,
   formatPerspective,
   matchLink,
   playerLink,
 } from 'util/funcs';
 import Localization from 'util/Localization';
-import Stat from '../Stat';
+
 import 'styles/player/PlayerMatchSummary.css';
 
+import PlayerMatchStats from './PlayerMatchStats';
+
 const PlayerMatchSummary = props => {
-  const { playerName, data } = props;
+  const {
+    playerName,
+    match,
+  } = props;
   const {
     match_id: matchId,
     summary: {
@@ -28,8 +33,7 @@ const PlayerMatchSummary = props => {
     },
     roster,
     stats,
-  } = data;
-  const travelDistance = (stats.walk_distance + stats.ride_distance) / 1000; // Convert to km
+  } = match;
   const rosterNames = roster.map(player => player.player_name);
 
   return (
@@ -45,31 +49,16 @@ const PlayerMatchSummary = props => {
       </Panel.Heading>
       <Panel.Body>
         <Link className="placement" to={matchLink(matchId)}>#{stats.win_place}</Link>
-        <Stat className="kills" title="Kills" stats={[stats.kills]} />
-        <Stat
-          className="damage"
-          title="Damage"
-          stats={[stats.damage_dealt]}
-          formatter={d => d.toFixed(0)}
-        />
-        <Stat
-          className="survived"
-          title="Survived"
-          stats={[stats.time_survived]}
-          formatter={formatSeconds}
-        />
-        <Stat
-          className="traveled"
-          title="Traveled"
-          stats={[travelDistance]}
-          formatter={dist => `${dist.toFixed(2)} km`}
-        />
+        <PlayerMatchStats stats={stats} />
         <ul className="roster">
           {rosterNames.map(name => (
             <li key={name}>
-              {name === playerName
-                ? <b>{name}</b>
-                : <Link to={playerLink(shard, name)}>{name}</Link>}
+              {
+                // Style this player's name different from the rest
+                name === playerName
+                  ? <b>{name}</b>
+                  : <Link to={playerLink(shard, name)}>{name}</Link>
+              }
             </li>
           ))}
         </ul>
@@ -80,7 +69,7 @@ const PlayerMatchSummary = props => {
 
 PlayerMatchSummary.propTypes = {
   playerName: PropTypes.string.isRequired,
-  data: PropTypes.objectOf(PropTypes.any).isRequired,
+  match: BtPropTypes.playerMatch.isRequired,
 };
 
 export default PlayerMatchSummary;

@@ -1,6 +1,7 @@
 import { capitalize } from 'lodash';
 import moment from 'moment-timezone';
 
+// TODO: Replace this with a call to the API
 export const SHARDS = Object.freeze([
   'pc-na',
   'pc-eu',
@@ -37,11 +38,6 @@ export function formatShard(shard) {
 export function formatItem(item) {
   const { name, stack_count: stackCount } = item;
   return `${stackCount}x ${name}`;
-}
-
-export function objectEqualShallow(o1, o2) {
-  // TODO finish
-  return Object.entries(o1).every(([k, v]) => v === o2[k]);
 }
 
 export function mapImage(mapKey) {
