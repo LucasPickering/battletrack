@@ -40,21 +40,21 @@ class OverviewFilterList extends React.PureComponent {
     // Special filters (plane, zones, etc.)
     const specialFilterNodes = Object.entries(SpecialMarkTypes).map(([
       key,
-      { icon: { code: iconCode, ...iconProps } },
+      { icon }, // Props for the Icon component
     ]) => ({
       value: key,
       label: Localization.specialMarks[key],
-      icon: <p className="fa" {...iconProps}>{iconCode}</p>,
+      icon: <Icon {...icon} />,
     }));
 
     // Event type filters
     const eventFilterNodes = Object.entries(EventMarkTypes).map(([
       key,
-      { icon: { code: iconCode, ...iconProps } },
+      { icon }, // Props for the Icon component
     ]) => ({
       value: key,
       label: Localization.eventMarks[key].plural,
-      icon: <p className="fa" {...iconProps}>{iconCode}</p>,
+      icon: <Icon {...icon} />,
     }));
 
     // Roster nodes

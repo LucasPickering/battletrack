@@ -2,33 +2,38 @@ import uniqid from 'uniqid';
 
 import Plane from 'components/map/Plane';
 import WhiteZones from 'components/map/WhiteZones';
+
 import Localization from './Localization';
 
 const ICONS = Object.freeze({
-  Kill: '\uf05b',
-  Death: '\uf54c',
-  Position: '\uf192',
-  CarePackage: '\uf4cd',
-  Plane: '\uf072',
-  Circle: '\uf111',
+  Plane: { name: 'plane' },
+  PlayZone: { name: 'circle', format: 'regular' },
+  Kill: { name: 'crosshairs' },
+  Death: { name: 'skull' },
+  DeathCause: { name: 'arrow-alt-circle-right' }, // TODO Find a better icon
+  Position: { name: 'dot-circle' },
+  CarePackage: { name: 'parachute-box' },
 });
 
 function deathTooltip(event) {
   const { attacker, player, damage_causer: damageCauser } = event;
   // Attacker element is only included if attacker is non-null
-  return (attacker ? [`${ICONS.Kill} ${attacker.name}`] : [])
-    .concat([`${ICONS.Death} ${player.name}`, `\uf35a ${Localization.damageCausers[damageCauser]}`]);
+  return [
+    ...(attacker ? [{ icon: ICONS.Kill, text: attacker.name }] : []),
+    { icon: ICONS.Death, text: player.name },
+    { icon: ICONS.DeathCause, text: Localization.damageCausers[damageCauser] },
+  ];
 }
 
 export const SpecialMarkTypes = Object.freeze({
   plane: {
     label: 'Plane',
-    icon: { code: ICONS.Plane },
+    icon: ICONS.Plane,
     component: Plane,
   },
   whiteZones: {
     label: 'Play Zones',
-    icon: { code: ICONS.Circle, style: { fontWeight: 400 } },
+    icon: ICONS.PlayZone,
     component: WhiteZones,
   },
 });
@@ -43,7 +48,7 @@ export const EventMarkTypes = Object.freeze({
   //   }),
   // },
   Kill: {
-    icon: { code: ICONS.Kill },
+    icon: ICONS.Kill,
     convert: event => {
       const { attacker } = event;
       return attacker && {
@@ -54,7 +59,7 @@ export const EventMarkTypes = Object.freeze({
     },
   },
   Death: {
-    icon: { code: ICONS.Death },
+    icon: ICONS.Death,
     convert: event => {
       const { player } = event;
       return {
@@ -65,10 +70,13 @@ export const EventMarkTypes = Object.freeze({
     },
   },
   CarePackage: {
-    icon: { code: ICONS.CarePackage },
+    icon: ICONS.CarePackage,
     convert: ({ pos, items }) => ({
       pos,
-      tooltip: items.map(item => `${item.stack_count}x ${Localization.items[item.name]}`),
+      tooltip: items.map(item => ({
+        icon: { name: 'windows' }, // TODO
+        text: `${item.stack_count}x ${Localization.items[item.name]}`,
+      })),
     }),
   },
 });

@@ -38,14 +38,20 @@ const circle = PropTypes.shape({
   radius: PropTypes.number.isRequired,
 });
 
+const tooltipContent = PropTypes.arrayOf(PropTypes.shape({
+  icon: PropTypes.object.isRequired,
+  text: PropTypes.string.isRequired,
+}));
+
+// --- API DATA ---
+
+// TODO eliminate common fields between these, move them into their own file
+
 const map = PropTypes.shape({
   name: PropTypes.string.isRequired,
   size: PropTypes.number.isRequired,
 });
 
-// --- API DATA ---
-
-// TODO eliminate common fields between these, move them into their own file
 const roster = PropTypes.shape({
   id: PropTypes.string.isRequired,
   win_place: PropTypes.number.isRequired,
@@ -100,6 +106,11 @@ const exported = {
   history,
   children,
   error,
+  pos,
+  ray,
+  circle,
+  tooltipContent,
+  map,
   player,
   match,
   matchSummary,
@@ -109,9 +120,5 @@ const exported = {
   apiState,
   rosterPalette,
   timeRange,
-  pos,
-  ray,
-  circle,
-  map,
 };
 export default exported;

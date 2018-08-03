@@ -2,13 +2,15 @@ import Leaflet from 'leaflet';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Marker } from 'react-leaflet';
-import toCss from 'to-css';
+import reactToCss from 'react-style-object-to-css';
 
 import BtPropTypes from 'util/BtPropTypes';
 import Localization from 'util/Localization';
 import { toLeaflet } from 'util/funcs';
 
+import { buildIconProps } from 'components/Icon';
 import LeafletComponent from 'components/map/LeafletComponent';
+import 'styles/map/EventMark.css';
 
 import MarkTooltip from './MarkTooltip';
 
@@ -16,7 +18,7 @@ class EventMark extends LeafletComponent {
   render() {
     const {
       type,
-      icon: { code: iconCode, ...iconStyle },
+      icon,
       time,
       tooltip,
       pos,
@@ -26,24 +28,32 @@ class EventMark extends LeafletComponent {
       ...rest
     } = this.props;
 
-    const fullIconStyle = {
-      // Set colors by player ID, if possible
+    // Used the icon passed in and the player's info to build props for an icon for this event
+    const {
+      className: iconClass,
+      style: iconStyle,
+    } = buildIconProps({
+      ...icon,
       color: player ? rosterPalette.getRosterColorForPlayer(player.id) : 'white',
-      ...iconStyle,
-    };
-    const icon = Leaflet.divIcon({
-      className: 'fa',
-      style: { color: 'red' },
-      html: `<p style="${toCss(fullIconStyle)}">${iconCode}</p>`,
+    });
+    // Build an HTML element from the props
+    const iconElement = Leaflet.divIcon({
+      html: `<p class="${iconClass}" style="${reactToCss(iconStyle)}" />`,
     });
 
     return (
-      <Marker position={toLeaflet(pos)} icon={icon} onClick={onMarkSelect} {...rest}>
+      <Marker
+        position={toLeaflet(pos)}
+        icon={iconElement}
+        onClick={onMarkSelect}
+        {...rest}
+      >
         <MarkTooltip
           title={Localization.eventMarks[type].single}
           time={time}
-          text={tooltip}
-        />
+        >
+          {tooltip}
+        </MarkTooltip>
       </Marker>
     );
   }
@@ -54,7 +64,7 @@ EventMark.propTypes = {
   icon: PropTypes.objectOf(PropTypes.any).isRequired,
   pos: BtPropTypes.pos.isRequired,
   time: PropTypes.number.isRequired,
-  tooltip: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]).isRequired,
+  tooltip: BtPropTypes.tooltipContent,
   player: PropTypes.shape({ id: PropTypes.string.isRequired }),
   rosterPalette: BtPropTypes.rosterPalette.isRequired,
   onMarkSelect: PropTypes.func,
@@ -62,6 +72,7 @@ EventMark.propTypes = {
 
 EventMark.defaultProps = {
   player: null,
+  tooltip: null,
   onMarkSelect: () => {},
 };
 
