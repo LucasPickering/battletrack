@@ -1,7 +1,15 @@
+.bt-tooltip {
+  font-family: sans-serif;
+}
+
 .bt-tooltip .leaflet-popup-content-wrapper,
 .bt-tooltip .leaflet-popup-tip {
   opacity: 0.9;
   background-color: var(--bg-color-1);
+}
+
+.bt-tooltip .leaflet-popup-content {
+  width: auto !important; /* Yay important */
 }
 
 .bt-tooltip .leaflet-popup-content {
@@ -13,10 +21,20 @@
   padding-bottom: 3px;
 }
 
-.bt-tooltip p {
-  margin: 0;
+.bt-tooltip .tooltip-line {
+  display: flex;
+  color: var(--accent-color-1);
 }
 
-.bt-tooltip p + p {
+.bt-tooltip .tooltip-line + .tooltip-line {
   padding-top: 5px;
+}
+
+.bt-tooltip i {
+  padding-top: 1px;
+}
+
+.bt-tooltip p {
+  margin: 0;
+  margin-left: 3px;
 }

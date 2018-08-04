@@ -74,7 +74,7 @@ export const EventMarkTypes = Object.freeze({
     convert: ({ pos, items }) => ({
       pos,
       tooltip: items.map(item => ({
-        icon: { name: 'windows' }, // TODO
+        // icon: { name: 'windows', format: 'regular' }, // TODO
         text: `${item.stack_count}x ${Localization.items[item.name]}`,
       })),
     }),

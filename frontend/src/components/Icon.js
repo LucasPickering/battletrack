@@ -20,7 +20,7 @@ const FORMATS = {
 const defaultProps = {
   className: null,
   format: 'solid',
-  color: 'inherit',
+  color: null,
 };
 
 /**
