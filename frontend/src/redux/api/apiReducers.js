@@ -24,12 +24,12 @@ function createApiReducer(actionType) {
     [actionGroup.success]: (state, { payload }) => ({
       ...state,
       loading: false,
-      data: payload,
+      ...payload, // Contains params and data
     }),
     [actionGroup.failure]: (state, { payload }) => ({
       ...state,
       loading: false,
-      error: payload,
+      ...payload, // Contains params and error
     }),
   }, initialApiState);
 }

@@ -12,12 +12,15 @@ import { getApiState } from './apiSelectors';
 import actions from '../actions';
 import { apiActionTypes } from './apiActions';
 
-function* fetch(actionGroup, url) {
+function* fetch(actionGroup, urlFormatter, payload) {
+  const url = urlFormatter(payload);
   try {
     const response = yield call(axios.get, url); // Make the API call
-    yield put(actionGroup.success(response.data));
+    // Re-pass params to prevent race conditions
+    yield put(actionGroup.success({ params: payload, data: response.data }));
   } catch (e) {
-    yield put(actionGroup.failure(e.response));
+    // Re-pass params to prevent race conditions
+    yield put(actionGroup.failure({ params: payload, error: e.response }));
   }
 }
 
@@ -40,7 +43,7 @@ function createFetchersForAction([actionType, urlFormatter]) {
     // Regular request saga
     takeLatest(
       actionGroup.request.toString(),
-      action => fetch(actionGroup, urlFormatter(action.payload)),
+      action => fetch(actionGroup, urlFormatter, action.payload),
     ),
     // Request-if-needed saga
     takeLatest(
