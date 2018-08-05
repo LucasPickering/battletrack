@@ -4,7 +4,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import actions from 'redux/actions';
-import { isStateStale } from 'redux/api/apiSelectors';
 import { shouldInitOverview } from 'redux/overview/overviewSelectors';
 import BtPropTypes from 'util/BtPropTypes';
 
@@ -26,20 +25,15 @@ class OverviewView extends ApiView {
     const {
       id,
       matchState,
-      telemetryState,
       shouldInitOverviewProp,
-      fetchMatch,
-      fetchTelemetry,
+      fetchMatchIfNeeded,
+      fetchTelemetryIfNeeded,
       initMatch,
     } = this.props;
     const newParams = { id };
 
-    if (isStateStale(matchState, newParams)) {
-      fetchMatch(newParams);
-    }
-    if (isStateStale(telemetryState, newParams)) {
-      fetchTelemetry(newParams);
-    }
+    fetchMatchIfNeeded(newParams);
+    fetchTelemetryIfNeeded(newParams);
 
     // If we have match data and the overview data is outdated, init overview now
     if (shouldInitOverviewProp) {
@@ -74,8 +68,8 @@ OverviewView.propTypes = {
   shouldInitOverviewProp: PropTypes.bool.isRequired,
 
   // Redux dispatches
-  fetchMatch: PropTypes.func.isRequired,
-  fetchTelemetry: PropTypes.func.isRequired,
+  fetchMatchIfNeeded: PropTypes.func.isRequired,
+  fetchTelemetryIfNeeded: PropTypes.func.isRequired,
   initMatch: PropTypes.func.isRequired,
 };
 
@@ -90,8 +84,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchMatch: actions.api.match.request,
-  fetchTelemetry: actions.api.telemetry.request,
+  fetchMatchIfNeeded: actions.api.match.requestIfNeeded,
+  fetchTelemetryIfNeeded: actions.api.telemetry.requestIfNeeded,
   initMatch: actions.overview.initMatch,
 }, dispatch);
 

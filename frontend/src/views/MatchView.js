@@ -4,7 +4,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import actions from 'redux/actions';
-import { isStateStale } from 'redux/api/apiSelectors';
 import BtPropTypes from 'util/BtPropTypes';
 
 import ApiDataComponent from 'components/ApiDataComponent';
@@ -16,14 +15,9 @@ class MatchView extends ApiView {
   updateData() {
     const {
       id,
-      matchState,
-      fetchMatch,
+      fetchMatchIfNeeded,
     } = this.props;
-    const newParams = { id };
-
-    if (isStateStale(matchState, newParams)) {
-      fetchMatch(newParams);
-    }
+    fetchMatchIfNeeded({ id });
   }
 
   render() {
@@ -41,7 +35,7 @@ class MatchView extends ApiView {
 MatchView.propTypes = {
   id: PropTypes.string.isRequired,
   matchState: BtPropTypes.apiState.isRequired,
-  fetchMatch: PropTypes.func.isRequired,
+  fetchMatchIfNeeded: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -49,7 +43,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchMatch: actions.api.match.request,
+  fetchMatchIfNeeded: actions.api.match.requestIfNeeded,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(MatchView);

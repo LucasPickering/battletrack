@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import actions from 'redux/actions';
-import { isStateStale } from 'redux/api/apiSelectors';
 import BtPropTypes from 'util/BtPropTypes';
 import { formatShard } from 'util/funcs';
 import ApiView from 'views/ApiView';
@@ -23,10 +22,8 @@ ShardList.propTypes = {
 
 class ShardSelect extends ApiView {
   updateData() {
-    const { shardsState, fetchShards } = this.props;
-    if (isStateStale(shardsState)) {
-      fetchShards();
-    }
+    const { fetchShardsIfNeeded } = this.props;
+    fetchShardsIfNeeded();
   }
 
   render() {
@@ -49,7 +46,7 @@ ShardSelect.propTypes = {
   activeShard: PropTypes.string.isRequired,
   shardsState: BtPropTypes.apiState.isRequired,
   onSelect: PropTypes.func,
-  fetchShards: PropTypes.func.isRequired,
+  fetchShardsIfNeeded: PropTypes.func.isRequired,
 };
 
 ShardSelect.defaultProps = {
@@ -61,7 +58,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchShards: actions.api.shards.request,
+  fetchShardsIfNeeded: actions.api.shards.requestIfNeeded,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(ShardSelect);

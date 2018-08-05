@@ -4,7 +4,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import actions from 'redux/actions';
-import { isStateStale } from 'redux/api/apiSelectors';
 import BtPropTypes from 'util/BtPropTypes';
 
 import ApiDataComponent from 'components/ApiDataComponent';
@@ -20,14 +19,9 @@ class PlayerView extends ApiView {
     const {
       shard,
       name,
-      playerState,
-      fetchPlayer,
+      fetchPlayerIfNeeded,
     } = this.props;
-    const newParams = { shard, name };
-
-    if (isStateStale(playerState, newParams)) {
-      fetchPlayer(newParams);
-    }
+    fetchPlayerIfNeeded({ shard, name });
   }
 
   render() {
@@ -53,7 +47,7 @@ PlayerView.propTypes = {
   shard: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   playerState: BtPropTypes.apiState.isRequired,
-  fetchPlayer: PropTypes.func.isRequired,
+  fetchPlayerIfNeeded: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -61,7 +55,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  fetchPlayer: actions.api.player.request,
+  fetchPlayerIfNeeded: actions.api.player.requestIfNeeded,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlayerView);

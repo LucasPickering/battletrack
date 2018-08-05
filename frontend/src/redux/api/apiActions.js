@@ -5,6 +5,7 @@ import { EventTypes } from 'util/MarkMappers';
 const API_ACTIONS = {
   // undefined means use identity function
   request: undefined,
+  requestIfNeeded: undefined,
   success: undefined,
   failure: undefined,
 };
