@@ -13,7 +13,7 @@ const error = PropTypes.shape({
 const apiState = PropTypes.shape({
   params: PropTypes.object,
   loading: PropTypes.bool.isRequired,
-  data: PropTypes.object,
+  data: PropTypes.any,
   error: PropTypes.error,
 });
 

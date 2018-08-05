@@ -6,7 +6,7 @@ import actions from '../actions';
 import { apiActionTypes } from './apiActions';
 
 const initialApiState = {
-  params: null,
+  params: undefined,
   loading: false,
   data: null,
   error: null,

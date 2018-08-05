@@ -14,6 +14,7 @@ export const apiActionTypes = {
   player: ({ shard, name }) => `/api/core/players/${shard}/${name}?popMatches`,
   match: ({ id }) => `/api/core/matches/${id}`,
   telemetry: ({ id }) => `/api/telemetry/${id}?events=${Object.keys(EventTypes).join()}`,
+  shards: () => '/api/core/shards',
 };
 
 const apiActions = mapValues(

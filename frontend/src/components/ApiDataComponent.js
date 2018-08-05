@@ -41,7 +41,7 @@ ApiDataComponent.propTypes = {
 };
 
 ApiDataComponent.defaultProps = {
-  loadingText: 'Loading...',
+  loadingText: null,
   isLoading: identity,
 };
 

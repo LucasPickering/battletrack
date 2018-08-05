@@ -8,11 +8,16 @@ import 'styles/Loading.css';
 const Loading = ({
   children,
   loading,
+  loadingComp,
   text,
   ...rest
 }) => (loading ? (
   <div className="loading">
-    <ClipLoader color="var(--highlight-color-2)" loading {...rest} />
+    {React.createElement(loadingComp, {
+      loading: true,
+      color: 'var(--highlight-color-1)',
+      ...rest,
+    })}
     {text && <p className="loading-text">{text}</p>}
     {children}
   </div>
@@ -21,6 +26,7 @@ const Loading = ({
 Loading.propTypes = {
   children: BtPropTypes.children,
   loading: PropTypes.bool,
+  loadingComp: PropTypes.func,
   text: PropTypes.string,
   size: PropTypes.number,
 };
@@ -28,6 +34,7 @@ Loading.propTypes = {
 Loading.defaultProps = {
   children: null,
   loading: true,
+  loadingComp: ClipLoader,
   text: null,
   size: 100,
 };
