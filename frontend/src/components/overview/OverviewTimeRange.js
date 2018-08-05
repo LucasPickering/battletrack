@@ -6,9 +6,7 @@ import { connect } from 'react-redux';
 
 import actions from 'redux/actions';
 import BtPropTypes from 'util/BtPropTypes';
-import {
-  formatSeconds,
-} from 'util/funcs';
+import { formatSeconds } from 'util/formatters';
 
 import Range from 'components/Range';
 import 'styles/overview/OverviewTimeRange.css';

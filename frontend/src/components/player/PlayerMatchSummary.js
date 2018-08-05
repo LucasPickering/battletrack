@@ -8,9 +8,11 @@ import {
   formatDate,
   formatGameMode,
   formatPerspective,
+} from 'util/formatters';
+import {
   matchLink,
   playerLink,
-} from 'util/funcs';
+} from 'util/links';
 import Localization from 'util/Localization';
 
 import 'styles/player/PlayerMatchSummary.css';

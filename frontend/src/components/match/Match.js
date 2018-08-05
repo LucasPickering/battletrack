@@ -9,8 +9,8 @@ import {
   formatSeconds,
   formatGameMode,
   formatPerspective,
-  overviewLink,
-} from 'util/funcs';
+} from 'util/formatters';
+import { overviewLink } from 'util/links';
 import Localization from 'util/Localization';
 import 'styles/match/Match.css';
 

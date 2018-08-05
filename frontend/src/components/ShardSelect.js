@@ -6,19 +6,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import actions from 'redux/actions';
-import BtPropTypes from 'util/BtPropTypes';
-import { formatShard } from 'util/funcs';
+import { formatShard } from 'util/formatters';
 import ApiView from 'views/ApiView';
 
 import 'styles/ShardSelect.css';
-
-const ShardList = ({ shards }) => shards.map(shard => (
-  <MenuItem key={shard} eventKey={shard}>{formatShard(shard)}</MenuItem>
-));
-
-ShardList.propTypes = {
-  shards: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-};
 
 class ShardSelect extends ApiView {
   updateData() {
@@ -27,7 +18,7 @@ class ShardSelect extends ApiView {
   }
 
   render() {
-    const { activeShard, shardsState, onSelect } = this.props;
+    const { activeShard, shards, onSelect } = this.props;
     return (
       <div className="shard-select">
         <DropdownButton
@@ -35,7 +26,9 @@ class ShardSelect extends ApiView {
           id="shards-dropdown"
           onSelect={onSelect}
         >
-          {!shardsState.loading && shardsState.data && <ShardList shards={shardsState.data} />}
+          {shards && shards.map(shard => (
+            <MenuItem key={shard} eventKey={shard}>{formatShard(shard)}</MenuItem>
+          ))}
         </DropdownButton>
       </div>
     );
@@ -44,17 +37,18 @@ class ShardSelect extends ApiView {
 
 ShardSelect.propTypes = {
   activeShard: PropTypes.string.isRequired,
-  shardsState: BtPropTypes.apiState.isRequired,
+  shards: PropTypes.arrayOf(PropTypes.string.isRequired),
   onSelect: PropTypes.func,
   fetchShardsIfNeeded: PropTypes.func.isRequired,
 };
 
 ShardSelect.defaultProps = {
+  shards: [],
   onSelect: noop,
 };
 
 const mapStateToProps = state => ({
-  shardsState: state.api.shards,
+  shards: state.api.shards.data,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({

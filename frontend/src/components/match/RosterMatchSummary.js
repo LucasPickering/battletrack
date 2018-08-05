@@ -3,7 +3,8 @@ import React from 'react';
 import { Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-import { formatSeconds, playerLink } from 'util/funcs';
+import { formatSeconds } from 'util/formatters';
+import { playerLink } from 'util/links';
 import 'styles/match/RosterMatchSummary.css';
 
 const RosterMatchSummary = props => {

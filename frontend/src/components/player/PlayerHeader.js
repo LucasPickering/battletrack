@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 
 import BtPropTypes from 'util/BtPropTypes';
-import { playerLink } from 'util/funcs';
+import { playerLink } from 'util/links';
 import ShardSelect from '../ShardSelect';
 import 'styles/player/PlayerHeader.css';
 

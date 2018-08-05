@@ -1,7 +1,7 @@
 import React from 'react';
 
 import BtPropTypes from 'util/BtPropTypes';
-import { formatSeconds } from 'util/funcs';
+import { formatSeconds } from 'util/formatters';
 
 import Stat from 'components/Stat';
 import 'styles/player/PlayerMatchStats.css';

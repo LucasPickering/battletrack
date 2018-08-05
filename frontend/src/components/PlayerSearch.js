@@ -3,7 +3,7 @@ import React from 'react';
 import { Button, FormControl } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 
-import { playerLink } from 'util/funcs';
+import { playerLink } from 'util/links';
 import Icon from './Icon';
 import ShardSelect from './ShardSelect';
 import 'styles/PlayerSearch.css';

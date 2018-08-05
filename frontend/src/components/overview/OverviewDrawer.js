@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { matchLink } from 'util/funcs';
+import { matchLink } from 'util/links';
 
 import 'styles/overview/OverviewDrawer.css';
 

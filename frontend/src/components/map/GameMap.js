@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Map, ImageOverlay } from 'react-leaflet';
 
-import { mapImage } from 'util/funcs';
+import { mapImage } from 'util/links';
 import BtPropTypes from 'util/BtPropTypes';
 
 import LeafletComponent from 'components/map/LeafletComponent';

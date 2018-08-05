@@ -4,7 +4,7 @@ import { Popup } from 'react-leaflet';
 import uniqid from 'uniqid';
 
 import BtPropTypes from 'util/BtPropTypes';
-import { formatSeconds } from 'util/funcs';
+import { formatSeconds } from 'util/formatters';
 
 import Icon from 'components/Icon';
 import 'styles/map/MarkTooltip.css';
