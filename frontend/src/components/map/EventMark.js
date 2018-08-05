@@ -1,6 +1,7 @@
-import Leaflet from 'leaflet';
-import PropTypes from 'prop-types';
 import React from 'react';
+import Leaflet from 'leaflet';
+import { noop } from 'lodash';
+import PropTypes from 'prop-types';
 import { Marker } from 'react-leaflet';
 import reactToCss from 'react-style-object-to-css';
 
@@ -73,7 +74,7 @@ EventMark.propTypes = {
 EventMark.defaultProps = {
   player: null,
   tooltip: null,
-  onMarkSelect: () => {},
+  onMarkSelect: noop,
 };
 
 export default EventMark;

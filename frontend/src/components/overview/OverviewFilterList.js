@@ -1,4 +1,5 @@
 import React from 'react';
+import { max } from 'lodash';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -60,7 +61,7 @@ class OverviewFilterList extends React.PureComponent {
     // Roster nodes
     let rosterNodes;
     // Check if this is a solo game - this will affect how we show the list
-    if (Math.max(...rosters.map(roster => roster.players.length)) > 1) {
+    if (max(rosters.map(r => r.players.length)) > 1) {
       // More than one player per roster - build one node per roster and one sub-node per player
       rosterNodes = rosters.map(({ id, win_place: winPlace, players }) => ({
         value: id,

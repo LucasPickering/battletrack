@@ -1,4 +1,5 @@
 import React from 'react';
+import { identity } from 'lodash';
 import PropTypes from 'prop-types';
 
 import BtPropTypes from 'util/BtPropTypes';
@@ -41,7 +42,7 @@ ApiDataComponent.propTypes = {
 
 ApiDataComponent.defaultProps = {
   loadingText: 'Loading...',
-  isLoading: stateLoading => stateLoading,
+  isLoading: identity,
 };
 
 export default ApiDataComponent;

@@ -1,3 +1,5 @@
+import { max } from 'lodash';
+
 import { playersInRosterPalette, rostersInMatchPalette } from 'util/palette';
 
 class RosterPalette {
@@ -21,7 +23,7 @@ class RosterPalette {
     Object.freeze(this.rosterColors);
 
     this.playerColors = {};
-    const maxRosterSize = Math.max(...rosters.map(roster => roster.players.length));
+    const maxRosterSize = max(rosters.map(r => r.players.length));
     playersInRosterPalette(maxRosterSize)
       .forEach((color, index) => {
         rosters

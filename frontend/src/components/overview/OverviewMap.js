@@ -1,5 +1,5 @@
 import React from 'react';
-import { pickBy } from 'lodash';
+import { flatten, pick } from 'lodash';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -48,13 +48,9 @@ class OverviewMap extends React.PureComponent {
     Object.freeze(this.eventMarks);
   }
 
-  filterEnabled(key) {
-    const { enabledFilters } = this.props;
-    return enabledFilters.includes(key);
-  }
-
   render() {
     const {
+      enabledFilters,
       map,
       telemetry: {
         plane,
@@ -65,15 +61,15 @@ class OverviewMap extends React.PureComponent {
     } = this.props;
 
     // Build an object of special marks to display, but filter out ones that are disabled
-    const specialMarks = pickBy({ plane, whiteZones }, (val, key) => this.filterEnabled(key));
+    const specialMarks = pick({ plane, whiteZones }, enabledFilters);
 
     // Filter marks by type/time/player and flatten them into one big list
-    const eventMarks = [].concat(...Object.entries(this.eventMarks)
-      .filter(([markType]) => this.filterEnabled(markType)) // Filter by type
+    const filteredByType = pick(this.eventMarks, enabledFilters); // Filter by type
+    const eventMarks = flatten(Object.values(filteredByType)
       // Filter each mark list by time/player
-      .map(([, markList]) => markList
+      .map(markList => markList
         .filter(({ time }) => inRangeIncl(time, minTime, maxTime)) // Filter by time
-        .filter(({ player }) => !player || this.filterEnabled(player.id)))); // Filter by player
+        .filter(({ player }) => !player || enabledFilters.includes(player.id)))); // And by player
 
     return (
       <MarkedGameMap

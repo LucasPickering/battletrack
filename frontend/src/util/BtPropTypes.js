@@ -39,7 +39,7 @@ const circle = PropTypes.shape({
 });
 
 const tooltipContent = PropTypes.arrayOf(PropTypes.shape({
-  icon: PropTypes.object.isRequired,
+  icon: PropTypes.object,
   text: PropTypes.string.isRequired,
 }));
 
