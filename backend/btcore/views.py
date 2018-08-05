@@ -1,7 +1,8 @@
 from rest_framework import views
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from . import serializers
+from . import serializers, util
 from .models import Match, Player
 from telemetry.models import Telemetry
 
@@ -48,3 +49,8 @@ class PlayerView(views.APIView):
 
         serializer = self.serializer_class(player, context={'shard': shard})
         return Response(serializer.data)
+
+
+@api_view(['GET'])
+def shards(request):
+    return Response(util.SHARDS)

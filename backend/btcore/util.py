@@ -10,6 +10,18 @@ MAP_SIZES = {
     'Desert_Main': 8000,
     'Savage_Main': 4000,
 }
+SHARDS = [
+    'pc-na',
+    'pc-eu',
+    'pc-as',
+    'pc-kakao',
+    'pc-krjp',
+    'pc-jp',
+    'pc-oc',
+    'pc-ru',
+    'pc-sa',
+    'pc-sea',
+]
 
 MATCH_ID_LENGTH = 36
 PLAYER_ID_LENGTH = 40
