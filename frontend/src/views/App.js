@@ -5,6 +5,8 @@ import BtRoute from 'components/BtRoute';
 
 import 'styles/colors.css';
 import 'styles/App.css';
+import 'styles/bootstrap/Button.css';
+import 'styles/bootstrap/Dropdown.css';
 
 import Home from './Home';
 import PlayerView from './PlayerView';

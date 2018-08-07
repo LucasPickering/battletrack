@@ -3,7 +3,8 @@
   background-color: var(--bg-color-2);
 }
 
-.player-search .shard-select button {
+#bootstrap-override .player-search .btn {
+  height: 100%;
   border-radius: 0;
 }
 
@@ -13,27 +14,32 @@
   background-color: var(--bg-color-2);
 }
 
-.player-search .name-input,
-.player-search .search-button,
-.player-search .search-button p {
+#bootstrap-override .player-search .name-input,
+#bootstrap-override .player-search .search-button,
+#bootstrap-override .player-search .search-button p {
   background-color: #00000000;
   color: var(--highlight-color-3);
   border-radius: 0;
 }
 
 .player-search .name-input {
+  height: 100%;
   box-shadow: none;
   width: 200px;
+  background-color: #00000000;
+  color: var(--highlight-color-3);
+  border-radius: 0;
 }
 
-.player-search .search-button:disabled,
-.player-search .search-button:enabled:hover,
-.player-search .search-button:enabled:focus,
-.player-search .search-button:enabled:active {
+#bootstrap-override .player-search .search-button:disabled,
+#bootstrap-override .player-search .search-button:enabled:hover,
+#bootstrap-override .player-search .search-button:enabled:focus,
+#bootstrap-override .player-search .search-button:enabled:active {
   background-color: #00000000;
+  color: var(--highlight-color-3);
   box-shadow: none;
 }
 
-.player-search .search-button:enabled:hover {
+#bootstrap-override .player-search .search-button:enabled:hover {
   color: var(--accent-color-1);
 }

@@ -26,20 +26,22 @@ const PlayerHeader = ({
       activeShard={shard}
       onSelect={newShard => history.push(playerLink(newShard, name))}
     />
-    <AllButtonGroup
-      className="game-mode-buttons"
-      name="gameModes"
-      values={gameModes}
-      selected={modeFilter}
-      onChange={selected => onChangeFilter({ mode: selected })}
-    />
-    <AllButtonGroup
-      className="perspective-buttons"
-      name="perspectives"
-      values={perspectives}
-      selected={perspectiveFilter}
-      onChange={selected => onChangeFilter({ perspective: selected })}
-    />
+    <div className="player-filter-buttons">
+      <AllButtonGroup
+        className="game-mode-buttons"
+        name="gameModes"
+        values={gameModes}
+        selected={modeFilter}
+        onChange={selected => onChangeFilter({ mode: selected })}
+      />
+      <AllButtonGroup
+        className="perspective-buttons"
+        name="perspectives"
+        values={perspectives}
+        selected={perspectiveFilter}
+        onChange={selected => onChangeFilter({ perspective: selected })}
+      />
+    </div>
   </div>
 );
 

@@ -1,0 +1,32 @@
+#bootstrap-override .btn {
+  height: 30px;
+  border: none;
+}
+
+#bootstrap-override .btn-group > .btn:first-child {
+  /* Round off the left corners of the first button in a group */
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+#bootstrap-override .btn-group > .btn:last-child {
+  /* Round off the right corners of the last button in a group */
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+#bootstrap-override .btn:active {
+  box-shadow: var(--hover-shadow-light), var(--active-shadow-dark);
+}
+
+#bootstrap-override .btn-default {
+  background-color: var(--bg-color-2);
+  color: var(--accent-color-1);
+}
+
+#bootstrap-override .btn-default:hover,
+#bootstrap-override .btn-default:focus {
+  background-color: var(--bg-color-2);
+  color: var(--accent-color-1);
+  box-shadow: var(--hover-shadow-light);
+}

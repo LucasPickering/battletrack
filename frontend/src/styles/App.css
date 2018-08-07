@@ -19,27 +19,6 @@ a:hover {
   color: var(--accent-color-3);
 }
 
-button, .btn-default {
-  border: none;
-}
-
-button:hover,
-button:focus {
-  box-shadow: var(--hover-shadow-light);
-}
-
-button:active {
-  box-shadow: var(--hover-shadow-light), var(--active-shadow-dark);
-}
-
-.dropdown button.dropdown-toggle:hover {
-  box-shadow: var(--hover-shadow-dark);
-}
-
-.dropdown.open > button.dropdown-toggle {
-  box-shadow: var(--hover-shadow-dark), var(--active-shadow-dark);
-}
-
 .form-control {
   border: none;
 }

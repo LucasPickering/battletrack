@@ -17,18 +17,6 @@
   margin-top: 0;
 }
 
-.match .links button {
-  background-color: var(--bg-color-2);
-  color: var(--accent-color-1);
-  border: 0;
-  height: 30px;
-  border-radius: 3px;
-}
-
-.match .links button:hover {
-  /*background-color: var(--highlight-color-1);*/
-}
-
 .match .rosters {
   margin-top: 15px;
   overflow-y: scroll;
