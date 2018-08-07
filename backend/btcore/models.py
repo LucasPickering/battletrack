@@ -41,8 +41,8 @@ class Match(models.Model):
 
     id = models.CharField(primary_key=True, max_length=util.MATCH_ID_LENGTH)
     shard = models.CharField(max_length=20)
-    mode = models.CharField(max_length=10)
-    perspective = models.CharField(max_length=10, choices=util.choices(util.PERSPECTIVES))
+    mode = models.CharField(max_length=20)
+    perspective = models.CharField(max_length=10, blank=True)  # Blank for custom games
     map_name = models.CharField(max_length=50, choices=util.choices(util.MAP_SIZES.keys()))
     date = models.DateTimeField()
     duration = models.PositiveSmallIntegerField()

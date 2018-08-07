@@ -4,7 +4,6 @@ import time
 
 from django.conf import settings
 
-PERSPECTIVES = ['fpp', 'tpp']
 MAP_SIZES = {
     'Erangel_Main': 8000,
     'Desert_Main': 8000,

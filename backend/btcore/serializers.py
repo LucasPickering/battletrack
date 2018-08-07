@@ -284,11 +284,16 @@ class MatchSerializer(DevDeserializer):
         data = dev_data['data']
         attrs = data['attributes']
 
-        # 'squad' = TPP Squad, 'squad-fpp' = FPP Squad
+        custom_match = attrs['isCustomMatch']
         mode_temp = attrs['gameMode']
-        if '-' in mode_temp:
+        if custom_match:
+            # Custom match has a bullshit game mode
+            mode, perspective = 'custom', ''
+        elif '-' in mode_temp:
+            # 'squad-fpp' = FPP Squad
             mode, perspective = mode_temp.split('-')
         else:
+            # 'squad' = TPP Squad
             mode, perspective = mode_temp, 'tpp'
 
         shard = attrs['shardId']
@@ -337,7 +342,7 @@ class MatchSerializer(DevDeserializer):
             'map_name': map_name,
             'date': attrs['createdAt'],
             'duration': attrs['duration'],
-            'custom_match': attrs['isCustomMatch'],
+            'custom_match': custom_match,
             'telemetry_url': tel_asset['attributes']['URL'],
             'rosters': roster_matches,
         }
