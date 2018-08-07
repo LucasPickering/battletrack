@@ -15,6 +15,16 @@ import 'styles/player/PlayerView.css';
 import ApiView from './ApiView';
 
 class PlayerView extends ApiView {
+  constructor(...args) {
+    super(...args);
+    this.state = {
+      filters: {
+        mode: null,
+        perspective: null,
+      },
+    };
+  }
+
   updateData() {
     const {
       shard,
@@ -30,13 +40,25 @@ class PlayerView extends ApiView {
       name,
       playerState,
     } = this.props;
+    const { filters } = this.state;
     return (
       <div className="player">
-        <PlayerHeader shard={shard} name={name} />
+        <PlayerHeader
+          shard={shard}
+          name={name}
+          filters={filters}
+          onChangeFilter={newFilter => this.setState({
+            filters: {
+              ...filters, // Include other filters
+              ...newFilter, // Overwrite the changed filter
+            },
+          })}
+        />
         <ApiDataComponent
           component={PlayerMatches}
           state={playerState}
           loadingText="Loading matches..."
+          filters={filters}
         />
       </div>
     );

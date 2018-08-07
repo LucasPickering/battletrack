@@ -1,5 +1,13 @@
-.player .player-header {
-  display: flex;
-  justify-content: space-between;
+.player-header {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   margin-bottom: 5px;
+}
+
+.player-header .shard-select {
+  justify-self: end;
+}
+
+.player-header .game-mode-buttons {
+  grid-column: 1 / 3;
 }

@@ -5,7 +5,7 @@ import BtPropTypes from 'util/BtPropTypes';
 
 import 'styles/ApiError.css';
 
-const ErrorComponent = ({ error }) => <p className="api-error">{error.data.detail}</p>;
+const ErrorComponent = ({ error }) => <p className="api-error">Error: {error.data.detail}</p>;
 
 ErrorComponent.propTypes = {
   error: BtPropTypes.error.isRequired,

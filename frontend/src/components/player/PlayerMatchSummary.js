@@ -6,8 +6,7 @@ import { Link } from 'react-router-dom';
 import BtPropTypes from 'util/BtPropTypes';
 import {
   formatDate,
-  formatGameMode,
-  formatPerspective,
+  formatModePerspective,
 } from 'util/formatters';
 import {
   matchLink,
@@ -41,9 +40,7 @@ const PlayerMatchSummary = props => {
   return (
     <Panel className="player-match-summary">
       <Panel.Heading>
-        <Panel.Title>
-          {formatGameMode(mode)} {formatPerspective(perspective)}
-        </Panel.Title>
+        <Panel.Title>{formatModePerspective(mode, perspective)}</Panel.Title>
         <Panel.Title style={{ textAlign: 'right' }}>
           {formatDate(date)}
         </Panel.Title>

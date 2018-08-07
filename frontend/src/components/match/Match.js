@@ -7,8 +7,7 @@ import BtPropTypes from 'util/BtPropTypes';
 import {
   formatDate,
   formatSeconds,
-  formatGameMode,
-  formatPerspective,
+  formatModePerspective,
 } from 'util/formatters';
 import { overviewLink } from 'util/links';
 import Localization from 'util/Localization';
@@ -30,7 +29,7 @@ const Match = ({
 }) => (
   <div className="match">
     <div className="match-info">
-      <h2>{formatGameMode(mode)} {formatPerspective(perspective)}</h2>
+      <h2>{formatModePerspective(mode, perspective)}</h2>
       <h2 style={{ textAlign: 'right' }}>{Localization.maps[mapName]}</h2>
       <h3>{formatDate(date)}</h3>
       <h3 style={{ textAlign: 'right' }}>{formatSeconds(duration)}</h3>
