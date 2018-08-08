@@ -1,12 +1,11 @@
-import { capitalize } from 'lodash';
 import moment from 'moment-timezone';
 
 export const gameModes = [
-  'solo',
-  'duo',
-  'squad',
-  'custom',
-].map(key => ({ key, label: capitalize(key) }));
+  { key: 'solo', label: 'Solo' },
+  { key: 'duo', label: 'Duo' },
+  { key: 'squad', label: 'Squad' },
+  { key: 'custom', label: 'Custom Game' },
+];
 
 const gameModesObj = gameModes.reduce((acc, { key, label }) => {
   acc[key] = label;
