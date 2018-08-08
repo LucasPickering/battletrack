@@ -15,8 +15,9 @@
   border-bottom-right-radius: 3px;
 }
 
-#bootstrap-override .btn:active {
-  box-shadow: var(--hover-shadow-light), var(--active-shadow-dark);
+#bootstrap-override .btn:active,
+#bootstrap-override .btn.active {
+  box-shadow: var(--active-shadow-dark);
 }
 
 #bootstrap-override .btn-default {

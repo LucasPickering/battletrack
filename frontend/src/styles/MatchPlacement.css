@@ -1,0 +1,12 @@
+.match-placement {
+  display: flex;
+}
+
+.match-placement .win-place {
+  font-size: 24px;
+}
+
+.match-placement .roster-count {
+  padding-top: 8px;
+  font-size: 16px;
+}

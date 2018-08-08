@@ -14,6 +14,7 @@ import {
 } from 'util/links';
 import Localization from 'util/Localization';
 
+import MatchPlacement from 'components/MatchPlacement';
 import 'styles/player/PlayerMatchSummary.css';
 
 import PlayerMatchStats from './PlayerMatchStats';
@@ -31,6 +32,7 @@ const PlayerMatchSummary = props => {
       map_name: mapName,
       date,
       shard,
+      roster_count: rosterCount,
     },
     roster,
     stats,
@@ -47,7 +49,11 @@ const PlayerMatchSummary = props => {
         <Panel.Title>{Localization.maps[mapName]}</Panel.Title>
       </Panel.Heading>
       <Panel.Body>
-        <Link className="placement" to={matchLink(matchId)}>#{stats.win_place}</Link>
+        <MatchPlacement
+          winPlace={stats.win_place}
+          rosterCount={rosterCount}
+          link={matchLink(matchId)}
+        />
         <PlayerMatchStats stats={stats} />
         <ul className="roster">
           {rosterNames.map(name => (
