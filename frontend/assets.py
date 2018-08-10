@@ -105,7 +105,7 @@ if __name__ == '__main__':
     parser.add_argument('--repo', '-r', default='https://github.com/pubg/api-assets/raw/master/',
                         help="URL of the repo to download from")
     parser.add_argument('--map-dir', '-m', default=MAP_DIR,
-                        help="Directory containg map images to tile")
+                        help="Directory containing map images to tile")
     args = parser.parse_args()
     func = ACTIONS[args.action]
     func()
