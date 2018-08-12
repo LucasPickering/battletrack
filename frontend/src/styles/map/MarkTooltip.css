@@ -1,7 +1,3 @@
-.bt-tooltip {
-  font-family: sans-serif;
-}
-
 .bt-tooltip .leaflet-popup-content-wrapper,
 .bt-tooltip .leaflet-popup-tip {
   opacity: 0.9;
@@ -9,32 +5,23 @@
 }
 
 .bt-tooltip .leaflet-popup-content {
-  width: auto !important; /* Yay important */
-}
-
-.bt-tooltip .leaflet-popup-content {
   margin: 10px;
 }
 
 .bt-tooltip .title {
-  margin: 0;
-  padding-bottom: 3px;
+  margin-bottom: 5px
 }
 
 .bt-tooltip .tooltip-line {
   display: flex;
+  align-items: center;
   color: var(--accent-color-1);
 }
 
 .bt-tooltip .tooltip-line + .tooltip-line {
-  padding-top: 5px;
+  margin-top: 3px;
 }
 
-.bt-tooltip i {
-  padding-top: 1px;
-}
-
-.bt-tooltip p {
-  margin: 0;
-  margin-left: 3px;
+.bt-tooltip .tooltip-line p {
+  margin: 0 0 0 3px;
 }

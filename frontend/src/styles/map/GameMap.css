@@ -1,3 +1,7 @@
 .game-map {
   background-color: var(--bg-color-2);
 }
+
+.game-map .leaflet-control-zoom a {
+  color: var(--bg-color-1);
+}

@@ -46,7 +46,12 @@ export function buildIconProps(iconProps) {
 
   // Build props meant to be passed to an <i> tag
   return {
-    className: classnames(className, 'fa', `fa-${name}`),
+    className: classnames(
+      className,
+      'bt-icon',
+      'fa',
+      `fa-${name}`,
+    ),
     style: {
       fontWeight: FORMATS[format],
       color,
@@ -54,11 +59,7 @@ export function buildIconProps(iconProps) {
   };
 }
 
-const Icon = props => (
-  <i
-    {...buildIconProps(props)}
-  />
-);
+const Icon = props => <i {...buildIconProps(props)} />;
 
 Icon.propTypes = {
   className: PropTypes.string,

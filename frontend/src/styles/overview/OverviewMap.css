@@ -2,7 +2,3 @@
   /* Move the zoom buttons down a bit */
   top: 40px;
 }
-
-.overview .game-map .leaflet-control-zoom a {
-  color: var(--bg-color-1);
-}

@@ -41,3 +41,10 @@
   background-color: var(--bg-color-1);
   color: var(--highlight-color-2);
 }
+
+.overview-drawer .drawer-button .bt-icon {
+  /* Center the icon on the button */
+  position: relative;
+  top: -1px;
+  left: -1px;
+}

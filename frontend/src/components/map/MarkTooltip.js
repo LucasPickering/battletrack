@@ -22,7 +22,7 @@ const MarkTooltip = props => {
   ];
 
   return (
-    <Popup className="bt-tooltip fa text">
+    <Popup className="bt-tooltip">
       <h4 className="title">{title}</h4>
       {content.map(({ icon, text }) => (
         <div className="tooltip-line" key={uniqid()}>

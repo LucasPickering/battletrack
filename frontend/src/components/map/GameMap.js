@@ -46,7 +46,6 @@ class GameMap extends LeafletComponent {
 
     return (
       <Map
-        ref="map"
         className="game-map full-size"
         crs={CoordSystem}
         bounds={bounds}

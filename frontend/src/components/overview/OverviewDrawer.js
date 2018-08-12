@@ -16,7 +16,7 @@ class OverviewDrawer extends React.PureComponent {
   constructor(...args) {
     super(...args);
     this.state = {
-      drawerOpen: false,
+      drawerOpen: true,
     };
   }
 
