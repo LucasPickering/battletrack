@@ -10,9 +10,10 @@ const ICONS = Object.freeze({
   PlayZone: { name: 'circle', format: 'regular' },
   Kill: { name: 'crosshairs' },
   Death: { name: 'skull' },
-  DeathCause: { name: 'arrow-alt-circle-right' }, // TODO Find a better icon
+  DeathCause: { name: 'asterisk' }, // TODO Find a better icon
   Position: { name: 'dot-circle' },
   CarePackage: { name: 'parachute-box' },
+  Item: { name: 'dot-circle', format: 'regular' }, // TODO Find a better icon
 });
 
 function deathTooltip(event) {
@@ -74,7 +75,7 @@ export const EventMarkTypes = Object.freeze({
     convert: ({ pos, items }) => ({
       pos,
       tooltip: items.map(item => ({
-        icon: { name: 'dot-circle', format: 'regular' }, // TODO
+        icon: ICONS.Item,
         text: `${item.stack_count}x ${Localization.items[item.name]}`,
       })),
     }),
