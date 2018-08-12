@@ -30,9 +30,10 @@ def confirm_prompt(prompt, padding=0, default_yes=True):
 def pull_latest(**kwargs):
     os.chdir(ASSETS_DIR)
     old_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip()
-    subprocess.run(['git', 'submodule', 'update', '--recursive', '--remote', '--', '.'])
+    subprocess.run(['git', 'pull', 'origin', 'master'])
     diff = subprocess.check_output(['git', 'diff', '--name-only', old_commit]).decode()
-    print(diff or "No Changes")
+    print("\nFiles changed:")
+    print(diff)
 
 
 def tile_for_all_zooms(image_path, output_dir):
