@@ -4,17 +4,27 @@ PUBG map stuff
 ## Development
 ### Setup
 1. Install Docker and Docker Compose
-1. Save your API key to `key`
-1. `source bin/dev.sh`
+1. `git submodule init && git submodule update`
 1. [OPTIONAL] Set up git hooks by running `bin/hooks.py`
-1. Run:
-    * `cd frontend && npm install`
-    * `docker-compose up`
+1. Save your API key to `key`
+1. `cd frontend && npm install`
+
+### Running
+```
+source bin/dev.sh
+docker-compose up
+```
 
 ### Migrations
 ```
-docker-compose makemigrations
-docker-compose migrate
+docker-compose run backend ./manage.py makemigrations
+docker-compose run backend ./manage.py migrate
+```
+
+### Updating Assets
+```
+frontend/assets.py pull
+frontend/assets.py tile # If map image(s) updated
 ```
 
 ### Testing
