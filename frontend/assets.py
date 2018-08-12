@@ -18,8 +18,8 @@ DATA_FILES = [
 
 MAP_DIR = 'public/assets/maps'
 TILE_PATH_FORMAT = 'public/assets/maps/{map_key}/{x}_{y}.jpg'
-TILE_SIZE = 256
-ZOOM_LEVELS = 6
+TILE_SIZE = 512
+ZOOM_LEVELS = 5
 
 
 def download(file, dest_dir=DOWNLOAD_DIR):
@@ -28,14 +28,14 @@ def download(file, dest_dir=DOWNLOAD_DIR):
     headers = {}
     # Attempt to check the local modified time to prevent downloading identical files
     try:
+        # Only download the file if the remote copy is newer. It seems like this doesn't actually
+        # work because GitHub doens't respect the If-Modified-Since header
         mod_time = os.path.getmtime(local_path)
         timestamp = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(mod_time))
         headers['If-Modified-Since'] = timestamp
     except FileNotFoundError:
         pass
 
-    # Only download the file if the remote copy is newer. It seems like this doesn't actually work
-    # because GitHub doens't respect the If-Modified-Since header
     print(f"Downloading '{file}'")
     r = requests.get(args.repo + file, headers=headers)
     r.raise_for_status()
@@ -61,10 +61,13 @@ def tile_for_all_zooms(image_path, output_dir):
     print(f"Tiling '{image_path}', saving to '{output_dir}'")
     try:
         shutil.rmtree(output_dir)
+        print(f"Deleted existing '{output_dir}' (RIP)")
     except FileNotFoundError:
         pass
     os.makedirs(output_dir)
 
+    # General approach: cut the full-res image into uniform tiles, downscale the full image by
+    # 50%, then repeat until the image is only one tile
     image = Image.open(image_path)
     for zoom in reversed(range(ZOOM_LEVELS)):
         zoom_output_dir = os.path.join(output_dir, str(zoom))
@@ -83,7 +86,8 @@ def tile_image(image, output_dir):
         for y in range(0, height, TILE_SIZE):
             box = (x, y, x + TILE_SIZE, y + TILE_SIZE)
             tile_path = os.path.join(output_dir, f'{x // TILE_SIZE}_{y // TILE_SIZE}.jpg')
-            image.crop(box).save(tile_path)
+            cropped = image.crop(box)
+            cropped.save(tile_path, quality=95, subsampling=0)  # No compression
 
 
 def tile_all():
