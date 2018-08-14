@@ -4,10 +4,7 @@ import { Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 import BtPropTypes from 'util/BtPropTypes';
-import {
-  formatDate,
-  formatModePerspective,
-} from 'util/formatters';
+import { formatDate } from 'util/formatters';
 import {
   matchLink,
   playerLink,
@@ -15,6 +12,7 @@ import {
 import Localization from 'util/Localization';
 
 import MatchPlacement from 'components/MatchPlacement';
+import ModePerspective from 'components/ModePerspective';
 import 'styles/player/PlayerMatchSummary.css';
 
 import PlayerMatchStats from './PlayerMatchStats';
@@ -42,7 +40,9 @@ const PlayerMatchSummary = props => {
   return (
     <Panel className="player-match-summary">
       <Panel.Heading>
-        <Panel.Title>{formatModePerspective(mode, perspective)}</Panel.Title>
+        <Panel.Title>
+          <ModePerspective mode={mode} perspective={perspective} />
+        </Panel.Title>
         <Panel.Title style={{ textAlign: 'right' }}>
           {formatDate(date)}
         </Panel.Title>

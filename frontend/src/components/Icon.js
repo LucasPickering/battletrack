@@ -42,6 +42,7 @@ export function buildIconProps(iconProps) {
     name,
     format,
     color,
+    ...rest
   } = fullProps;
 
   // Build props meant to be passed to an <i> tag
@@ -56,6 +57,7 @@ export function buildIconProps(iconProps) {
       fontWeight: FORMATS[format],
       color,
     },
+    ...rest,
   };
 }
 
