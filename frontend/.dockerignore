@@ -1,5 +1,6 @@
-build/
-node_modules/
-
-assets.py
-package-lock.json
+*
+!public/
+!src/
+!.env
+!.eslintrc.json
+!package.json

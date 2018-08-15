@@ -18,6 +18,7 @@ before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
 
 
+# BUILD
 build_backend:
   stage: build
   tags:
@@ -37,6 +38,7 @@ build_frontend:
     - docker push $FRONTEND_IMAGE
 
 
+# TEST
 test_backend:
   stage: test
   tags:
@@ -56,22 +58,20 @@ test_frontend:
     - docker-compose rm -s -f
 
 
+# BUILD MAIN
 build_main:
   stage: build_main
   only:
     - master
+    - nginx-monitoring  # TODO: Remove this
   tags:
     - shell
   script:
-    # Open the frontend image, build it, copy out the build, then delete the container
-    - "id=$(docker create $FRONTEND_IMAGE npm run build); \
-      docker start -a $id; \
-      docker cp $id:/battletrack/build prod/; \
-      docker rm $id;"
-    - docker build --pull -t $PROD_IMAGE prod/
+    - docker build --pull -t $PROD_IMAGE --build-arg tag=${CI_COMMIT_REF_SLUG} prod/
     - docker push $PROD_IMAGE
 
 
+# DEPLOY
 deploy:
   stage: deploy
   only:
@@ -88,13 +88,13 @@ deploy:
     - docker stack deploy -c prod/docker-compose.yml --with-registry-auth battletrack
 
 
+# CLEANUP
 local_cleanup:
   stage: cleanup
   tags:
     - shell
   script:
-    - docker container prune -f
-    - docker image prune -f
+    - docker system prune -f
 
 remote_cleanup:
   stage: cleanup
@@ -107,5 +107,4 @@ remote_cleanup:
   tags:
     - shell
   script:
-    - docker container prune -f
-    - docker image prune -f
+    - docker system prune -f
