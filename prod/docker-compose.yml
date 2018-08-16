@@ -37,6 +37,8 @@ services:
       - target: 80
         published: 80
         mode: host
+    environment:
+      - API_KEY=${AMPLIFY_API_KEY}
 
 networks:
   public:

@@ -6,9 +6,7 @@ RUN npm run build
 
 
 # NGINX SERVER
-FROM nginx:alpine
-
-RUN wget -O - https://raw.githubusercontent.com/nginxinc/nginx-amplify-agent/master/packages/install-source.sh | sh
+FROM nginx-amplify:latest
 
 # Copy in config and build files
 COPY . /battletrack/

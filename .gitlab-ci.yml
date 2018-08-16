@@ -67,6 +67,7 @@ build_main:
   tags:
     - shell
   script:
+    - docker build -t nginx-amplify https://github.com/nginxinc/docker-nginx-amplify.git
     - docker build --pull -t $PROD_IMAGE --build-arg tag=${CI_COMMIT_REF_SLUG} prod/
     - docker push $PROD_IMAGE
 
