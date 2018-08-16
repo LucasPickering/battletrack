@@ -6,7 +6,10 @@ PUBG map stuff
 1. Install Docker and Docker Compose
 1. `git submodule init && git submodule update`
 1. [OPTIONAL] Set up git hooks by running `bin/hooks.py`
-1. Save your API key to `key`
+1. Save the following keys in the `keys/` directory as needed:
+    1. `pubg` - PUBG API key
+    1. `amplify` - Nginx Amplify key
+    1. `gitlab` - Gitlab token
 1. `cd frontend && npm install`
 
 ### Running
@@ -32,6 +35,10 @@ frontend/assets.py tile # If map image(s) updated
 docker-compose run backend ./manage.py test
 docker-compose run frontend npm run test
 ```
+
+### Docker Registry
+You can push to/pull from the docker registry by logging in with:  
+`docker login -u <gitlab_user> -p $GITLAB_TOKEN registry.gitlab.com`
 
 ## Production
 ### Creating a new swarm manager

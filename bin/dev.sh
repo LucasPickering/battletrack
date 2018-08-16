@@ -1,3 +1,5 @@
 export DOCKER_UID=$(id -u)
 export DOCKER_GID=$(id -g)
-export BT_DEV_API_KEY=$(cat ./key)
+export BT_DEV_API_KEY=$(cat ./keys/pubg)
+export AMPLIFY_API_KEY=$(cat ./keys/amplify)
+export GITLAB_TOKEN=$(cat ./keys/gitlab)

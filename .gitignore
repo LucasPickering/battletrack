@@ -18,6 +18,5 @@
 *.log*
 *.sql
 *.p
-key
+keys/
 package-lock.json
-gitlab_token
