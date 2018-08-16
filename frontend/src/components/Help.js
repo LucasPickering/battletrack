@@ -7,6 +7,7 @@ import Icon from './Icon';
 const Help = ({ id, children, ...rest }) => (
   <OverlayTrigger
     overlay={<Tooltip id={id}>{children}</Tooltip>}
+    placement="top"
   >
     <Icon
       className="bt-help-icon"

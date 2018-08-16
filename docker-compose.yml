@@ -3,12 +3,10 @@ version: '3'
 services:
   db:
     image: postgres:10-alpine
-    volumes:
-      - .database:/var/lib/postgresql/data:rw
     environment:
-      POSTGRES_DB: battletrack
-      POSTGRES_USER: btuser
-      POSTGRES_PASSWORD: btpassword
+      - POSTGRES_DB=battletrack
+      - POSTGRES_USER=btuser
+      - POSTGRES_PASSWORD=btpassword
 
   backend:
     build: ./backend/

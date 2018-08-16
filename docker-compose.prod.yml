@@ -2,19 +2,18 @@ version: '3.2'
 
 services:
   db:
-    restart: always
     image: postgres:10-alpine
     volumes:
-      - /var/lib/postgresql/data:/var/lib/postgresql/data:rw
+      - ${POSTGRES_DATA_DIR}:/var/lib/postgresql/data:rw
     environment:
-      POSTGRES_DB: battletrack
-      POSTGRES_USER: btuser
-      POSTGRES_PASSWORD: $BT_DB_PASSWORD
+      - POSTGRES_DATA_DIR=/var/lib/postgresql/data
+      - POSTGRES_DB=battletrack
+      - POSTGRES_USER=btuser
+      - POSTGRES_PASSWORD=$BT_DB_PASSWORD
 
   api:
-    restart: always
     image: registry.gitlab.com/lucaspickering/battletrack/backend:${CI_COMMIT_REF_SLUG}
-    command: sh -c "dockerize -wait tcp://db:5432 && ./manage.py migrate && gunicorn battletrack.wsgi -b :8000 --log-file $BT_LOGGING_DIR/gunicorn_error.log --access-logfile $BT_LOGGING_DIR/gunicorn_access.log"
+    command: sh -c "dockerize -wait tcp://db:5432 && ./manage.py migrate && gunicorn battletrack.wsgi -b :8000 --log-file $BT_LOGGING_DIR/gunicorn.log --access-logfile $BT_LOGGING_DIR/gunicorn_access.log"
     depends_on:
       - db
     volumes:
@@ -27,7 +26,6 @@ services:
       - BT_SECRET_KEY
 
   main:
-    restart: always
     image: registry.gitlab.com/lucaspickering/battletrack/prod:${CI_COMMIT_REF_SLUG}
     depends_on:
       - api
@@ -39,6 +37,7 @@ services:
         mode: host
     environment:
       - API_KEY=${AMPLIFY_API_KEY}
+      - AMPLIFY_IMAGENAME=battletrack
 
 networks:
   public:

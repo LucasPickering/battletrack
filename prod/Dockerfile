@@ -1,15 +1,12 @@
-ARG tag=latest
-
 # BUILDER
+ARG tag=latest
 FROM registry.gitlab.com/lucaspickering/battletrack/frontend:$tag as builder
 RUN npm run build
 
 
 # NGINX SERVER
-FROM nginx-amplify:latest
+FROM registry.gitlab.com/lucaspickering/battletrack/nginx-amplify:latest
 
 # Copy in config and build files
-COPY . /battletrack/
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /battletrack/build/ /battletrack/build/
-
-CMD sh -c "sleep 5 && nginx -c /battletrack/nginx.conf -g 'daemon off;'"

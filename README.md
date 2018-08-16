@@ -14,7 +14,7 @@ PUBG map stuff
 
 ### Running
 ```
-source bin/dev.sh
+. bin/dev.env
 docker-compose up
 ```
 

@@ -11,6 +11,7 @@ variables:
   BACKEND_IMAGE: ${IMAGE_REGISTRY}/backend:${CI_COMMIT_REF_SLUG}
   FRONTEND_IMAGE: ${IMAGE_REGISTRY}/frontend:${CI_COMMIT_REF_SLUG}
   PROD_IMAGE: ${IMAGE_REGISTRY}/prod:${CI_COMMIT_REF_SLUG}
+  NGINX_AMPLIFY_IMAGE: ${IMAGE_REGISTRY}/nginx-amplify:latest
   DEPLOY_HOST: tcp://battletrack.lucaspickering.me:2375
   DEPLOY_CERT_PATH: /home/gitlab-runner/certs/battletrack
 
@@ -67,7 +68,8 @@ build_main:
   tags:
     - shell
   script:
-    - docker build -t nginx-amplify https://github.com/nginxinc/docker-nginx-amplify.git
+    - docker build -t ${NGINX_AMPLIFY_IMAGE} https://github.com/nginxinc/docker-nginx-amplify.git
+    - docker push ${NGINX_AMPLIFY_IMAGE}
     - docker build --pull -t $PROD_IMAGE --build-arg tag=${CI_COMMIT_REF_SLUG} prod/
     - docker push $PROD_IMAGE
 
@@ -85,7 +87,7 @@ deploy:
     - shell
   script:
     # I AM PETER DEPLOYERS
-    - docker-compose -f prod/docker-compose.yml pull
+    - docker-compose -f docker-compose.prod.yml pull
     - docker stack deploy -c prod/docker-compose.yml --with-registry-auth battletrack
 
 
