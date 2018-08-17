@@ -64,7 +64,6 @@ build_main:
   stage: build_main
   only:
     - master
-    - nginx-monitoring  # TODO: Remove this
   tags:
     - shell
   script:
@@ -88,7 +87,7 @@ deploy:
   script:
     # I AM PETER DEPLOYERS
     - docker-compose -f docker-compose.prod.yml pull
-    - docker stack deploy -c prod/docker-compose.yml --with-registry-auth battletrack
+    - docker stack deploy -c docker-compose.prod.yml --with-registry-auth battletrack
 
 
 # CLEANUP
