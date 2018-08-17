@@ -4,9 +4,8 @@ services:
   db:
     image: postgres:10-alpine
     volumes:
-      - ${POSTGRES_DATA_DIR}:/var/lib/postgresql/data:rw
+      - ${POSTGRES_DATA_DIR-/var/lib/postgresql/data}:/var/lib/postgresql/data:rw
     environment:
-      - POSTGRES_DATA_DIR=/var/lib/postgresql/data
       - POSTGRES_DB=battletrack
       - POSTGRES_USER=btuser
       - POSTGRES_PASSWORD=$BT_DB_PASSWORD
