@@ -5,10 +5,17 @@ import { withRouter } from 'react-router-dom';
 import BtPropTypes from 'util/BtPropTypes';
 import { gameModes, perspectives } from 'util/formatters';
 import { playerLink } from 'util/links';
+import Localization from 'util/Localization';
 
 import AllButtonGroup from 'components/AllButtonGroup';
 import ShardSelect from 'components/ShardSelect';
 import 'styles/player/PlayerHeader.css';
+
+const MAPS = [
+  'Erangel_Main',
+  'Desert_Main',
+  'Savage_Main',
+].map(key => ({ key, label: Localization.maps[key] }));
 
 const PlayerHeader = ({
   history,
@@ -17,6 +24,7 @@ const PlayerHeader = ({
   filters: {
     mode: modeFilter,
     perspective: perspectiveFilter,
+    map: mapFilter,
   },
   onChangeFilter,
 }) => (
@@ -40,6 +48,13 @@ const PlayerHeader = ({
         values={perspectives}
         selected={perspectiveFilter}
         onChange={selected => onChangeFilter({ perspective: selected })}
+      />
+      <AllButtonGroup
+        className="map-buttons"
+        name="maps"
+        values={MAPS}
+        selected={mapFilter}
+        onChange={selected => onChangeFilter({ map: selected })}
       />
     </div>
   </div>

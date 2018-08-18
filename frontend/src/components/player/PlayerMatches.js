@@ -14,8 +14,9 @@ function filterPasses(filter, val) {
 function filterMatches(filters, matches) {
   return matches
     .filter(m => m.summary) // Filter out null matches
-    .filter(m => filterPasses(filters.mode, m.summary.mode)) // Filter by mode
-    .filter(m => filterPasses(filters.perspective, m.summary.perspective)); // Filter by perspective
+    .filter(m => filterPasses(filters.mode, m.summary.mode)) // By mode
+    .filter(m => filterPasses(filters.perspective, m.summary.perspective)) // By perspective
+    .filter(m => filterPasses(filters.map, m.summary.map_name)); // By map
 }
 
 const PlayerMatches = ({

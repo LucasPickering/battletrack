@@ -14,7 +14,7 @@ const ModePerspective = ({ mode, perspective }) => {
         ? (
           <React.Fragment>
             {modeStr}
-            <Help>
+            <Help id="custom-game-tooltip">
               Custom games don&apos;t have a game mode or perspective in PUBG&apos;s API data
             </Help>
           </React.Fragment>
