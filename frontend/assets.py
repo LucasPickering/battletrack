@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import glob
-import itertools
 import os
 import shutil
 import subprocess
@@ -11,7 +9,13 @@ from PIL import Image
 ASSETS_DIR = 'src/api-assets'
 
 # Maps
-MAP_SRC_DIR = os.path.join(ASSETS_DIR, 'Assets/Maps')
+MAP_SRC_DIR = os.path.join(ASSETS_DIR, 'Assets/Maps/')
+MAP_FILE_NAMES = {
+    # These file names are stupid
+    'Erangel_Main': 'Erangel_Main_High_Res.jpg',
+    'Desert_Main': 'Miramar_Main_High_Res.jpg',
+    'Savage_Main': 'Savage_Main_High_Res.png',
+}
 TILE_MAP_DEST_DIR = 'public/assets/maps'
 TILE_SIZE = 512
 ZOOM_LEVELS = 5
@@ -82,13 +86,11 @@ def tile_image(image, output_dir):
 
 
 def tile_all(output_dir, **kwargs):
-    exts = ('*.jpg', '*.png')
-    all_files = itertools.chain.from_iterable(glob.glob(os.path.join(MAP_SRC_DIR, ext))
-                                              for ext in exts)
-    files = (f for f in all_files if 'lowres' not in f)  # Filter out lowres images
-    for map_file in files:
-        map_key = os.path.splitext(os.path.basename(map_file))[0]
-        tile_for_all_zooms(map_file, os.path.join(output_dir, map_key))
+    # Find all the map files we care about and tile each one
+    files = {map_name: os.path.join(MAP_SRC_DIR, fname)
+             for map_name, fname in MAP_FILE_NAMES.items()}
+    for map_name, file_name in files.items():
+        tile_for_all_zooms(file_name, os.path.join(output_dir, map_name))
 
 
 if __name__ == '__main__':
