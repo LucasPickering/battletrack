@@ -3,7 +3,7 @@ import { Button, Panel } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import BtPropTypes from 'util/BtPropTypes';
+import DataPropTypes from 'proptypes/DataPropTypes';
 import {
   formatDate,
   formatSeconds,
@@ -51,7 +51,7 @@ const Match = ({
 );
 
 Match.propTypes = {
-  match: BtPropTypes.match.isRequired,
+  match: DataPropTypes.match.isRequired,
 };
 
 const mapStateToProps = state => ({

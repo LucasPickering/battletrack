@@ -3,7 +3,8 @@ import { flatten, pick } from 'lodash';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import BtPropTypes from 'util/BtPropTypes';
+import DataPropTypes from 'proptypes/DataPropTypes';
+import MapPropTypes from 'proptypes/MapPropTypes';
 import {
   inRangeIncl,
 } from 'util/funcs';
@@ -85,11 +86,11 @@ class OverviewMap extends React.PureComponent {
 
 OverviewMap.propTypes = {
   // Redux state
-  map: BtPropTypes.map.isRequired,
-  telemetry: BtPropTypes.telemetry.isRequired,
-  rosterPalette: BtPropTypes.rosterPalette.isRequired,
+  map: DataPropTypes.map.isRequired,
+  telemetry: DataPropTypes.telemetry.isRequired,
+  rosterPalette: MapPropTypes.rosterPalette.isRequired,
   enabledFilters: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
-  timeRange: BtPropTypes.timeRange.isRequired,
+  timeRange: MapPropTypes.timeRange.isRequired,
 };
 
 const mapStateToProps = state => ({

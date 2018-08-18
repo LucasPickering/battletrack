@@ -8,8 +8,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Map, TileLayer } from 'react-leaflet';
 
+import CommonPropTypes from 'proptypes/CommonPropTypes';
+import DataPropTypes from 'proptypes/DataPropTypes';
 import { mapTilesUrl } from 'util/links';
-import BtPropTypes from 'util/BtPropTypes';
 
 import LeafletComponent from 'components/map/LeafletComponent';
 import 'styles/map/GameMap.css';
@@ -75,9 +76,9 @@ class GameMap extends LeafletComponent {
 }
 
 GameMap.propTypes = {
-  map: BtPropTypes.map.isRequired,
+  map: DataPropTypes.map.isRequired,
   showGrid: PropTypes.bool,
-  children: BtPropTypes.children,
+  children: CommonPropTypes.children,
 };
 
 GameMap.defaultProps = {

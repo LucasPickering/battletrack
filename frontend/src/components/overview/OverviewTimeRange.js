@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import MapPropTypes from 'proptypes/MapPropTypes';
 import actions from 'redux/actions';
-import BtPropTypes from 'util/BtPropTypes';
 import { formatSeconds } from 'util/formatters';
 
 import Range from 'components/Range';
@@ -59,7 +59,7 @@ class OverviewTimeRange extends React.PureComponent {
 OverviewTimeRange.propTypes = {
   // Redux state
   matchDuration: PropTypes.number.isRequired,
-  timeRange: BtPropTypes.timeRange.isRequired, // [min, max]
+  timeRange: MapPropTypes.timeRange.isRequired, // [min, max]
 
   // Redux actions
   setTimeRange: PropTypes.func.isRequired,

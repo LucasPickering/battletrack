@@ -3,20 +3,18 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { ListGroup } from 'react-bootstrap';
 
-import BtPropTypes from 'util/BtPropTypes';
-import PlayerMatchSummary from './PlayerMatchSummary';
+import FilterContext from 'context/FilterContext';
+import DataPropTypes from 'proptypes/DataPropTypes';
 import 'styles/player/PlayerMatches.css';
 
-function filterPasses(filter, val) {
-  return !filter || filter === val;
-}
+import PlayerMatchSummary from './PlayerMatchSummary';
 
-function filterMatches(filters, matches) {
-  return matches
-    .filter(m => m.summary) // Filter out null matches
-    .filter(m => filterPasses(filters.mode, m.summary.mode)) // By mode
-    .filter(m => filterPasses(filters.perspective, m.summary.perspective)) // By perspective
-    .filter(m => filterPasses(filters.map, m.summary.map_name)); // By map
+function makeFilterPredicate(filterCfgs, filterVals) {
+  // Apply each filter, AND them together
+  return m => filterCfgs.every(({ key, extractor }) => {
+    const filterVal = filterVals[key];
+    return !filterVal || filterVal === extractor(m); // If filterVal is null, let all through
+  });
 }
 
 const PlayerMatches = ({
@@ -24,29 +22,36 @@ const PlayerMatches = ({
     name,
     matches,
   },
-  filters,
-}) => {
-  const filteredMatches = filterMatches(filters, matches);
-  return (
-    <div className="player-matches-container">
-      <p className="player-match-count">{filteredMatches.length} matches</p>
-      <ListGroup className="player-matches">
-        {filteredMatches
-          .map(m => (
-            <PlayerMatchSummary
-              key={m.match_id}
-              playerName={name}
-              match={m}
-            />
-          ))}
-      </ListGroup>
-    </div>
-  );
-};
+  filterCfgs,
+}) => (
+  <FilterContext.Consumer>
+    {({ filterVals }) => {
+      const filteredMatches = matches.filter(makeFilterPredicate(filterCfgs, filterVals));
+      return (
+        <div className="player-matches-container">
+          <p className="player-match-count">{filteredMatches.length} matches</p>
+          <ListGroup className="player-matches">
+            {filteredMatches
+              .map(m => (
+                <PlayerMatchSummary
+                  key={m.match_id}
+                  playerName={name}
+                  match={m}
+                />
+              ))}
+          </ListGroup>
+        </div>
+      );
+    }}
+  </FilterContext.Consumer>
+);
 
 PlayerMatches.propTypes = {
-  player: BtPropTypes.player.isRequired,
-  filters: PropTypes.objectOf(PropTypes.string).isRequired,
+  player: DataPropTypes.player.isRequired,
+  filterCfgs: PropTypes.arrayOf(PropTypes.shape({
+    key: PropTypes.string.isRequired,
+    extractor: PropTypes.func.isRequired,
+  })).isRequired,
 };
 
 const mapStateToProps = state => ({

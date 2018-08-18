@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 
 import actions from 'redux/actions';
 import { shouldInitOverview } from 'redux/overview/overviewSelectors';
-import BtPropTypes from 'util/BtPropTypes';
+import ApiPropTypes from 'proptypes/ApiPropTypes';
 
 import ApiDataComponent from 'components/ApiDataComponent';
 import Overview from 'components/overview/Overview';
@@ -63,8 +63,8 @@ OverviewView.propTypes = {
   id: PropTypes.string.isRequired, // Match ID
 
   // Redux state
-  matchState: BtPropTypes.apiState.isRequired,
-  telemetryState: BtPropTypes.apiState.isRequired,
+  matchState: ApiPropTypes.apiState.isRequired,
+  telemetryState: ApiPropTypes.apiState.isRequired,
   shouldInitOverviewProp: PropTypes.bool.isRequired,
 
   // Redux dispatches

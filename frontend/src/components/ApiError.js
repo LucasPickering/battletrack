@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import BtPropTypes from 'util/BtPropTypes';
+import ApiPropTypes from 'proptypes/ApiPropTypes';
 
 import 'styles/ApiError.css';
 
 const ErrorComponent = ({ error }) => <p className="api-error">Error: {error.data.detail}</p>;
 
 ErrorComponent.propTypes = {
-  error: BtPropTypes.error.isRequired,
+  error: ApiPropTypes.error.isRequired,
 };
 
 const ApiError = ({ error, errors }) => {
@@ -22,8 +22,8 @@ const ApiError = ({ error, errors }) => {
 };
 
 ApiError.propTypes = {
-  error: BtPropTypes.error,
-  errors: PropTypes.objectOf(BtPropTypes.error.isRequired),
+  error: ApiPropTypes.error,
+  errors: PropTypes.objectOf(ApiPropTypes.error.isRequired),
 };
 
 ApiError.defaultProps = {

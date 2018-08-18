@@ -2,31 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 
-import BtPropTypes from 'util/BtPropTypes';
-import { gameModes, perspectives } from 'util/formatters';
+import FilterContext from 'context/FilterContext';
+import CommonPropTypes from 'proptypes/CommonPropTypes';
 import { playerLink } from 'util/links';
-import Localization from 'util/Localization';
 
 import AllButtonGroup from 'components/AllButtonGroup';
 import ShardSelect from 'components/ShardSelect';
 import 'styles/player/PlayerHeader.css';
 
-const MAPS = [
-  'Erangel_Main',
-  'Desert_Main',
-  'Savage_Main',
-].map(key => ({ key, label: Localization.maps[key] }));
-
 const PlayerHeader = ({
   history,
   shard,
   name,
-  filters: {
-    mode: modeFilter,
-    perspective: perspectiveFilter,
-    map: mapFilter,
-  },
-  onChangeFilter,
+  filterCfgs,
 }) => (
   <div className="player-header">
     <h2>{name}</h2>
@@ -35,37 +23,26 @@ const PlayerHeader = ({
       onSelect={newShard => history.push(playerLink(newShard, name))}
     />
     <div className="player-filter-buttons">
-      <AllButtonGroup
-        className="game-mode-buttons"
-        name="gameModes"
-        values={gameModes}
-        selected={modeFilter}
-        onChange={selected => onChangeFilter({ mode: selected })}
-      />
-      <AllButtonGroup
-        className="perspective-buttons"
-        name="perspectives"
-        values={perspectives}
-        selected={perspectiveFilter}
-        onChange={selected => onChangeFilter({ perspective: selected })}
-      />
-      <AllButtonGroup
-        className="map-buttons"
-        name="maps"
-        values={MAPS}
-        selected={mapFilter}
-        onChange={selected => onChangeFilter({ map: selected })}
-      />
+      <FilterContext.Consumer>
+        {({ filterVals, setFilterVal }) => filterCfgs.map(({ key, values }) => (
+          <AllButtonGroup
+            key={key}
+            name={key}
+            values={values}
+            selected={filterVals[key]}
+            onChange={selected => setFilterVal(key, selected)}
+          />
+        ))}
+      </FilterContext.Consumer>
     </div>
   </div>
 );
 
 PlayerHeader.propTypes = {
-  history: BtPropTypes.history.isRequired,
+  history: CommonPropTypes.history.isRequired,
   shard: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  filters: PropTypes.objectOf(PropTypes.string).isRequired,
-  onChangeFilter: PropTypes.func.isRequired,
+  filterCfgs: CommonPropTypes.filterCfgs.isRequired,
 };
 
 export default withRouter(PlayerHeader);

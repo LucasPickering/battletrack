@@ -2,7 +2,7 @@ import React from 'react';
 import { identity } from 'lodash';
 import PropTypes from 'prop-types';
 
-import BtPropTypes from 'util/BtPropTypes';
+import ApiPropTypes from 'proptypes/ApiPropTypes';
 
 import ApiError from './ApiError';
 import Loading from './Loading';
@@ -35,7 +35,7 @@ const ApiDataComponent = ({
 
 ApiDataComponent.propTypes = {
   component: PropTypes.func.isRequired, // React component
-  state: BtPropTypes.apiState.isRequired,
+  state: ApiPropTypes.apiState.isRequired,
   loadingText: PropTypes.string,
   isLoading: PropTypes.func,
 };

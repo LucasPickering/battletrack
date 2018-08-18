@@ -1,6 +1,6 @@
 import React from 'react';
 
-import BtPropTypes from 'util/BtPropTypes';
+import MapPropTypes from 'proptypes/MapPropTypes';
 
 import LeafletComponent from './LeafletComponent';
 import Ray from './Ray';
@@ -13,7 +13,7 @@ class Plane extends LeafletComponent {
 }
 
 Plane.propTypes = {
-  data: BtPropTypes.ray.isRequired,
+  data: MapPropTypes.ray.isRequired,
 };
 
 export default Plane;

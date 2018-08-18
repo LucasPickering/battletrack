@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Route } from 'react-router-dom';
 
-import BtPropTypes from 'util/BtPropTypes';
+import CommonPropTypes from 'proptypes/CommonPropTypes';
+
 import Header from './Header';
 import 'styles/BtRoute.css';
 
@@ -16,7 +17,7 @@ const PageWrapper = ({ children }) => (
 );
 
 PageWrapper.propTypes = {
-  children: BtPropTypes.children,
+  children: CommonPropTypes.children,
 };
 
 PageWrapper.defaultProps = {

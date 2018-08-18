@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ClipLoader } from 'react-spinners';
 
-import BtPropTypes from 'util/BtPropTypes';
+import CommonPropTypes from 'proptypes/CommonPropTypes';
 import 'styles/Loading.css';
 
 const Loading = ({
@@ -24,7 +24,7 @@ const Loading = ({
 ) : null);
 
 Loading.propTypes = {
-  children: BtPropTypes.children,
+  children: CommonPropTypes.children,
   loading: PropTypes.bool,
   loadingComp: PropTypes.func,
   text: PropTypes.string,

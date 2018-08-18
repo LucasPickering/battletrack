@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Popup } from 'react-leaflet';
 import uniqid from 'uniqid';
 
-import BtPropTypes from 'util/BtPropTypes';
+import CommonPropTypes from 'proptypes/CommonPropTypes';
 import { formatSeconds } from 'util/formatters';
 
 import Icon from 'components/Icon';
@@ -37,7 +37,7 @@ const MarkTooltip = props => {
 MarkTooltip.propTypes = {
   title: PropTypes.string.isRequired,
   time: PropTypes.number.isRequired,
-  children: BtPropTypes.tooltipContent,
+  children: CommonPropTypes.tooltipContent,
 };
 
 MarkTooltip.defaultProps = {

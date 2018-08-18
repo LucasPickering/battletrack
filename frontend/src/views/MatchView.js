@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import ApiPropTypes from 'proptypes/ApiPropTypes';
 import actions from 'redux/actions';
-import BtPropTypes from 'util/BtPropTypes';
 
 import ApiDataComponent from 'components/ApiDataComponent';
 import Match from 'components/match/Match';
@@ -34,7 +34,7 @@ class MatchView extends ApiView {
 
 MatchView.propTypes = {
   id: PropTypes.string.isRequired,
-  matchState: BtPropTypes.apiState.isRequired,
+  matchState: ApiPropTypes.apiState.isRequired,
   fetchMatchIfNeeded: PropTypes.func.isRequired,
 };
 

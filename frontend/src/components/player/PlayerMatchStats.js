@@ -1,6 +1,6 @@
 import React from 'react';
 
-import BtPropTypes from 'util/BtPropTypes';
+import DataPropTypes from 'proptypes/DataPropTypes';
 import { formatSeconds } from 'util/formatters';
 
 import Stat from 'components/Stat';
@@ -39,7 +39,7 @@ const PlayerMatchStats = ({
 );
 
 PlayerMatchStats.propTypes = {
-  stats: BtPropTypes.playerMatchStats.isRequired,
+  stats: DataPropTypes.playerMatchStats.isRequired,
 };
 
 export default PlayerMatchStats;

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import BtPropTypes from 'util/BtPropTypes';
+import MapPropTypes from 'proptypes/MapPropTypes';
 
 import LeafletComponent from './LeafletComponent';
 import Zones from './Zones';
@@ -14,7 +14,7 @@ class WhiteZones extends LeafletComponent {
 }
 
 WhiteZones.propTypes = {
-  data: PropTypes.arrayOf(BtPropTypes.circle.isRequired).isRequired,
+  data: PropTypes.arrayOf(MapPropTypes.circle.isRequired).isRequired,
 };
 
 export default WhiteZones;

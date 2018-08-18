@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Marker } from 'react-leaflet';
 import reactToCss from 'react-style-object-to-css';
 
-import BtPropTypes from 'util/BtPropTypes';
+import MapPropTypes from 'proptypes/MapPropTypes';
 import Localization from 'util/Localization';
 import { toLeaflet } from 'util/funcs';
 
@@ -63,11 +63,11 @@ class EventMark extends LeafletComponent {
 EventMark.propTypes = {
   type: PropTypes.string.isRequired,
   icon: PropTypes.objectOf(PropTypes.any).isRequired,
-  pos: BtPropTypes.pos.isRequired,
+  pos: MapPropTypes.pos.isRequired,
   time: PropTypes.number.isRequired,
-  tooltip: BtPropTypes.tooltipContent,
+  tooltip: MapPropTypes.tooltipContent,
   player: PropTypes.shape({ id: PropTypes.string.isRequired }),
-  rosterPalette: BtPropTypes.rosterPalette.isRequired,
+  rosterPalette: MapPropTypes.rosterPalette.isRequired,
   onMarkSelect: PropTypes.func,
 };
 

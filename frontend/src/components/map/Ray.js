@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Circle, Polygon, Polyline } from 'react-leaflet';
 
-import BtPropTypes from 'util/BtPropTypes';
+import MapPropTypes from 'proptypes/MapPropTypes';
 import { toLeaflet } from 'util/funcs';
 
 const ArrowEnds = ({
@@ -43,8 +43,8 @@ const ArrowEnds = ({
 };
 
 ArrowEnds.propTypes = {
-  start: BtPropTypes.pos.isRequired,
-  end: BtPropTypes.pos.isRequired,
+  start: MapPropTypes.pos.isRequired,
+  end: MapPropTypes.pos.isRequired,
   arrowSize: PropTypes.number,
   arrowAngle: PropTypes.number,
 };
@@ -72,8 +72,8 @@ const Ray = ({
 );
 
 Ray.propTypes = {
-  start: BtPropTypes.pos.isRequired,
-  end: BtPropTypes.pos.isRequired,
+  start: MapPropTypes.pos.isRequired,
+  end: MapPropTypes.pos.isRequired,
   color: PropTypes.string,
   showTailTip: PropTypes.bool,
 };

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Panel } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
-import BtPropTypes from 'util/BtPropTypes';
+import DataPropTypes from 'proptypes/DataPropTypes';
 import { formatDate } from 'util/formatters';
 import {
   matchLink,
@@ -74,7 +74,7 @@ const PlayerMatchSummary = props => {
 
 PlayerMatchSummary.propTypes = {
   playerName: PropTypes.string.isRequired,
-  match: BtPropTypes.playerMatch.isRequired,
+  match: DataPropTypes.playerMatch.isRequired,
 };
 
 export default PlayerMatchSummary;

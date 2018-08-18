@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import BtPropTypes from 'util/BtPropTypes';
+import ApiPropTypes from 'proptypes/ApiPropTypes';
 
 import ApiDataComponent from 'components/ApiDataComponent';
 import 'styles/overview/OverviewMapContainer.css';
@@ -31,7 +31,7 @@ class OverviewMapContainer extends React.PureComponent {
 
 OverviewMapContainer.propTypes = {
   // Redux state
-  telemetryState: BtPropTypes.apiState.isRequired,
+  telemetryState: ApiPropTypes.apiState.isRequired,
 };
 
 const mapStateToProps = state => ({
