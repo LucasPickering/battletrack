@@ -1,18 +1,15 @@
-import os
-
-from btcore.tests import BtTestCase, FIXTURE_DIR, vcr
+from btcore.tests.common import BtTestCase, vcr
 from telemetry import models
 
 
 class TelemetryTests(BtTestCase):
 
-    DATA_DIR = os.path.join(FIXTURE_DIR, 'telemetry')
     MATCH_ID = '5cf3ed16-6383-4172-bb60-8ead540d1245'
 
+    @vcr.use_cassette('telemetry.yml')
     def get_telemetry(self, id):
         return self.get(f'/api/telemetry/{id}')
 
-    @vcr.use_cassette('telemetry.yml')
     def setUp(self):
         super().setUp()
         self.telemetry = self.get_telemetry(self.MATCH_ID)
