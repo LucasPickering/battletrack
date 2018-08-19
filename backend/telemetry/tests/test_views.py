@@ -28,7 +28,7 @@ class TelemetryTests(BtTestCase):
     def test_events(self):
         # Make sure each event type appears in the telemetry data
         for type_ in models.get_all_event_types():
-            self.assertTrue(type_ in self.telemetry['events'])
+            self.assertIn(type_, self.telemetry['events'])
 
     def test_events_sorted(self):
         # Make sure all events are sorted by time

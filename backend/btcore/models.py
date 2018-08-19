@@ -36,6 +36,27 @@ objects where possible. An unlinked in this case PlayerMatch will have a null re
 """
 
 
+def DELETE_PLAYERMATCH_FROM_ROSTERMATCH(collector, field, sub_objs, using):
+    to_null = []  # PMs with a Player linked will have the RosterMatch link nullified
+    to_delete = []  # PMs with no Player linked will be deleted
+    for pm in sub_objs:
+        if Player.objects.filter(id=pm.player_id).exists():
+            to_null.append(pm)
+        else:
+            to_delete.append(pm)
+
+    collector.add_field_update(field, None, to_null)  # Null out RosterMatch fields
+    collector.collect(to_delete, source=field.remote_field.model,
+                      source_attr=field.name, nullable=field.null)  # DELETION
+
+
+def DELETE_PLAYERMATCH_FROM_PLAYER(collector, field, sub_objs, using):
+    # Delete all PlayerMatches with no linked Roster
+    to_delete = [pm for pm in sub_objs if not pm.roster]
+    collector.collect(to_delete, source=field.remote_field.model,
+                      source_attr=field.name, nullable=field.null)
+
+
 class Match(models.Model):
     objects = MatchQuerySet.as_manager()
 
@@ -65,10 +86,12 @@ class RosterMatch(models.Model):
 
 class PlayerMatch(models.Model):
     # Null if match/player isn't in the DB yet
-    roster = models.ForeignKey(RosterMatch, on_delete=models.SET_NULL, null=True,
-                               related_name='players')
-    player = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True, db_constraint=False,
-                               related_name='matches')
+    roster = models.ForeignKey(RosterMatch, on_delete=DELETE_PLAYERMATCH_FROM_ROSTERMATCH,
+                               null=True, related_name='players')
+    # Always populated - link is broken if Player isn't in DB yet
+    player = models.ForeignKey(Player, on_delete=DELETE_PLAYERMATCH_FROM_PLAYER,
+                               db_constraint=False, related_name='matches')
+    # ^^^ Deletion for these fields is handled by custom logic in the related objects ^^^
 
     # Store these additional fields, because they can be gotten from match OR player data
     match_id = models.CharField(max_length=36)
