@@ -1,0 +1,23 @@
+{
+    "api_assets_dir": "api-assets",
+    "static": {
+        "output_dir": "src/api-assets",
+        "files":  [
+            "dictionaries/telemetry/common/mapName.json",
+            "dictionaries/telemetry/item/itemId.json",
+            "dictionaries/telemetry/vehicle/vehicleId.json",
+            "dictionaries/telemetry/damageCauserName.json"
+        ]
+    },
+    "maps": {
+        "input_dir": "Assets/Maps",
+        "output_dir": "public/assets/maps",
+        "zoom_levels": 5,
+        "tile_size": 512,
+        "files": {
+            "Erangel_Main": "Erangel_Main_High_Res.jpg",
+            "Desert_Main": "Miramar_Main_High_Res.jpg",
+            "Savage_Main": "Savage_Main_High_Res.png"
+        }
+    }
+}

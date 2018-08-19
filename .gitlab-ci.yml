@@ -25,7 +25,6 @@ build_backend:
   tags:
     - shell
   script:
-    - git submodule init && git submodule update
     - docker build --pull -t $BACKEND_IMAGE backend/
     - docker push $BACKEND_IMAGE
 
@@ -34,7 +33,6 @@ build_frontend:
   tags:
     - shell
   script:
-    - git submodule init && git submodule update
     - docker build --pull -t $FRONTEND_IMAGE frontend/
     - docker push $FRONTEND_IMAGE
 
