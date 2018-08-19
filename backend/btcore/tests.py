@@ -63,6 +63,15 @@ class MatchTests(BtTestCase):
             'duration': 1968,
             'custom_match': False,
         },
+        '97d08b9d-ac30-42db-a576-947cbfb69a9f': {
+            'shard': 'pc-na',
+            'mode': 'early',
+            'perspective': 'fpp',
+            'map': {'name': 'Erangel_Main', 'size': 8000},
+            'date': '2018-08-17T21:59:25-04:00',
+            'duration': 1868,
+            'custom_match': False,
+        },
     }
 
     @vcr.use_cassette('match.yml')

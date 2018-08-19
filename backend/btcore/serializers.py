@@ -1,3 +1,4 @@
+import re
 from collections import defaultdict
 
 from django.db import models, transaction
@@ -279,35 +280,21 @@ class MatchSerializer(DevDeserializer):
             'size': util.MAP_SIZES[map_name],
         }
 
-    @classmethod
-    def convert_dev_data(cls, dev_data, **kwargs):
-        data = dev_data['data']
-        attrs = data['attributes']
-
-        custom_match = attrs['isCustomMatch']
-        mode_temp = attrs['gameMode']
-        if custom_match:
+    @staticmethod
+    def _parse_mode_perspective(game_mode, is_custom_match):
+        if is_custom_match:
             # Custom match has a bullshit game mode
-            mode, perspective = 'custom', ''
-        elif '-' in mode_temp:
-            # 'squad-fpp' = FPP Squad
-            mode, perspective = mode_temp.split('-')
-        else:
-            # 'squad' = TPP Squad
-            mode, perspective = mode_temp, 'tpp'
+            return 'custom', ''
+        m = re.match(r'^(?P<mode>[\w\d]+?)-?(?P<perspective>[ft]pp)?$', game_mode)
+        if m:
+            groups = m.groupdict(default='')
+            return groups['mode'], groups['perspective']
+        return '', ''
 
-        shard = attrs['shardId']
-        map_name = attrs['mapName']
-
-        # Separate 'included' objects by type: we'll need to access all 3 types later
-        incl = defaultdict(list)
-        for e in dev_data['included']:
-            incl[e['type']].append(e)
-        tel_asset = incl['asset'][0]  # Get the first asset, which is always telemetry metadata
-
-        # Dict of each PlayerMatch data, keyed on participant ID
+    @staticmethod
+    def _parse_player_matches(participants, shard):
         player_matches = {}
-        for participant in incl['participant']:
+        for participant in participants:
             stats_dev_data = participant['attributes']['stats']
 
             # We need this, but not in the stats
@@ -322,6 +309,27 @@ class MatchSerializer(DevDeserializer):
                 'shard': shard,
                 'stats': stats,
             }
+        return player_matches
+
+    @classmethod
+    def convert_dev_data(cls, dev_data, **kwargs):
+        data = dev_data['data']
+        attrs = data['attributes']
+
+        is_custom_match = attrs['isCustomMatch']
+        mode, perspective = cls._parse_mode_perspective(attrs['gameMode'], is_custom_match)
+
+        shard = attrs['shardId']
+        map_name = attrs['mapName']
+
+        # Separate 'included' objects by type: we'll need to access all 3 types later
+        incl = defaultdict(list)
+        for e in dev_data['included']:
+            incl[e['type']].append(e)
+        tel_asset = incl['asset'][0]  # Get the first asset, which is always telemetry metadata
+
+        # Dict of each PlayerMatch data, keyed on participant ID
+        player_matches = cls._parse_player_matches(incl['participant'], shard)
 
         # Build a RosterMatch dict for each team in the game, and nest a list of PlayerMatches
         # in each one
@@ -342,7 +350,7 @@ class MatchSerializer(DevDeserializer):
             'map_name': map_name,
             'date': attrs['createdAt'],
             'duration': attrs['duration'],
-            'custom_match': custom_match,
+            'custom_match': is_custom_match,
             'telemetry_url': tel_asset['attributes']['URL'],
             'rosters': roster_matches,
         }
