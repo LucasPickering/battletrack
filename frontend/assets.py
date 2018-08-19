@@ -93,8 +93,6 @@ def update_all(assets_manifest, **kwargs):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Script to download and save PUBG assets")
-    parser.add_argument('--yes', '-y', action='store_true',
-                        help="Answer yes to all confirmation prompts")
     subparsers = parser.add_subparsers()
 
     pull_parser = subparsers.add_parser('pull', help="Pull the latest version of the assets repo")
@@ -102,11 +100,6 @@ if __name__ == '__main__':
 
     update_parser = subparsers.add_parser('update', help="Copy/process asset files into the repo")
     update_parser.set_defaults(func=update_all)
-
-    # tile_parser = subparsers.add_parser('tile', help="Break map images into tiles")
-    # tile_parser.add_argument('--output-dir', '-o', default=TILE_MAP_DEST_DIR,
-    #                          help="Directory to output tiled maps to")
-    # tile_parser.set_defaults(func=tile_all)
 
     script_dir = os.path.dirname(os.path.realpath(__file__))
     os.chdir(script_dir)
