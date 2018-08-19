@@ -1,20 +1,10 @@
 .player-header {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 65% 35%;
+  grid-row-gap: 5px;
   margin-bottom: 15px;
-}
-
-.player-header .shard-select {
-  justify-self: end;
 }
 
 .player-header .player-filter-buttons {
   grid-column: 1 / 3;
-  display: flex;
-  flex-direction: column;
-  margin-top: 5px;
-}
-
-.player-header .btn-group + .btn-group {
-  margin-top: 8px;
 }

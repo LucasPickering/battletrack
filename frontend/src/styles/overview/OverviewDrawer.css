@@ -29,7 +29,7 @@
   box-shadow: var(--hover-shadow-light);
 }
 
-#bootstrap-override .overview-drawer .drawer-button {
+#style-override .overview-drawer .drawer-button {
   z-index: 500;
   position: absolute;
   bottom: 10px;

@@ -23,3 +23,7 @@ a:hover {
 .form-control {
   border: none;
 }
+
+.grid-right {
+  justify-self: end;
+}

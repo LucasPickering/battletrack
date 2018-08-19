@@ -19,22 +19,23 @@ const PlayerHeader = ({
   <div className="player-header">
     <h2>{name}</h2>
     <ShardSelect
+      className="grid-right"
       activeShard={shard}
       onSelect={newShard => history.push(playerLink(newShard, name))}
     />
-    <div className="player-filter-buttons">
-      <FilterContext.Consumer>
-        {({ filterVals, setFilterVal }) => filterCfgs.map(({ key, values }) => (
-          <AllButtonGroup
-            key={key}
-            name={key}
-            values={values}
-            selected={filterVals[key]}
-            onChange={selected => setFilterVal(key, selected)}
-          />
-        ))}
-      </FilterContext.Consumer>
-    </div>
+    <FilterContext.Consumer>
+      {({ filterVals, setFilterVal }) => filterCfgs.map(({ key, values }, index) => (
+        <AllButtonGroup
+          key={key}
+          type="radio"
+          name={key}
+          values={values}
+          selected={filterVals[key]}
+          placement={index % 2 === 0 ? 'left' : 'right'}
+          onChange={selected => setFilterVal(key, selected)}
+        />
+      ))}
+    </FilterContext.Consumer>
   </div>
 );
 

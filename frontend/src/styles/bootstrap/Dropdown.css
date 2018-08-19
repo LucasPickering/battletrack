@@ -1,7 +1,7 @@
-#bootstrap-override .dropdown.open > .btn.dropdown-toggle {
+#style-override .dropdown.open > .btn.dropdown-toggle {
   box-shadow: var(--hover-shadow-dark), var(--active-shadow-dark);
 }
 
-#bootstrap-override .dropdown > .btn.dropdown-toggle:hover {
+#style-override .dropdown > .btn.dropdown-toggle:hover {
   box-shadow: var(--hover-shadow-dark);
 }

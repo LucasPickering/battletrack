@@ -1,6 +1,7 @@
-import React from 'react';
+import classNames from 'classnames';
 import { noop } from 'lodash';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { DropdownButton, MenuItem } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -18,9 +19,14 @@ class ShardSelect extends ApiView {
   }
 
   render() {
-    const { activeShard, shards, onSelect } = this.props;
+    const {
+      className,
+      activeShard,
+      shards,
+      onSelect,
+    } = this.props;
     return (
-      <div className="shard-select">
+      <div className={classNames('shard-select', className)}>
         <DropdownButton
           title={formatShard(activeShard)}
           id="shards-dropdown"
@@ -36,6 +42,7 @@ class ShardSelect extends ApiView {
 }
 
 ShardSelect.propTypes = {
+  className: PropTypes.string,
   activeShard: PropTypes.string.isRequired,
   shards: PropTypes.arrayOf(PropTypes.string.isRequired),
   onSelect: PropTypes.func,
@@ -43,6 +50,7 @@ ShardSelect.propTypes = {
 };
 
 ShardSelect.defaultProps = {
+  className: null,
   shards: [],
   onSelect: noop,
 };
