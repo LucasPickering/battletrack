@@ -95,6 +95,7 @@ local_cleanup:
     - shell
   script:
     - docker system prune -f
+    - docker volume prune -f
 
 remote_cleanup:
   stage: cleanup
@@ -108,3 +109,4 @@ remote_cleanup:
     - shell
   script:
     - docker system prune -f
+    - docker volume prune -f
