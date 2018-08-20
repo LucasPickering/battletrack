@@ -13,11 +13,19 @@
         "input_dir": "Assets/Maps",
         "output_dir": "public/assets/maps",
         "zoom_levels": 5,
-        "tile_size": 512,
         "files": {
-            "Erangel_Main": "Erangel_Main_High_Res.jpg",
-            "Desert_Main": "Miramar_Main_High_Res.jpg",
-            "Savage_Main": "Savage_Main_High_Res.png"
+            "Erangel_Main": {
+                "file": "Erangel_Main_High_Res.jpg",
+                "crop_size": 8128
+            },
+            "Desert_Main": {
+                "file": "Miramar_Main_High_Res.jpg",
+                "crop_size": 8128
+            },
+            "Savage_Main": {
+                "file": "Savage_Main_High_Res.png",
+                "crop_size": 8128
+            }
         }
     }
 }

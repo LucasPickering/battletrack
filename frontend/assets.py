@@ -49,7 +49,7 @@ def tile_image(image, output_dir, tile_size):
             cropped.save(tile_path, quality=95, subsampling=0)  # No compression
 
 
-def tile_for_all_zooms(image_path, output_dir, zoom_levels, tile_size):
+def tile_for_all_zooms(image_path, output_dir, zoom_levels, crop_size):
     print(f"Tiling {image_path} => {output_dir}")
 
     # Delete the directory (if present) and re-make it
@@ -60,15 +60,19 @@ def tile_for_all_zooms(image_path, output_dir, zoom_levels, tile_size):
         pass
     os.makedirs(output_dir)
 
+    # The asset images are larger than what's actually used in game so we have to crop down
+    image = Image.open(image_path).crop((0, 0, crop_size, crop_size))
+    tile_size = crop_size // (2 ** (zoom_levels - 1))  # Compute tile size based on zoom level
+
     # General approach: cut the full-res image into uniform tiles, downscale the full image by
     # 50%, then repeat until the image is only one tile
-    image = Image.open(image_path)
     for zoom in reversed(range(zoom_levels)):
         zoom_output_dir = os.path.join(output_dir, str(zoom))
         os.makedirs(zoom_output_dir)
 
         tile_image(image, zoom_output_dir, tile_size)  # Generate tiles
 
+        # Scale the image down by a factor of 2
         width, height = image.size
         image = image.copy()
         image.thumbnail((width // 2, height // 2))
@@ -78,11 +82,10 @@ def tile_maps(assets_dir, maps_cfg):
     input_dir = os.path.join(assets_dir, maps_cfg['input_dir'])
     output_dir = maps_cfg['output_dir']
     zoom_levels = maps_cfg['zoom_levels']
-    tile_size = maps_cfg['tile_size']
-    for map_name, file_name in maps_cfg['files'].items():
-        tile_for_all_zooms(os.path.join(input_dir, file_name),
+    for map_name, map_cfg in maps_cfg['files'].items():
+        tile_for_all_zooms(os.path.join(input_dir, map_cfg['file']),
                            os.path.join(output_dir, map_name),
-                           zoom_levels, tile_size)
+                           zoom_levels, map_cfg['crop_size'])
 
 
 def update_all(assets_manifest, **kwargs):
