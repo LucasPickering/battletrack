@@ -12,7 +12,7 @@ def convert_distance(dist):
 
     @return     the distance, in meters
     """
-    return dist / 101.7782696  # Calculated from circle widths - probably needs tweaking
+    return dist / 101.171242  # Calculated from circle widths, calibrated by comparing to replay
 
 
 class Position2:
