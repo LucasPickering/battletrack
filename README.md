@@ -27,7 +27,7 @@ docker-compose run backend ./manage.py migrate
 ### Updating Assets
 ```
 frontend/assets.py pull
-frontend/assets.py tile # If map image(s) updated
+frontend/assets.py update
 ```
 
 ### Testing
