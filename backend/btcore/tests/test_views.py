@@ -1,3 +1,5 @@
+from btcore import util
+
 from .common import BtTestCase, vcr
 
 
@@ -143,3 +145,9 @@ class PlayerTests(BtTestCase):
         matches = self.get_player(self.SHARD, self.PLAYER_NAME, pop_matches=True)['matches']
         self.assertEqual(3, len(matches))
         self.assertTrue(all(m['summary'] for m in matches))
+
+
+class ShardsTests(BtTestCase):
+    def test_shards(self):
+        shards = self.client.get('/api/core/shards').json()
+        self.assertEqual(util.SHARDS, shards)
