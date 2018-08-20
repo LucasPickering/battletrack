@@ -6,7 +6,11 @@ import { connect } from 'react-redux';
 import FilterContext from 'context/FilterContext';
 import ApiPropTypes from 'proptypes/ApiPropTypes';
 import actions from 'redux/actions';
-import { gameModes, perspectives } from 'util/formatters';
+import {
+  formatGameMode,
+  formatPerspective,
+} from 'util/formatters';
+import { makeLabels } from 'util/funcs';
 import Localization from 'util/Localization';
 
 import ApiDataComponent from 'components/ApiDataComponent';
@@ -17,21 +21,33 @@ import 'styles/player/PlayerView.css';
 
 import ApiView from './ApiView';
 
-const MAPS = [
+const GAME_MODES = Object.freeze(makeLabels([
+  'solo',
+  'duo',
+  'squad',
+  'custom',
+], formatGameMode));
+
+const PERSPECTIVES = Object.freeze(makeLabels([
+  'fpp', // Good
+  'tpp', // Scrubs
+], formatPerspective));
+
+const MAPS = Object.freeze(makeLabels([
   'Erangel_Main',
   'Desert_Main',
   'Savage_Main',
-].map(key => ({ key, label: Localization.maps[key] }));
+], key => Localization.maps[key]));
 
 const FILTER_CFGS = Object.freeze([
   {
     key: 'mode',
-    values: gameModes,
+    values: GAME_MODES,
     extractor: m => m.summary.mode,
   },
   {
     key: 'perspective',
-    values: perspectives,
+    values: PERSPECTIVES,
     extractor: m => m.summary.perspective,
   },
   {

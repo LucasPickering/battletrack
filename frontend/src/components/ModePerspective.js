@@ -1,13 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { gameModesObj, perspectivesObj } from 'util/formatters';
+import {
+  formatGameMode,
+  formatPerspective,
+} from 'util/formatters';
 
 import Help from './Help';
 import 'styles/ModePerspective.css';
 
 const ModePerspective = ({ mode, perspective }) => {
-  const modeStr = gameModesObj[mode];
+  const modeStr = formatGameMode(mode);
   return (
     <div className="bt-mode-perspective">
       {mode === 'custom'
@@ -19,7 +22,7 @@ const ModePerspective = ({ mode, perspective }) => {
             </Help>
           </React.Fragment>
         )
-        : `${modeStr} ${perspectivesObj[perspective]}`}
+        : `${modeStr} ${formatPerspective(perspective)}`}
     </div>
   );
 };
