@@ -14,14 +14,13 @@ PUBG map stuff
 
 ### Running
 ```
-. bin/dev.env
-docker-compose up
+bin/dev.sh up
 ```
 
 ### Migrations
 ```
-docker-compose run backend ./manage.py makemigrations
-docker-compose run backend ./manage.py migrate
+bin/dev.sh run backend ./manage.py makemigrations
+bin/dev.sh run backend ./manage.py migrate
 ```
 
 ### Updating Assets
@@ -32,13 +31,13 @@ frontend/assets.py update
 
 ### Testing
 ```
-docker-compose run backend ./manage.py test
-docker-compose run frontend npm run test
+bin/dev.sh run backend ./manage.py test
+bin/dev.sh run frontend npm run test
 ```
 
 ### Docker Registry
 You can push to/pull from the docker registry by logging in with:  
-`docker login -u <gitlab_user> -p $GITLAB_TOKEN registry.gitlab.com`
+`docker login -u <gitlab_user> -p $(cat keys/gitlab) registry.gitlab.com`
 
 ## Production
 ### Creating a new swarm manager
