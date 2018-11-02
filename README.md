@@ -1,5 +1,5 @@
 # Battletrack
-PUBG map stuff
+Website for viewing PUBG match history, and analyzing the events that occurred throughout a match.
 
 ## Development
 ### Setup
