@@ -1,7 +1,7 @@
 # BUILDER
 ARG tag=latest
 FROM registry.gitlab.com/lucaspickering/battletrack/frontend:$tag as builder
-RUN npm run build
+RUN yarn run build
 
 
 # NGINX SERVER

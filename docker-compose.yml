@@ -26,7 +26,7 @@ services:
     build: ./frontend/
     image: registry.gitlab.com/lucaspickering/battletrack/frontend
     user: "${UID}:${GID}"
-    command: npm start
+    command: yarn start
     volumes:
       - ./frontend/:/battletrack:rw
     ports:
