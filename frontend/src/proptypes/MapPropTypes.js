@@ -5,10 +5,7 @@ const exported = {};
 
 exported.rosterPalette = PropTypes.instanceOf(RosterPalette);
 
-exported.timeRange = PropTypes.shape([
-  PropTypes.number.isRequired, // min
-  PropTypes.number.isRequired, // max
-]);
+exported.timeRange = PropTypes.arrayOf(PropTypes.number.isRequired); // [min, max]
 
 exported.pos = PropTypes.shape({
   x: PropTypes.number.isRequired,
