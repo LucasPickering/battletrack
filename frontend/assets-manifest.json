@@ -2,8 +2,8 @@
     "api_assets_dir": "api-assets",
     "static": {
         "output_dir": "src/api-assets",
-        "files":  [
-            "dictionaries/telemetry/common/mapName.json",
+        "files": [
+            "dictionaries/telemetry/mapName.json",
             "dictionaries/telemetry/item/itemId.json",
             "dictionaries/telemetry/vehicle/vehicleId.json",
             "dictionaries/telemetry/damageCauserName.json"

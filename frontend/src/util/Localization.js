@@ -1,6 +1,6 @@
 import LocalizedStrings from 'react-localization';
 
-import mapName from 'api-assets/dictionaries/telemetry/common/mapName.json';
+import mapName from 'api-assets/dictionaries/telemetry/mapName.json';
 import itemId from 'api-assets/dictionaries/telemetry/item/itemId.json';
 import vehicleId from 'api-assets/dictionaries/telemetry/vehicle/vehicleId.json';
 import damageCauserName from 'api-assets/dictionaries/telemetry/damageCauserName.json';
