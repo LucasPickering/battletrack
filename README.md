@@ -1,15 +1,20 @@
 # Battletrack
 Website for viewing PUBG match history, and analyzing the events that occurred throughout a match.
 
+## Examples
+- [Player history](http://battletrack.lucaspickering.me/players/pc-eu/BreaK)
+- [Match summary](http://battletrack.lucaspickering.me/matches/7fd9bbf4-63e5-4250-b2cd-8447125e8271)
+- [Match event map](http://battletrack.lucaspickering.me/matches/7fd9bbf4-63e5-4250-b2cd-8447125e8271/overview)
+
 ## Development
 ### Setup
 1. Install Docker and Docker Compose
 1. `git submodule init && git submodule update`
 1. [OPTIONAL] Set up git hooks by running `bin/hooks.py`
 1. Save the following keys in the `keys/` directory as needed:
-    1. `pubg` - PUBG API key
-    1. `amplify` - Nginx Amplify key
-    1. `gitlab` - Gitlab token
+    1. `pubg` - PUBG API key (required)
+    1. `amplify` - Nginx Amplify key (for local prod-env testing)
+    1. `gitlab` - Gitlab token (for push/pull with Gitlab docker repo)
 1. `cd frontend && npm install`
 
 ### Running
