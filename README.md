@@ -15,7 +15,6 @@ Website for viewing PUBG match history, and analyzing the events that occurred t
     1. `pubg` - PUBG API key (required)
     1. `amplify` - Nginx Amplify key (for local prod-env testing)
     1. `gitlab` - Gitlab token (for push/pull with Gitlab docker repo)
-1. `cd frontend && npm install`
 
 ### Running
 ```
