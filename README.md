@@ -36,7 +36,7 @@ frontend/assets.py update
 ### Testing
 ```
 bin/dev.sh run backend ./manage.py test
-bin/dev.sh run frontend npm run test
+bin/dev.sh run frontend yarn test
 ```
 
 ### Docker Registry

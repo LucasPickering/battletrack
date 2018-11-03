@@ -19,4 +19,3 @@
 *.sql
 *.p
 keys/
-package-lock.json
