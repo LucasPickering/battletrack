@@ -1,0 +1,15 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.home .recent-matches-label {
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.home .recent-matches {
+  margin-top: 20px;
+  width: 500px;
+}

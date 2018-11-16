@@ -17,12 +17,6 @@ exported.roster = PropTypes.shape({
   players: PropTypes.arrayOf(PropTypes.object).isRequired,
 });
 
-exported.player = PropTypes.shape({
-  id: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  matches: PropTypes.arrayOf(PropTypes.object).isRequired,
-});
-
 exported.match = PropTypes.shape({
   id: PropTypes.string.isRequired,
   shard: PropTypes.string.isRequired,
@@ -53,6 +47,12 @@ exported.playerMatch = PropTypes.shape({
   summary: exported.matchSummary.isRequired,
   roster: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired,
   stats: exported.playerMatchStats.isRequired,
+});
+
+exported.player = PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  matches: PropTypes.arrayOf(exported.playerMatch).isRequired,
 });
 
 exported.telemetry = PropTypes.shape({

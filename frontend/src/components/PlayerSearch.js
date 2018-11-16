@@ -38,7 +38,7 @@ class PlayerSearch extends React.PureComponent {
           <FormControl
             className="name-input"
             type="text"
-            placeholder="Player name..."
+            placeholder="Player name (case sensitive)"
             onChange={e => this.setState({ searchName: e.target.value })}
             onKeyPress={e => {
               if (e.key === 'Enter') {

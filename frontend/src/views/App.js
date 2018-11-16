@@ -8,20 +8,24 @@ import 'styles/App.css';
 import 'styles/bootstrap/Button.css';
 import 'styles/bootstrap/Dropdown.css';
 
-import Home from './Home';
+import HomeView from './HomeView';
 import PlayerView from './PlayerView';
 import MatchView from './MatchView';
 import OverviewView from './OverviewView';
 import NotFound from './NotFound';
 
-
 const App = () => (
   <Router>
     <Switch>
-      <BtRoute exact path="/" component={Home} />
+      <BtRoute exact path="/" component={HomeView} />
       <BtRoute exact path="/players/:shard/:name" component={PlayerView} />
       <BtRoute exact path="/matches/:id" component={MatchView} />
-      <BtRoute exact path="/matches/:id/overview" component={OverviewView} fullscreen />
+      <BtRoute
+        exact
+        path="/matches/:id/overview"
+        component={OverviewView}
+        fullscreen
+      />
       <Route component={NotFound} />
     </Switch>
   </Router>

@@ -1,7 +1,7 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React from 'react';
 import { ListGroup } from 'react-bootstrap';
+import { connect } from 'react-redux';
 
 import FilterContext from 'context/FilterContext';
 import DataPropTypes from 'proptypes/DataPropTypes';
@@ -17,28 +17,23 @@ function makeFilterPredicate(filterCfgs, filterVals) {
   });
 }
 
-const PlayerMatches = ({
-  player: {
-    name,
-    matches,
-  },
-  filterCfgs,
-}) => (
+const PlayerMatches = ({ player: { name, matches }, filterCfgs }) => (
   <FilterContext.Consumer>
     {({ filterVals }) => {
-      const filteredMatches = matches.filter(makeFilterPredicate(filterCfgs, filterVals));
+      const filteredMatches = matches.filter(
+        makeFilterPredicate(filterCfgs, filterVals),
+      );
       return (
         <div className="player-matches-container">
           <p className="player-match-count">{filteredMatches.length} matches</p>
           <ListGroup className="player-matches">
-            {filteredMatches
-              .map(m => (
-                <PlayerMatchSummary
-                  key={m.match_id}
-                  playerName={name}
-                  match={m}
-                />
-              ))}
+            {filteredMatches.map(m => (
+              <PlayerMatchSummary
+                key={m.match_id}
+                playerName={name}
+                match={m}
+              />
+            ))}
           </ListGroup>
         </div>
       );
@@ -48,10 +43,12 @@ const PlayerMatches = ({
 
 PlayerMatches.propTypes = {
   player: DataPropTypes.player.isRequired,
-  filterCfgs: PropTypes.arrayOf(PropTypes.shape({
-    key: PropTypes.string.isRequired,
-    extractor: PropTypes.func.isRequired,
-  })).isRequired,
+  filterCfgs: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string.isRequired,
+      extractor: PropTypes.func.isRequired,
+    }),
+  ).isRequired,
 };
 
 const mapStateToProps = state => ({

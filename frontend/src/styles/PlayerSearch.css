@@ -25,7 +25,7 @@
 .player-search .name-input {
   height: 100%;
   box-shadow: none;
-  width: 200px;
+  width: 240px;
   background-color: #00000000;
   color: var(--highlight-color-3);
   border-radius: 0;
