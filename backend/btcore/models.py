@@ -45,7 +45,8 @@ def DELETE_PLAYERMATCH_FROM_ROSTERMATCH(collector, field, sub_objs, using):
         else:
             to_delete.append(pm)
 
-    collector.add_field_update(field, None, to_null)  # Null out RosterMatch fields
+    # Null out RosterMatch fields
+    collector.add_field_update(field, None, to_null)
     collector.collect(to_delete, source=field.remote_field.model,
                       source_attr=field.name, nullable=field.null)  # DELETION
 
@@ -63,8 +64,10 @@ class Match(models.Model):
     id = models.CharField(primary_key=True, max_length=util.MATCH_ID_LENGTH)
     shard = models.CharField(max_length=20)
     mode = models.CharField(max_length=20)
-    perspective = models.CharField(max_length=10, blank=True)  # Blank for custom games
-    map_name = models.CharField(max_length=50, choices=util.choices(util.MAP_SIZES.keys()))
+    # Blank for custom games
+    perspective = models.CharField(max_length=10, blank=True)
+    map_name = models.CharField(max_length=50,
+                                choices=util.choices(util.MAP_SIZES.keys()))
     date = models.DateTimeField()
     duration = models.PositiveSmallIntegerField()
     custom_match = models.BooleanField()
@@ -80,17 +83,22 @@ class Player(models.Model):
 
 class RosterMatch(models.Model):
     id = models.CharField(primary_key=True, max_length=util.ROSTER_ID_LENGTH)
-    match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='rosters')
+    match = models.ForeignKey(
+        Match, on_delete=models.CASCADE, related_name='rosters')
     win_place = models.PositiveSmallIntegerField()
 
 
 class PlayerMatch(models.Model):
     # Null if match/player isn't in the DB yet
-    roster = models.ForeignKey(RosterMatch, on_delete=DELETE_PLAYERMATCH_FROM_ROSTERMATCH,
-                               null=True, related_name='players')
+    roster = models.ForeignKey(RosterMatch,
+                               on_delete=DELETE_PLAYERMATCH_FROM_ROSTERMATCH,
+                               null=True,
+                               related_name='players')
     # Always populated - link is broken if Player isn't in DB yet
-    player = models.ForeignKey(Player, on_delete=DELETE_PLAYERMATCH_FROM_PLAYER,
-                               db_constraint=False, related_name='matches')
+    player = models.ForeignKey(Player,
+                               on_delete=DELETE_PLAYERMATCH_FROM_PLAYER,
+                               db_constraint=False,
+                               related_name='matches')
     # ^^^ Deletion for these fields is handled by custom logic in the related objects ^^^
 
     # Store these additional fields, because they can be gotten from match OR player data
@@ -104,7 +112,9 @@ class PlayerMatch(models.Model):
 
 # This object will only be create when a PlayerMatch is populated from the Match side
 class PlayerMatchStats(models.Model):
-    player_match = models.OneToOneField(PlayerMatch, on_delete=models.CASCADE, primary_key=True,
+    player_match = models.OneToOneField(PlayerMatch,
+                                        on_delete=models.CASCADE,
+                                        primary_key=True,
                                         related_name='stats')
     assists = models.PositiveSmallIntegerField()
     boosts = models.PositiveSmallIntegerField()

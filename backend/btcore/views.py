@@ -18,9 +18,21 @@ class MatchView(views.APIView):
 
         # If requested, populate missing telemetry data for the match
         if request.GET.get('popTelemetry', False) is not False:
-            Telemetry.objects.preload(match=match.id)  # Will pull from the API if necessary
+            # Will pull from the API if necessary
+            Telemetry.objects.preload(match=match.id)
 
         serializer = self.serializer_class(match)
+        return Response(serializer.data)
+
+
+class RecentMatchesView(MatchView):
+    DEFAULT_COUNT = 5
+    serializer_class = serializers.MatchSummarySerializer
+
+    def get(self, request):
+        count = request.GET.get('count', self.DEFAULT_COUNT)
+        matches = self.queryset.order_by('date')[:count]
+        serializer = self.serializer_class(matches, many=True)
         return Response(serializer.data)
 
 
@@ -41,7 +53,8 @@ class PlayerView(views.APIView):
         # If requested, populate missing match matches for the player
         pop_matches = request.GET.get(self.POP_MATCHES_PARAM)
         if pop_matches is not None:
-            match_ids = player.matches.filter(shard=shard).values_list('match_id', flat=True)
+            match_ids = player.matches.filter(
+                shard=shard).values_list('match_id', flat=True)
             Match.objects.multi_preload('id', match_ids)
 
             # Refresh the object. By excluding the shard, we tell it not to hit the API this time.
