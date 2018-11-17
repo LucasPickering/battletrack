@@ -11,8 +11,7 @@ services:
   backend:
     build: ./backend/
     image: registry.gitlab.com/lucaspickering/battletrack/backend
-    user: "${UID}:${GID}"
-    command: sh -c "dockerize -wait tcp://db:5432 && ./manage.py migrate && ./manage.py runserver 0.0.0.0:8000"
+    command: sh -c "dockerize -wait tcp://db:5432 && ./manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend/:/battletrack:rw
     depends_on:
@@ -25,7 +24,6 @@ services:
   frontend:
     build: ./frontend/
     image: registry.gitlab.com/lucaspickering/battletrack/frontend
-    user: "${UID}:${GID}"
     command: yarn start
     volumes:
       - ./frontend/:/battletrack:rw

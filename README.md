@@ -8,23 +8,25 @@ Website for viewing PUBG match history, and analyzing the events that occurred t
 
 ## Development
 ### Setup
-1. Install Docker and Docker Compose
+1. Install Docker, Docker compose, and yarn
 1. `git submodule init && git submodule update`
 1. [OPTIONAL] Set up git hooks by running `bin/hooks.py`
 1. Save the following keys in the `keys/` directory as needed:
     1. `pubg` - PUBG API key (required)
     1. `amplify` - Nginx Amplify key (for local prod-env testing)
     1. `gitlab` - Gitlab token (for push/pull with Gitlab docker repo)
+1. `cd frontend && yarn install`
 
 ### Running
 ```
-bin/dev.sh up
+source bin/dev.sh
+docker-compose up
 ```
 
 ### Migrations
 ```
-bin/dev.sh run backend ./manage.py makemigrations
-bin/dev.sh run backend ./manage.py migrate
+docker-compose run backend ./manage.py makemigrations
+docker-compose run backend ./manage.py migrate
 ```
 
 ### Updating Assets
@@ -35,12 +37,12 @@ frontend/assets.py update
 
 ### Testing
 ```
-bin/dev.sh run backend ./manage.py test
-bin/dev.sh run frontend yarn test
+docker-compose run backend ./manage.py test
+docker-compose run frontend npm run test
 ```
 
 ### Docker Registry
-You can push to/pull from the docker registry by logging in with:  
+You can push to/pull from the docker registry by logging in with:
 `docker login -u <gitlab_user> -p $(cat keys/gitlab) registry.gitlab.com`
 
 ## Production
